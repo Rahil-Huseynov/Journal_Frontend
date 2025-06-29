@@ -1,0 +1,53 @@
+{
+  "Navigation": {
+    "home": "Home",
+    "features": "Features",
+    "services": "Services",
+    "categories": "Categories",
+    "about": "About",
+    "contact": "Contact",
+    "login": "Login",
+    "register": "Register",
+    "logout": "Logout"
+  },
+  "Hero": {
+    "badge": "Scientific Works Platform",
+    "title": "Share Your Scientific",
+    "titleHighlight": "Research",
+    "description": "Share your scientific articles, research, and projects on our professional platform. Connect with the academic community and advance your career.",
+    "startNow": "Get Started",
+    "learnMore": "Learn More"
+  },
+  "Auth": {
+    "loginTitle": "Login",
+    "loginDescription": "Enter your credentials to access your account",
+    "registerTitle": "Register",
+    "registerDescription": "Enter your information to create a new account",
+    "email": "Email",
+    "password": "Password",
+    "confirmPassword": "Confirm Password",
+    "firstName": "First Name",
+    "lastName": "Last Name",
+    "role": "Role",
+    "organization": "Organization",
+    "position": "Position",
+    "forgotPassword": "Forgot your password?",
+    "alreadyHaveAccount": "Already have an account?",
+    "dontHaveAccount": "Don't have an account?",
+    "loginButton": "Login",
+    "registerButton": "Register",
+    "resetPassword": "Reset Password",
+    "backToLogin": "Back to Login"
+  },
+  "Roles": {
+    "client": "Researcher",
+    "admin": "Admin",
+    "superadmin": "Super Admin"
+  },
+  "Categories": {
+    "title": "Categories",
+    "description": "Classification by scientific fields",
+    "viewSeries": "View Series",
+    "totalArticles": "articles"
+  }
+}

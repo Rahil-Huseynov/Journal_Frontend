@@ -1,0 +1,53 @@
+{
+  "Navigation": {
+    "home": "Ana səhifə",
+    "features": "Xüsusiyyətlər",
+    "services": "Xidmətlər",
+    "categories": "Kateqoriyalar",
+    "about": "Haqqımızda",
+    "contact": "Əlaqə",
+    "login": "Giriş",
+    "register": "Qeydiyyat",
+    "logout": "Çıxış"
+  },
+  "Hero": {
+    "badge": "Elmi İşlər Platforması",
+    "title": "Elmi Tədqiqatlarınızı",
+    "titleHighlight": "Paylaşın",
+    "description": "Elmi məqalələrinizi, tədqiqatlarınızı və layihələrinizi peşəkar platformamızda paylaşın. Akademik icma ilə əlaqə qurun və karyeranızı inkişaf etdirin.",
+    "startNow": "İndi Başlayın",
+    "learnMore": "Daha Ətraflı"
+  },
+  "Auth": {
+    "loginTitle": "Giriş",
+    "loginDescription": "Hesabınıza daxil olmaq üçün məlumatlarınızı daxil edin",
+    "registerTitle": "Qeydiyyat",
+    "registerDescription": "Yeni hesab yaratmaq üçün məlumatlarınızı daxil edin",
+    "email": "E-poçt",
+    "password": "Şifrə",
+    "confirmPassword": "Şifrəni təsdiq edin",
+    "firstName": "Ad",
+    "lastName": "Soyad",
+    "role": "Rol",
+    "organization": "Təşkilat",
+    "position": "Vəzifə",
+    "forgotPassword": "Şifrəni unutmusunuz?",
+    "alreadyHaveAccount": "Artıq hesabınız var?",
+    "dontHaveAccount": "Hesabınız yoxdur?",
+    "loginButton": "Giriş",
+    "registerButton": "Qeydiyyat",
+    "resetPassword": "Şifrəni sıfırla",
+    "backToLogin": "Girişə qayıt"
+  },
+  "Roles": {
+    "client": "Tədqiqatçı",
+    "admin": "Admin",
+    "superadmin": "Super Admin"
+  },
+  "Categories": {
+    "title": "Kateqoriyalar",
+    "description": "Elmi sahələr üzrə təsnifat",
+    "viewSeries": "Seriyaları gör",
+    "totalArticles": "məqalə"
+  }
+}

@@ -1,0 +1,53 @@
+{
+  "Navigation": {
+    "home": "Главная",
+    "features": "Возможности",
+    "services": "Услуги",
+    "categories": "Категории",
+    "about": "О нас",
+    "contact": "Контакты",
+    "login": "Вход",
+    "register": "Регистрация",
+    "logout": "Выход"
+  },
+  "Hero": {
+    "badge": "Платформа Научных Работ",
+    "title": "Делитесь Своими Научными",
+    "titleHighlight": "Исследованиями",
+    "description": "Делитесь своими научными статьями, исследованиями и проектами на нашей профессиональной платформе. Общайтесь с академическим сообществом и развивайте свою карьеру.",
+    "startNow": "Начать",
+    "learnMore": "Подробнее"
+  },
+  "Auth": {
+    "loginTitle": "Вход",
+    "loginDescription": "Введите свои данные для доступа к аккаунту",
+    "registerTitle": "Регистрация",
+    "registerDescription": "Введите свою информацию для создания нового аккаунта",
+    "email": "Email",
+    "password": "Пароль",
+    "confirmPassword": "Подтвердите пароль",
+    "firstName": "Имя",
+    "lastName": "Фамилия",
+    "role": "Роль",
+    "organization": "Организация",
+    "position": "Должность",
+    "forgotPassword": "Забыли пароль?",
+    "alreadyHaveAccount": "Уже есть аккаунт?",
+    "dontHaveAccount": "Нет аккаунта?",
+    "loginButton": "Войти",
+    "registerButton": "Зарегистрироваться",
+    "resetPassword": "Сбросить пароль",
+    "backToLogin": "Вернуться к входу"
+  },
+  "Roles": {
+    "client": "Исследователь",
+    "admin": "Админ",
+    "superadmin": "Супер Админ"
+  },
+  "Categories": {
+    "title": "Категории",
+    "description": "Классификация по научным областям",
+    "viewSeries": "Посмотреть серии",
+    "totalArticles": "статей"
+  }
+}

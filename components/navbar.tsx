@@ -5,19 +5,20 @@ import { BookOpen, Menu, X } from "lucide-react"
 import Link from "next/link"
 import { useState } from "react"
 import { LanguageSwitcher } from "./language-switcher"
-import { useTranslations } from "next-intl"
+import { useLocale, useTranslations } from "next-intl"
 import { useAuth } from "@/lib/auth-context"
 
 export function Navbar() {
   const [isOpen, setIsOpen] = useState(false)
   const t = useTranslations("Navigation")
   const { user, logout } = useAuth()
+  const locale = useLocale()
 
   const navigation = [
     { name: t("home"), href: "/" },
     { name: t("features"), href: "/#features" },
     { name: t("services"), href: "/#services" },
-    { name: t("categories"), href: "/categories" },
+    { name: t("journals"), href: `/${locale}/journals`},
     { name: t("about"), href: "/#about" },
     { name: t("contact"), href: "/#contact" },
   ]

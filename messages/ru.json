@@ -3,7 +3,7 @@
     "home": "Главная",
     "features": "Возможности",
     "services": "Услуги",
-    "categories": "Категории",
+    "journals": "Журналы",
     "about": "О нас",
     "contact": "Контакты",
     "login": "Вход",
@@ -44,8 +44,8 @@
     "admin": "Админ",
     "superadmin": "Супер Админ"
   },
-  "Categories": {
-    "title": "Категории",
+  "Journals": {
+    "title": "Журналы",
     "description": "Классификация по научным областям",
     "viewSeries": "Посмотреть серии",
     "totalArticles": "статей"

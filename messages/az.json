@@ -3,7 +3,7 @@
     "home": "Ana səhifə",
     "features": "Xüsusiyyətlər",
     "services": "Xidmətlər",
-    "categories": "Kateqoriyalar",
+    "journals": "Jurnallar",
     "about": "Haqqımızda",
     "contact": "Əlaqə",
     "login": "Giriş",
@@ -44,7 +44,7 @@
     "admin": "Admin",
     "superadmin": "Super Admin"
   },
-  "Categories": {
+  "Journals": {
     "title": "Kateqoriyalar",
     "description": "Elmi sahələr üzrə təsnifat",
     "viewSeries": "Seriyaları gör",

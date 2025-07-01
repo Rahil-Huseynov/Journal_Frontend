@@ -3,7 +3,7 @@
     "home": "Home",
     "features": "Features",
     "services": "Services",
-    "categories": "Categories",
+    "journals": "Journals",
     "about": "About",
     "contact": "Contact",
     "login": "Login",
@@ -44,8 +44,8 @@
     "admin": "Admin",
     "superadmin": "Super Admin"
   },
-  "Categories": {
-    "title": "Categories",
+  "Journals": {
+    "title": "Journals",
     "description": "Classification by scientific fields",
     "viewSeries": "View Series",
     "totalArticles": "articles"

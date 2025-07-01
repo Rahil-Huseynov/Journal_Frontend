@@ -16,7 +16,12 @@
     "titleHighlight": "Paylaşın",
     "description": "Elmi məqalələrinizi, tədqiqatlarınızı və layihələrinizi peşəkar platformamızda paylaşın. Akademik icma ilə əlaqə qurun və karyeranızı inkişaf etdirin.",
     "startNow": "İndi Başlayın",
-    "learnMore": "Daha Ətraflı"
+    "learnMore": "Daha Ətraflı",
+    "text": {
+      "before": "Elmi Tədqiqatınızı ",
+      "highlight": "Paylaşın",
+      "after": ""
+    }
   },
   "Auth": {
     "loginTitle": "Giriş",

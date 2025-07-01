@@ -6,9 +6,21 @@ import { Badge } from "@/components/ui/badge"
 import { BookOpen, Users, Award, TrendingUp, ArrowRight, CheckCircle } from "lucide-react"
 import Link from "next/link"
 import { useTranslations } from "next-intl"
+import AnimatedText from "@/components/AnimatedText"
 
 export default function LandingPage() {
   const t = useTranslations()
+
+  const animatedTexts = [
+    {
+      before: t("Hero.text.before"),
+      highlight: t("Hero.text.highlight"),
+      after: t("Hero.text.after")
+    }
+  ];
+
+
+  console.log(animatedTexts)
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100">
@@ -20,8 +32,7 @@ export default function LandingPage() {
               {t("Hero.badge")}
             </Badge>
             <h1 className="text-4xl md:text-6xl font-bold text-gray-900 mb-6">
-              {t("Hero.title")}
-              <span className="text-blue-600"> {t("Hero.titleHighlight")}</span>
+              <AnimatedText texts={animatedTexts} />
             </h1>
             <p className="text-xl text-gray-600 mb-8 max-w-3xl mx-auto">{t("Hero.description")}</p>
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
@@ -38,6 +49,8 @@ export default function LandingPage() {
           </div>
         </div>
       </section>
+
+
 
       {/* Features Section */}
       <section id="features" className="py-20 bg-white">

@@ -16,7 +16,12 @@
     "titleHighlight": "Research",
     "description": "Share your scientific articles, research, and projects on our professional platform. Connect with the academic community and advance your career.",
     "startNow": "Get Started",
-    "learnMore": "Learn More"
+    "learnMore": "Learn More",
+    "text": {
+      "before": "Share Your Scientific ",
+      "highlight": "Research",
+      "after": ""
+    }
   },
   "Auth": {
     "loginTitle": "Login",

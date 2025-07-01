@@ -1,0 +1,12 @@
+.blinkingCursor {
+  font-weight: 100;
+  font-size: 48px;
+  color: #2563eb; /* Tailwind blue-600 */
+  animation: blink 1s step-start infinite;
+}
+
+@keyframes blink {
+  50% {
+    opacity: 0;
+  }
+}

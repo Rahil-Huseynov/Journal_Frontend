@@ -12,6 +12,8 @@ import { BookOpen, Eye, EyeOff } from "lucide-react"
 import Link from "next/link"
 import { useRouter } from "next/navigation"
 import { useAuth } from "@/lib/auth-context"
+import { useLocale, useTranslations } from "next-intl"
+import "./page.css"
 
 export default function LoginPage() {
   const [email, setEmail] = useState("")
@@ -19,6 +21,8 @@ export default function LoginPage() {
   const [showPassword, setShowPassword] = useState(false)
   const [isLoading, setIsLoading] = useState(false)
   const [error, setError] = useState("")
+  const locale = useLocale();
+  const t = useTranslations('Register');
 
   const router = useRouter()
   const { login } = useAuth()
@@ -59,6 +63,12 @@ export default function LoginPage() {
     <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 flex items-center justify-center p-4">
       <Card className="w-full max-w-md">
         <CardHeader className="text-center">
+          <Link href={'/'}>
+            <div className="back_container">
+              <img className="back_container_image" src="https://www.svgrepo.com/show/509905/dropdown-arrow.svg" alt="" />
+              <span>{t("back")}</span>
+            </div>
+          </Link>
           <div className="flex items-center justify-center mb-4">
             <BookOpen className="h-8 w-8 text-blue-600" />
             <span className="ml-2 text-2xl font-bold text-gray-900">ScientificWorks</span>
@@ -123,7 +133,7 @@ export default function LoginPage() {
 
             <div className="text-center text-sm">
               Hesabınız yoxdur?{" "}
-              <Link href="/auth/register" className="text-blue-600 hover:underline">
+              <Link href={`/${locale}/auth/register`} className="text-blue-600 hover:underline">
                 Qeydiyyatdan keçin
               </Link>
             </div>

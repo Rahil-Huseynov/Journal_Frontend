@@ -11,7 +11,7 @@ import { Alert, AlertDescription } from "@/components/ui/alert"
 import { BookOpen, Eye, EyeOff } from "lucide-react"
 import Link from "next/link"
 import { useRouter, useSearchParams } from "next/navigation"
-import { useTranslations } from "next-intl"
+import { useLocale, useTranslations } from "next-intl"
 import { apiClient } from "@/lib/api-client"
 
 export default function ResetPasswordPage() {
@@ -22,6 +22,7 @@ export default function ResetPasswordPage() {
   const [isLoading, setIsLoading] = useState(false)
   const [error, setError] = useState("")
   const [token, setToken] = useState("")
+  const locale = useLocale();
 
   const router = useRouter()
   const searchParams = useSearchParams()
@@ -55,7 +56,11 @@ export default function ResetPasswordPage() {
 
     try {
       await apiClient.resetPassword(token, password)
-      router.push("/auth/login?message=Şifrə uğurla dəyişdirildi. Yeni şifrə ilə giriş edə bilərsiniz.")
+      router.push(
+        `/${locale}/auth/login?message=${encodeURIComponent(
+          "Şifrə uğurla dəyişdirildi. Yeni şifrə ilə giriş edə bilərsiniz."
+        )}`
+      )
     } catch (err: any) {
       setError(err.message || "Xəta baş verdi. Yenidən cəhd edin.")
     } finally {
@@ -135,7 +140,7 @@ export default function ResetPasswordPage() {
             </Button>
 
             <div className="text-center text-sm">
-              <Link href="/auth/login" className="text-blue-600 hover:underline">
+              <Link href={`/${locale}/auth/login`} className="text-blue-600 hover:underline">
                 {t("backToLogin")}
               </Link>
             </div>

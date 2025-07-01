@@ -62,10 +62,10 @@ export function Navbar() {
               </div>
             ) : (
               <>
-                <Link href="/auth/login">
+                <Link href={`/${locale}/auth/login`}>
                   <Button variant="outline">{t("login")}</Button>
                 </Link>
-                <Link href="/auth/register">
+                <Link href={`/${locale}/auth/register`}>
                   <Button>{t("register")}</Button>
                 </Link>
               </>
@@ -112,12 +112,12 @@ export function Navbar() {
                   </div>
                 ) : (
                   <div className="space-y-2">
-                    <Link href="/auth/login">
+                    <Link href={`/${locale}/auth/login`}>
                       <Button variant="outline" className="w-full bg-transparent" onClick={() => setIsOpen(false)}>
                         {t("login")}
                       </Button>
                     </Link>
-                    <Link href="/auth/register">
+                    <Link href={`/${locale}/auth/register`}>
                       <Button className="w-full" onClick={() => setIsOpen(false)}>
                         {t("register")}
                       </Button>

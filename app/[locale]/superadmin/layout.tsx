@@ -9,6 +9,7 @@ import { Users, FileText, BarChart3, Settings, Shield, Database, LogOut, Menu, X
 import Link from "next/link"
 import { usePathname, useRouter } from "next/navigation"
 import { useState } from "react"
+import { useLocale } from "next-intl"
 
 const navigation = [
   { name: "Dashboard", href: "/superadmin/dashboard", icon: BarChart3 },
@@ -28,10 +29,12 @@ export default function SuperAdminLayout({
   const { user, logout } = useAuth()
   const pathname = usePathname()
   const router = useRouter()
+  const locale = useLocale();
+
 
   const handleLogout = () => {
     logout()
-    router.push("/auth/login")
+    router.push(`/${locale}/auth/login`);
   }
 
   return (
@@ -57,9 +60,8 @@ export default function SuperAdminLayout({
                   <Link
                     key={item.name}
                     href={item.href}
-                    className={`group flex items-center px-2 py-2 text-sm font-medium rounded-md ${
-                      isActive ? "bg-red-100 text-red-900" : "text-gray-600 hover:bg-gray-50 hover:text-gray-900"
-                    }`}
+                    className={`group flex items-center px-2 py-2 text-sm font-medium rounded-md ${isActive ? "bg-red-100 text-red-900" : "text-gray-600 hover:bg-gray-50 hover:text-gray-900"
+                      }`}
                     onClick={() => setSidebarOpen(false)}
                   >
                     <item.icon className="mr-3 h-6 w-6" />
@@ -85,9 +87,8 @@ export default function SuperAdminLayout({
                   <Link
                     key={item.name}
                     href={item.href}
-                    className={`group flex items-center px-2 py-2 text-sm font-medium rounded-md ${
-                      isActive ? "bg-red-100 text-red-900" : "text-gray-600 hover:bg-gray-50 hover:text-gray-900"
-                    }`}
+                    className={`group flex items-center px-2 py-2 text-sm font-medium rounded-md ${isActive ? "bg-red-100 text-red-900" : "text-gray-600 hover:bg-gray-50 hover:text-gray-900"
+                      }`}
                   >
                     <item.icon className="mr-3 h-6 w-6" />
                     {item.name}

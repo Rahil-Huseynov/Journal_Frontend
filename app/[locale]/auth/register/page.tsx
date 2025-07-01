@@ -13,22 +13,32 @@ import { BookOpen, Eye, EyeOff } from "lucide-react"
 import Link from "next/link"
 import { useRouter } from "next/navigation"
 import { useAuth } from "@/lib/auth-context"
-
+import { useLocale, useTranslations } from "next-intl"
+import "./page.css"
+import CountrySelect from "@/components/CountryCodeSelect"
 export default function RegisterPage() {
   const [formData, setFormData] = useState({
     firstName: "",
     lastName: "",
+    fathername: "",
     email: "",
     password: "",
     confirmPassword: "",
     role: "client",
     organization: "",
     position: "",
+    phoneCode: "",
+    phoneNumber: "",
+    address: "",
+    fin: "",
+    idSerial: ''
   })
   const [showPassword, setShowPassword] = useState(false)
   const [showConfirmPassword, setShowConfirmPassword] = useState(false)
   const [isLoading, setIsLoading] = useState(false)
   const [error, setError] = useState("")
+  const t = useTranslations('Register');
+  const locale = useLocale();
 
   const router = useRouter()
   const { register } = useAuth()
@@ -53,11 +63,15 @@ export default function RegisterPage() {
       setIsLoading(false)
       return
     }
-
+    console.log(formData)
     try {
       const result = await register(formData)
       if (result.success) {
-        router.push("/auth/login?message=Qeydiyyat uğurlu oldu. Giriş edə bilərsiniz.")
+        router.push(
+          `/${locale}/auth/login?message=${encodeURIComponent(
+            'Qeydiyyat uğurlu oldu. Giriş edə bilərsiniz.'
+          )}`
+        );
       } else {
         setError(result.error || "Qeydiyyat uğursuz oldu")
       }
@@ -72,6 +86,12 @@ export default function RegisterPage() {
     <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 flex items-center justify-center p-4">
       <Card className="w-full max-w-2xl">
         <CardHeader className="text-center">
+          <Link href={'/'}>
+            <div className="back_container">
+              <img className="back_container_image" src="https://www.svgrepo.com/show/509905/dropdown-arrow.svg" alt="" />
+              <span>{t("back")}</span>
+            </div>
+          </Link>
           <div className="flex items-center justify-center mb-4">
             <BookOpen className="h-8 w-8 text-blue-600" />
             <span className="ml-2 text-2xl font-bold text-gray-900">ScientificWorks</span>
@@ -87,7 +107,7 @@ export default function RegisterPage() {
               </Alert>
             )}
 
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
               <div className="space-y-2">
                 <Label htmlFor="firstName">Ad</Label>
                 <Input
@@ -106,6 +126,16 @@ export default function RegisterPage() {
                   placeholder="Soyadınızı daxil edin"
                   value={formData.lastName}
                   onChange={(e) => handleInputChange("lastName", e.target.value)}
+                  required
+                />
+              </div>
+              <div className="space-y-2">
+                <Label htmlFor="fathername">Ata adı</Label>
+                <Input
+                  id="fathername"
+                  placeholder="Ata adınızı daxil edin"
+                  value={formData.fathername}
+                  onChange={(e) => handleInputChange("fathername", e.target.value)}
                   required
                 />
               </div>
@@ -131,7 +161,6 @@ export default function RegisterPage() {
                 </SelectTrigger>
                 <SelectContent>
                   <SelectItem value="client">Tədqiqatçı</SelectItem>
-                  <SelectItem value="admin">Admin</SelectItem>
                 </SelectContent>
               </Select>
             </div>
@@ -144,6 +173,7 @@ export default function RegisterPage() {
                   placeholder="Təşkilatınızın adı"
                   value={formData.organization}
                   onChange={(e) => handleInputChange("organization", e.target.value)}
+                  required
                 />
               </div>
 
@@ -154,9 +184,66 @@ export default function RegisterPage() {
                   placeholder="Vəzifəniz"
                   value={formData.position}
                   onChange={(e) => handleInputChange("position", e.target.value)}
+                  required
                 />
               </div>
             </div>
+
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+
+              <div className="space-y-2">
+                <Label htmlFor="phone">Mobil nömrə</Label>
+                <div className="flex gap-2">
+                  <CountrySelect
+                    value={formData.phoneCode}
+                    onChange={(val) => handleInputChange("phoneCode", val)}
+                  />
+                  <Input
+                    id="phone"
+                    placeholder="501234567"
+                    value={formData.phoneNumber}
+                    onChange={(e) => handleInputChange("phoneNumber", e.target.value)}
+                    required
+                  />
+                </div>
+              </div>
+
+              <div className="space-y-2">
+                <Label htmlFor="address">Ünvan</Label>
+                <Input
+                  id="address"
+                  placeholder="Ünvanınızı qeyd edin"
+                  value={formData.address}
+                  onChange={(e) => handleInputChange("address", e.target.value)}
+                  required
+                />
+              </div>
+            </div>
+
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div className="space-y-2">
+                <Label htmlFor="fin">FİN nömrəsi</Label>
+                <Input
+                  id="fin"
+                  placeholder="FİN nömrəsi"
+                  value={formData.fin}
+                  onChange={(e) => handleInputChange("fin", e.target.value)}
+                  required
+                />
+              </div>
+
+              <div className="space-y-2">
+                <Label htmlFor="position">Şəxsiyyət vəsiqəsinin seriya nömrəsi</Label>
+                <Input
+                  id="idSerial"
+                  placeholder="Şəxsiyyət vəsiqəsinin seriya nömrəsi"
+                  value={formData.idSerial}
+                  onChange={(e) => handleInputChange("idSerial", e.target.value)}
+                  required
+                />
+              </div>
+            </div>
+
 
             <div className="space-y-2">
               <Label htmlFor="password">Şifrə</Label>
@@ -212,7 +299,8 @@ export default function RegisterPage() {
 
             <div className="text-center text-sm">
               Artıq hesabınız var?{" "}
-              <Link href="/auth/login" className="text-blue-600 hover:underline">
+              <Link href={`/${locale}/auth/login`}
+                className="text-blue-600 hover:underline">
                 Giriş edin
               </Link>
             </div>

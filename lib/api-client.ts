@@ -1,3 +1,4 @@
+import { useLocale } from "next-intl"
 import { tokenManager } from "./token-manager"
 
 class ApiClient {
@@ -83,14 +84,16 @@ class ApiClient {
 
   // Auth endpoints
   async login(email: string, password: string) {
-    return this.request("/auth/login", {
+    const locale = useLocale();
+    return this.request(`/${locale}/auth/login`, {
       method: "POST",
       body: JSON.stringify({ email, password }),
     })
   }
 
   async register(userData: any) {
-    return this.request("/auth/register", {
+    const locale = useLocale();
+    return this.request(`/${locale}/auth/register`, {
       method: "POST",
       body: JSON.stringify(userData),
     })

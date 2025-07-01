@@ -3,8 +3,11 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Badge } from "@/components/ui/badge"
 import { BookOpen, Users, Award, TrendingUp, ArrowRight, CheckCircle } from "lucide-react"
 import Link from "next/link"
+import { useLocale } from "next-intl"
 
 export default function LandingPage() {
+  const locale = useLocale();
+
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100">
       {/* Header */}
@@ -30,10 +33,10 @@ export default function LandingPage() {
               </a>
             </nav>
             <div className="flex space-x-4">
-              <Link href="/auth/login">
+              <Link href={`/${locale}/auth/login`}>
                 <Button variant="outline">Giriş</Button>
               </Link>
-              <Link href="/auth/register">
+              <Link href={`/${locale}/auth/register`}>
                 <Button>Qeydiyyat</Button>
               </Link>
             </div>
@@ -57,7 +60,7 @@ export default function LandingPage() {
               əlaqə qurun və karyeranızı inkişaf etdirin.
             </p>
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
-              <Link href="/auth/register">
+              <Link href={`/${locale}/auth/register`}>
                 <Button size="lg" className="w-full sm:w-auto">
                   İndi Başlayın
                   <ArrowRight className="ml-2 h-4 w-4" />
@@ -202,7 +205,7 @@ export default function LandingPage() {
           <p className="text-xl text-blue-100 mb-8 max-w-2xl mx-auto">
             Minlərlə tədqiqatçının qoşulduğu platformada yerinizi alın və elmi təsiriniziartırın
           </p>
-          <Link href="/auth/register">
+          <Link href={`/${locale}/auth/register`}>
             <Button size="lg" variant="secondary">
               Pulsuz Qeydiyyat
               <ArrowRight className="ml-2 h-4 w-4" />

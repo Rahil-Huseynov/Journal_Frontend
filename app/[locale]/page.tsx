@@ -5,12 +5,12 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Badge } from "@/components/ui/badge"
 import { BookOpen, Users, Award, TrendingUp, ArrowRight, CheckCircle } from "lucide-react"
 import Link from "next/link"
-import { useTranslations } from "next-intl"
+import { useLocale, useTranslations } from "next-intl"
 import AnimatedText from "@/components/AnimatedText"
 
 export default function LandingPage() {
   const t = useTranslations()
-
+  const locale = useLocale();
   const animatedTexts = [
     {
       before: t("Hero.text.before"),
@@ -18,9 +18,6 @@ export default function LandingPage() {
       after: t("Hero.text.after")
     }
   ];
-
-
-  console.log(animatedTexts)
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100">
@@ -36,7 +33,7 @@ export default function LandingPage() {
             </h1>
             <p className="text-xl text-gray-600 mb-8 max-w-3xl mx-auto">{t("Hero.description")}</p>
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
-              <Link href="/auth/register">
+              <Link href={`/${locale}/auth/register`}>
                 <Button size="lg" className="w-full sm:w-auto">
                   {t("Hero.startNow")}
                   <ArrowRight className="ml-2 h-4 w-4" />
@@ -183,7 +180,7 @@ export default function LandingPage() {
           <p className="text-xl text-blue-100 mb-8 max-w-2xl mx-auto">
             Minlərlə tədqiqatçının qoşulduğu platformada yerinizi alın və elmi təsiriniziartırın
           </p>
-          <Link href="/auth/register">
+          <Link href={`/${locale}/auth/register`}>
             <Button size="lg" variant="secondary">
               Pulsuz Qeydiyyat
               <ArrowRight className="ml-2 h-4 w-4" />

@@ -9,6 +9,7 @@ import { BookOpen, FileText, User, BarChart3, Settings, LogOut, Menu, X, PlusCir
 import Link from "next/link"
 import { usePathname, useRouter } from "next/navigation"
 import { useState } from "react"
+import { useLocale } from "next-intl"
 
 const navigation = [
   { name: "Dashboard", href: "/client/dashboard", icon: BarChart3 },
@@ -27,10 +28,11 @@ export default function ClientLayout({
   const { user, logout } = useAuth()
   const pathname = usePathname()
   const router = useRouter()
+  const locale = useLocale();
 
   const handleLogout = () => {
     logout()
-    router.push("/auth/login")
+    router.push(`/${locale}/auth/login`);
   }
 
   return (
@@ -56,9 +58,8 @@ export default function ClientLayout({
                   <Link
                     key={item.name}
                     href={item.href}
-                    className={`group flex items-center px-2 py-2 text-sm font-medium rounded-md ${
-                      isActive ? "bg-green-100 text-green-900" : "text-gray-600 hover:bg-gray-50 hover:text-gray-900"
-                    }`}
+                    className={`group flex items-center px-2 py-2 text-sm font-medium rounded-md ${isActive ? "bg-green-100 text-green-900" : "text-gray-600 hover:bg-gray-50 hover:text-gray-900"
+                      }`}
                     onClick={() => setSidebarOpen(false)}
                   >
                     <item.icon className="mr-3 h-6 w-6" />
@@ -84,9 +85,8 @@ export default function ClientLayout({
                   <Link
                     key={item.name}
                     href={item.href}
-                    className={`group flex items-center px-2 py-2 text-sm font-medium rounded-md ${
-                      isActive ? "bg-green-100 text-green-900" : "text-gray-600 hover:bg-gray-50 hover:text-gray-900"
-                    }`}
+                    className={`group flex items-center px-2 py-2 text-sm font-medium rounded-md ${isActive ? "bg-green-100 text-green-900" : "text-gray-600 hover:bg-gray-50 hover:text-gray-900"
+                      }`}
                   >
                     <item.icon className="mr-3 h-6 w-6" />
                     {item.name}

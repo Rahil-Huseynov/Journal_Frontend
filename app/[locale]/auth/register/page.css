@@ -1,0 +1,8 @@
+.back_container{
+    display: flex;
+    align-items: center;
+}
+.back_container_image{
+    width: 40px;
+    transform: rotate(90deg);
+}

@@ -9,7 +9,6 @@ const inter = Inter({ subsets: ["latin"] })
 export const metadata: Metadata = {
   title: "ScientificWorks - Elmi Tədqiqatlar Platforması",
   description: "Elmi məqalələrinizi paylaşın və akademik icma ilə əlaqə qurun",
-    generator: 'v0.dev'
 }
 
 export default function RootLayout({

@@ -54,5 +54,9 @@
     "description": "Classification by scientific fields",
     "viewSeries": "View Series",
     "totalArticles": "articles"
+  },
+  
+  "Register":{
+    "back": "Back"
   }
 }

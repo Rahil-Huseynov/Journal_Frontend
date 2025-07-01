@@ -54,5 +54,8 @@
     "description": "Классификация по научным областям",
     "viewSeries": "Посмотреть серии",
     "totalArticles": "статей"
+  },
+  "Register": {
+    "back": "Назад"
   }
 }

@@ -48,9 +48,13 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
   const login = async (email: string, password: string) => {
     try {
-      const response = await apiClient.login(email, password)
+      const formData = new FormData()
+      formData.append("email", email)
+      formData.append("password", password)
 
-      if (response.accessToken && response.refreshToken) {
+      const response = await apiClient.login(formData)
+
+      if (response.accessToken && response.refreshToken && response.user?.role) {
         tokenManager.setTokens(response.accessToken, response.refreshToken)
         setUser(response.user)
         return { success: true, user: response.user }

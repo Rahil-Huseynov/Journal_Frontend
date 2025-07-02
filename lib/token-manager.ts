@@ -1,3 +1,4 @@
+// token-manager.ts
 interface TokenData {
   accessToken: string
   refreshToken: string
@@ -12,9 +13,8 @@ class TokenManager {
   setTokens(accessToken: string, refreshToken: string) {
     if (typeof window === "undefined") return
 
-    // Decode JWT to get expiration time
     const payload = this.decodeJWT(accessToken)
-    const expiresAt = payload.exp * 1000 // Convert to milliseconds
+    const expiresAt = payload.exp * 1000
 
     localStorage.setItem(this.ACCESS_TOKEN_KEY, accessToken)
     localStorage.setItem(this.REFRESH_TOKEN_KEY, refreshToken)
@@ -71,7 +71,7 @@ class TokenManager {
     if (!expiresAt) return true
 
     const currentTime = Date.now()
-    const thresholdTime = minutesThreshold * 60 * 1000 // Convert to milliseconds
+    const thresholdTime = minutesThreshold * 60 * 1000
 
     return expiresAt - currentTime < thresholdTime
   }
@@ -84,7 +84,7 @@ class TokenManager {
         atob(base64)
           .split("")
           .map((c) => "%" + ("00" + c.charCodeAt(0).toString(16)).slice(-2))
-          .join(""),
+          .join("")
       )
       return JSON.parse(jsonPayload)
     } catch (error) {

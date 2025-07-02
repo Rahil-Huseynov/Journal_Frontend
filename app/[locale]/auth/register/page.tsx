@@ -16,7 +16,6 @@ import { useAuth } from "@/lib/auth-context"
 import { useLocale, useTranslations } from "next-intl"
 import "./page.css"
 import CountrySelect from "@/components/CountryCodeSelect"
-import { apiClient } from "@/lib/api-client"
 export default function RegisterPage() {
   const [formData, setFormData] = useState({
     firstName: "",
@@ -42,7 +41,6 @@ export default function RegisterPage() {
   const locale = useLocale();
 
   const router = useRouter()
-  const { register } = useAuth()
 
   const handleInputChange = (field: string, value: string) => {
     setFormData((prev) => ({ ...prev, [field]: value }))

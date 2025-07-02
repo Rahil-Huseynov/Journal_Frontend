@@ -86,12 +86,18 @@ class ApiClient {
 
   // Auth endpoints
   async login(email: string, password: string) {
-    const locale = useLocale();
-    return this.request(`/${locale}/auth/login`, {
+    const formData = new FormData();
+    formData.append("email", email);
+    formData.append("password", password);
+
+    return this.request(`auth/user/login`, {
       method: "POST",
-      body: JSON.stringify({ email, password }),
-    })
+      body: formData,
+      headers: {}, // Content-Type avtomatik təyin olunur
+    });
   }
+
+
   async register(formData: FormData) {
     return this.request(`auth/user/signup`, {
       method: "POST",
@@ -99,7 +105,6 @@ class ApiClient {
       headers: {},
     })
   }
-
 
   async refreshToken(refreshToken: string) {
     return this.request("/auth/refresh", {

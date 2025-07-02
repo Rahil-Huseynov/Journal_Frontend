@@ -5,19 +5,21 @@ class ApiClient {
   private baseURL: string
 
   constructor() {
-    this.baseURL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:3001/api"
+    this.baseURL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:3001/"
   }
 
   private async request(endpoint: string, options: RequestInit = {}) {
     const url = `${this.baseURL}${endpoint}`
+    const isFormData = options.body instanceof FormData
 
     const config: RequestInit = {
+      ...options,
       headers: {
-        "Content-Type": "application/json",
+        ...(isFormData ? {} : { "Content-Type": "application/json" }),
         ...options.headers,
       },
-      ...options,
     }
+
 
     // Add authorization header if token exists
     const token = tokenManager.getAccessToken()
@@ -91,11 +93,11 @@ class ApiClient {
     })
   }
 
-  async register(userData: any) {
-    const locale = useLocale();
-    return this.request(`/${locale}/auth/register`, {
+  async register(formData: FormData) {
+    return this.request(`user/signup`, {
       method: "POST",
-      body: JSON.stringify(userData),
+      body: formData,
+      headers: {},
     })
   }
 

@@ -16,6 +16,7 @@ import { useAuth } from "@/lib/auth-context"
 import { useLocale, useTranslations } from "next-intl"
 import "./page.css"
 import CountrySelect from "@/components/CountryCodeSelect"
+import { apiClient } from "@/lib/api-client"
 export default function RegisterPage() {
   const [formData, setFormData] = useState({
     firstName: "",
@@ -31,7 +32,7 @@ export default function RegisterPage() {
     phoneNumber: "",
     address: "",
     fin: "",
-    idSerial: ''
+    idSerial: ""
   })
   const [showPassword, setShowPassword] = useState(false)
   const [showConfirmPassword, setShowConfirmPassword] = useState(false)
@@ -47,40 +48,53 @@ export default function RegisterPage() {
     setFormData((prev) => ({ ...prev, [field]: value }))
   }
 
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault()
-    setIsLoading(true)
-    setError("")
+const handleSubmit = async (e: React.FormEvent) => {
+  e.preventDefault()
+  setIsLoading(true)
+  setError("")
 
-    if (formData.password !== formData.confirmPassword) {
-      setError("Şifrələr uyğun gəlmir")
-      setIsLoading(false)
-      return
-    }
-
-    if (formData.password.length < 6) {
-      setError("Şifrə ən azı 6 simvol olmalıdır")
-      setIsLoading(false)
-      return
-    }
-    console.log(formData)
-    try {
-      const result = await register(formData)
-      if (result.success) {
-        router.push(
-          `/${locale}/auth/login?message=${encodeURIComponent(
-            'Qeydiyyat uğurlu oldu. Giriş edə bilərsiniz.'
-          )}`
-        );
-      } else {
-        setError(result.error || "Qeydiyyat uğursuz oldu")
-      }
-    } catch (err) {
-      setError("Xəta baş verdi. Yenidən cəhd edin.")
-    } finally {
-      setIsLoading(false)
-    }
+  if (formData.password !== formData.confirmPassword) {
+    setError("Şifrələr uyğun gəlmir")
+    setIsLoading(false)
+    return
   }
+
+  if (formData.password.length < 6) {
+    setError("Şifrə ən azı 6 simvol olmalıdır")
+    setIsLoading(false)
+    return
+  }
+
+  try {
+    const multipartData = new FormData()
+    multipartData.append("firstName", formData.firstName)
+    multipartData.append("lastName", formData.lastName)
+    multipartData.append("fathername", formData.fathername)
+    multipartData.append("email", formData.email)
+    multipartData.append("password", formData.password)
+    multipartData.append("role", formData.role)
+    multipartData.append("organization", formData.organization)
+    multipartData.append("position", formData.position)
+    multipartData.append("phoneCode", formData.phoneCode)
+    multipartData.append("phoneNumber", formData.phoneNumber)
+    multipartData.append("address", formData.address)
+    multipartData.append("fin", formData.fin)
+    multipartData.append("idSerial", formData.idSerial)
+
+
+    const result = await apiClient.register(multipartData)
+
+    if (result.success) {
+      router.push(`/${locale}/auth/login?message=${encodeURIComponent('Qeydiyyat uğurlu oldu. Giriş edə bilərsiniz.')}`)
+    } else {
+      setError(result.error || "Qeydiyyat uğursuz oldu")
+    }
+  } catch (err) {
+    setError("Xəta baş verdi. Yenidən cəhd edin.")
+  } finally {
+    setIsLoading(false)
+  }
+}
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 flex items-center justify-center p-4">

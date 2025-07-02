@@ -92,14 +92,14 @@ class ApiClient {
       body: JSON.stringify({ email, password }),
     })
   }
-
   async register(formData: FormData) {
-    return this.request(`user/signup`, {
+    return this.request(`auth/user/signup`, {
       method: "POST",
       body: formData,
       headers: {},
     })
   }
+
 
   async refreshToken(refreshToken: string) {
     return this.request("/auth/refresh", {

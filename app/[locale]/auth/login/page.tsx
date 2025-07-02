@@ -11,8 +11,8 @@ import { BookOpen, Eye, EyeOff } from "lucide-react"
 import Link from "next/link"
 import { useRouter } from "next/navigation"
 import { useLocale, useTranslations } from "next-intl"
-import { tokenManager } from "@/lib/token-manager" 
-import { apiClient } from "@/lib/api-client"       
+import { tokenManager } from "@/lib/token-manager"
+import { apiClient } from "@/lib/api-client"
 
 export default function LoginPage() {
   const [email, setEmail] = useState("")
@@ -24,47 +24,37 @@ export default function LoginPage() {
   const t = useTranslations("Register")
   const router = useRouter()
 
-  async function login(email: string, password: string) {
-    try {
-      const response = await apiClient.login(email, password)
-
-      if (response.accessToken) {
-        tokenManager.setAccessToken(response.accessToken)
-        return { success: true, user: response.user }
-      }
-
-      return { success: false, error: "Giriş uğursuz oldu: token tapılmadı" }
-    } catch (error: any) {
-      return { success: false, error: error.message || "Giriş xətası" }
-    }
-  }
-
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
     setIsLoading(true)
     setError("")
 
     try {
-      const result = await login(email, password)
-      if (result.success && result.user?.role) {
-        switch (result.user.role) {
-          case "superadmin":
-            router.push("/superadmin/dashboard")
-            break
-          case "admin":
-            router.push("/admin/dashboard")
-            break
-          case "client":
-            router.push(`/client/dashboard`)
-            break
-          default:
-            router.push("/dashboard")
+      const response = await apiClient.login(email, password)
+      if (response.accessToken && response.user) {
+        tokenManager.setAccessToken(response.accessToken);
+
+        let destination = ``;
+
+        switch (response.user.role) {
+          case 'superadmin':
+            destination = `/${locale}/superadmin/dashboard`;
+            break;
+          case 'admin':
+            destination = `/${locale}/admin/dashboard`;
+            break;
+          case 'client':
+            destination = `/${locale}/client/dashboard`;
+            break;
         }
+
+        window.location.href = destination;
+
       } else {
-        setError(result.error || "Giriş uğursuz oldu")
+        setError("Giriş uğursuz oldu: Istifadəçi məlumatı tapılmadı")
       }
-    } catch (err) {
-      setError("Xəta baş verdi. Yenidən cəhd edin.")
+    } catch (err: any) {
+      setError(err.message || "Xəta baş verdi. Yenidən cəhd edin.")
     } finally {
       setIsLoading(false)
     }
@@ -91,6 +81,7 @@ export default function LoginPage() {
           <CardTitle className="text-2xl">Giriş</CardTitle>
           <CardDescription>Hesabınıza daxil olmaq üçün məlumatlarınızı daxil edin</CardDescription>
         </CardHeader>
+
         <form onSubmit={handleSubmit}>
           <CardContent className="space-y-4">
             {error && (
@@ -136,7 +127,7 @@ export default function LoginPage() {
             </div>
 
             <div className="flex items-center justify-between">
-              <Link href="/auth/forgot-password" className="text-sm text-blue-600 hover:underline">
+              <Link href={`/${locale}/auth/forgot-password`} className="text-sm text-blue-600 hover:underline">
                 Şifrəni unutmusunuz?
               </Link>
             </div>

@@ -1,15 +1,17 @@
-import { useLocale } from "next-intl"
 import { tokenManager } from "./token-manager"
 
 class ApiClient {
   private baseURL: string
 
   constructor() {
-    this.baseURL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:3001/"
+    // BaseURL-in sonunda slash varsa onu silirik
+    this.baseURL = (process.env.NEXT_PUBLIC_API_URL || "http://localhost:3001").replace(/\/+$/, "")
   }
 
   private async request(endpoint: string, options: RequestInit = {}) {
+    // endpoint mütləq önündə slash ilə gəlməlidir, məsələn "/auth/me"
     const url = `${this.baseURL}${endpoint}`
+
     const isFormData = options.body instanceof FormData
 
     const config: RequestInit = {
@@ -20,8 +22,7 @@ class ApiClient {
       },
     }
 
-
-    // Add authorization header if token exists
+    // Token varsa və vaxtı keçməyibsə Authorization başlığı əlavə et
     const token = tokenManager.getAccessToken()
     if (token && !tokenManager.isTokenExpired(token)) {
       config.headers = {
@@ -31,19 +32,18 @@ class ApiClient {
     }
 
     try {
-      const response = await fetch(url, config)
+      let response = await fetch(url, config)
 
-      // Handle token refresh if needed
+      // 401 statusu və token varsa refresh token ilə yenilə
       if (response.status === 401 && token) {
         const refreshSuccess = await this.handleTokenRefresh()
         if (refreshSuccess) {
-          // Retry the original request with new token
           const newToken = tokenManager.getAccessToken()
           config.headers = {
             ...config.headers,
             Authorization: `Bearer ${newToken}`,
           }
-          return await fetch(url, config)
+          response = await fetch(url, config)
         }
       }
 
@@ -86,20 +86,19 @@ class ApiClient {
 
   // Auth endpoints
   async login(email: string, password: string) {
-    const formData = new FormData();
-    formData.append("email", email);
-    formData.append("password", password);
+    const formData = new FormData()
+    formData.append("email", email)
+    formData.append("password", password)
 
-    return this.request(`auth/user/login`, {
+    return this.request("/auth/user/login", {
       method: "POST",
       body: formData,
       headers: {}, // Content-Type avtomatik təyin olunur
-    });
+    })
   }
 
-
   async register(formData: FormData) {
-    return this.request(`auth/user/signup`, {
+    return this.request("/auth/user/signup", {
       method: "POST",
       body: formData,
       headers: {},

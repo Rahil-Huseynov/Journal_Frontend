@@ -1,23 +1,14 @@
 "use client"
 
 import type React from "react"
-
+import { useState } from "react"
+import { useLocale } from "next-intl"
 import { ProtectedRoute } from "@/components/protected-route"
 import { Button } from "@/components/ui/button"
-import { useAuth } from "@/lib/auth-context"
 import { BookOpen, FileText, User, BarChart3, Settings, LogOut, Menu, X, PlusCircle } from "lucide-react"
 import Link from "next/link"
 import { usePathname, useRouter } from "next/navigation"
-import { useState } from "react"
-import { useLocale } from "next-intl"
-
-const navigation = [
-  { name: "Dashboard", href: "/client/dashboard", icon: BarChart3 },
-  { name: "Məqalələrim", href: "/client/articles", icon: FileText },
-  { name: "Yeni Məqalə", href: "/client/articles/new", icon: PlusCircle },
-  { name: "Profil", href: "/client/profile", icon: User },
-  { name: "Parametrlər", href: "/client/settings", icon: Settings },
-]
+import { useAuth } from "@/lib/auth-context"
 
 export default function ClientLayout({
   children,
@@ -30,10 +21,19 @@ export default function ClientLayout({
   const router = useRouter()
   const locale = useLocale();
 
+  const navigation = [
+    { name: "Dashboard", href: `/${locale}/client/dashboard`, icon: BarChart3 },
+    { name: "Məqalələrim", href: `/${locale}/client/articles`, icon: FileText },
+    { name: "Yeni Məqalə", href: `/${locale}/client/articles/new`, icon: PlusCircle },
+    { name: "Profil", href: `/${locale}/client/profile`, icon: User },
+    { name: "Parametrlər", href: `/${locale}/client/settings`, icon: Settings },
+  ];
+
   const handleLogout = () => {
-    logout()
+    logout();
     router.push(`/${locale}/auth/login`);
-  }
+  };
+
 
   return (
     <ProtectedRoute allowedRoles={["client"]}>

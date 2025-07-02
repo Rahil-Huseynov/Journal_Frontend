@@ -1,64 +1,68 @@
-"use client"
+'use client';
 
-import type React from "react"
-
-import { useAuth } from "@/lib/auth-context"
-import { useRouter } from "next/navigation"
-import { useEffect } from "react"
-import { Loader2 } from "lucide-react"
+import React, { useEffect } from 'react';
+import { useRouter } from 'next/navigation';
+import { useLocale } from 'next-intl';
+import { Loader2 } from 'lucide-react';
+import { useAuth } from '@/lib/auth-context';
 
 interface ProtectedRouteProps {
-  children: React.ReactNode
-  allowedRoles?: ("client" | "admin" | "superadmin")[]
-  redirectTo?: string
+  children: React.ReactNode;
+  allowedRoles?: ('client' | 'admin' | 'superadmin')[];
+  redirectTo?: string;
 }
 
 export function ProtectedRoute({
   children,
-  allowedRoles = ["client", "admin", "superadmin"],
-  redirectTo = "/auth/login",
+  allowedRoles = ['client', 'admin', 'superadmin'],
+  redirectTo,
 }: ProtectedRouteProps) {
-  const { user, isLoading } = useAuth()
-  const router = useRouter()
+  const { user, isLoading } = useAuth();
+  const router = useRouter();
+  const locale = useLocale();
+
+  const fallbackRedirect = redirectTo || `/${locale}/auth/login`;
 
   useEffect(() => {
-    if (!isLoading) {
-      if (!user) {
-        router.push(redirectTo)
-        return
+    if (isLoading) return;
+
+    if (!user) {
+      router.push(fallbackRedirect);
+      return;
+    }
+
+    if (!allowedRoles.includes(user.role)) {
+      let destination = '/';
+
+      switch (user.role) {
+        case 'superadmin':
+          destination = `/${locale}/superadmin/dashboard`;
+          break;
+        case 'admin':
+          destination = `/${locale}/admin/dashboard`;
+          break;
+        case 'client':
+          destination = `/${locale}/client/dashboard`;
+          break;
       }
 
-      if (!allowedRoles.includes(user.role)) {
-        // Redirect to appropriate dashboard based on role
-        switch (user.role) {
-          case "superadmin":
-            router.push("/superadmin/dashboard")
-            break
-          case "admin":
-            router.push("/admin/dashboard")
-            break
-          case "client":
-            router.push("/client/dashboard")
-            break
-          default:
-            router.push("/auth/login")
-        }
-        return
-      }
+      router.push(destination);
     }
-  }, [user, isLoading, allowedRoles, redirectTo, router])
+  }, [user, isLoading, allowedRoles, redirectTo, router, locale]);
 
   if (isLoading) {
     return (
       <div className="min-h-screen flex items-center justify-center">
         <Loader2 className="h-8 w-8 animate-spin" />
       </div>
-    )
+    );
   }
 
+  // İstifadəçi yoxdursa və ya rol icazəli deyil, heç nə göstərmə
   if (!user || !allowedRoles.includes(user.role)) {
-    return null
+    return null;
   }
 
-  return <>{children}</>
+  // Hər şey qaydasındadırsa, uşaqları göstər
+  return <>{children}</>;
 }

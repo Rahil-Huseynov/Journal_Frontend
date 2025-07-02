@@ -90,10 +90,10 @@ class ApiClient {
     formData.append("email", email)
     formData.append("password", password)
 
-    return this.request("/auth/user/login", {
+    return this.request("/auth/login", {
       method: "POST",
       body: formData,
-      headers: {}, // Content-Type avtomatik təyin olunur
+      headers: {},
     })
   }
 

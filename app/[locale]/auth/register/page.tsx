@@ -1,21 +1,33 @@
-"use client"
+"use client";
 
-import type React from "react"
+import React, { useState } from "react";
+import { Button } from "@/components/ui/button";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardFooter,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import { Alert, AlertDescription } from "@/components/ui/alert";
+import { BookOpen, Eye, EyeOff } from "lucide-react";
+import Link from "next/link";
+import { useRouter } from "next/navigation";
+import { useLocale, useTranslations } from "next-intl";
+import CountrySelect from "@/components/CountryCodeSelect";
+import "./page.css";
+import { apiClient } from "@/lib/api-client";
 
-import { useState } from "react"
-import { Button } from "@/components/ui/button"
-import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card"
-import { Input } from "@/components/ui/input"
-import { Label } from "@/components/ui/label"
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
-import { Alert, AlertDescription } from "@/components/ui/alert"
-import { BookOpen, Eye, EyeOff } from "lucide-react"
-import Link from "next/link"
-import { useRouter } from "next/navigation"
-import { useAuth } from "@/lib/auth-context"
-import { useLocale, useTranslations } from "next-intl"
-import "./page.css"
-import CountrySelect from "@/components/CountryCodeSelect"
 export default function RegisterPage() {
   const [formData, setFormData] = useState({
     firstName: "",
@@ -31,63 +43,56 @@ export default function RegisterPage() {
     phoneNumber: "",
     address: "",
     fin: "",
-    idSerial: ""
-  })
-  const [showPassword, setShowPassword] = useState(false)
-  const [showConfirmPassword, setShowConfirmPassword] = useState(false)
-  const [isLoading, setIsLoading] = useState(false)
-  const [error, setError] = useState("")
-  const t = useTranslations('Register');
+    idSerial: "",
+  });
+  const [showPassword, setShowPassword] = useState(false);
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
+  const [error, setError] = useState("");
+  const t = useTranslations("Register");
   const locale = useLocale();
-
-  const router = useRouter()
+  const router = useRouter();
 
   const handleInputChange = (field: string, value: string) => {
-    setFormData((prev) => ({ ...prev, [field]: value }))
-  }
+    setFormData((prev) => ({ ...prev, [field]: value }));
+  };
 
   const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault()
-    setIsLoading(true)
-    setError("")
+    e.preventDefault();
 
     if (formData.password !== formData.confirmPassword) {
-      setError("Şifrələr uyğun gəlmir")
-      setIsLoading(false)
-      return
+      setError("Şifrələr uyğun gəlmir");
+      return;
     }
 
-    if (formData.password.length < 6) {
-      setError("Şifrə ən azı 6 simvol olmalıdır")
-      setIsLoading(false)
-      return
-    }
+    setIsLoading(true);
+    setError("");
 
     try {
-      const multipartData = new FormData()
-      multipartData.append("firstName", formData.firstName)
-      multipartData.append("lastName", formData.lastName)
-      multipartData.append("fatherName", formData.fatherName)
-      multipartData.append("email", formData.email)
-      multipartData.append("password", formData.password)
-      multipartData.append("role", formData.role)
-      multipartData.append("organization", formData.organization)
-      multipartData.append("position", formData.position)
-      multipartData.append("phoneCode", formData.phoneCode)
-      multipartData.append("phoneNumber", formData.phoneNumber)
-      multipartData.append("address", formData.address)
-      multipartData.append("fin", formData.fin)
-      multipartData.append("idSerial", formData.idSerial)
+      const multipartData = new FormData();
+      multipartData.append("firstName", formData.firstName);
+      multipartData.append("lastName", formData.lastName);
+      multipartData.append("fatherName", formData.fatherName);
+      multipartData.append("email", formData.email);
+      multipartData.append("password", formData.password);
+      multipartData.append("role", formData.role);
+      multipartData.append("organization", formData.organization);
+      multipartData.append("position", formData.position);
+      multipartData.append("phoneCode", formData.phoneCode);
+      multipartData.append("phoneNumber", formData.phoneNumber);
+      multipartData.append("address", formData.address);
+      multipartData.append("fin", formData.fin);
+      multipartData.append("idSerial", formData.idSerial);
 
-      router.push(`/${locale}/auth/login?message=${encodeURIComponent("Qeydiyyat uğurlu oldu. Giriş edə bilərsiniz.")}`);
-    
-    } catch (err: any) {
+      const response = await apiClient.register(multipartData);
+
+      } catch (err: any) {
       setError(err.message || "Xəta baş verdi. Yenidən cəhd edin.");
-    
     } finally {
-      setIsLoading(false)
+      setIsLoading(false);
     }
-  }
+  };
+
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 flex items-center justify-center p-4">

@@ -31,27 +31,40 @@ export default function LoginPage() {
 
     try {
       const response = await apiClient.login(email, password)
-      if (response.accessToken && response.user) {
-        tokenManager.setAccessToken(response.accessToken);
 
-        let destination = ``;
+      if (response.accessToken) {
+        tokenManager.setAccessToken(response.accessToken)
 
-        switch (response.user.role) {
-          case 'superadmin':
-            destination = `/${locale}/superadmin/dashboard`;
-            break;
-          case 'admin':
-            destination = `/${locale}/admin/dashboard`;
-            break;
-          case 'client':
-            destination = `/${locale}/client/dashboard`;
-            break;
+        let role = ""
+
+        let destination = ""
+
+        if (response.user && response.user.role) {
+          role = response.user.role 
+        } else if (response.admin) {
+          role = "admin"
+        } else if (response.superadmin) {
+          role = "superadmin"
         }
 
-        window.location.href = destination;
+        switch (role) {
+          case "superadmin":
+            destination = `/${locale}/superadmin/dashboard`
+            break
+          case "admin":
+            destination = `/${locale}/admin/dashboard`
+            break
+          case "client":
+            destination = `/${locale}/client/dashboard`
+            break
+          default:
+            setError("Giriş uğursuz oldu: Rol təyin olunmayıb")
+            return
+        }
 
+        window.location.href = destination
       } else {
-        setError("Giriş uğursuz oldu: Istifadəçi məlumatı tapılmadı")
+        setError("Giriş uğursuz oldu: Məlumat tapılmadı")
       }
     } catch (err: any) {
       setError(err.message || "Xəta baş verdi. Yenidən cəhd edin.")
@@ -59,6 +72,7 @@ export default function LoginPage() {
       setIsLoading(false)
     }
   }
+
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 flex items-center justify-center p-4">

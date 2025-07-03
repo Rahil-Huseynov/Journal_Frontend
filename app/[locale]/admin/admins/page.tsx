@@ -10,20 +10,17 @@ import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigge
 import { Search, MoreHorizontal, UserPlus, Edit, Trash2 } from "lucide-react"
 import { apiClient } from "@/lib/api-client"
 
-interface User {
+interface admin {
   id: string
   firstName: string
   lastName: string
   email: string
-  role: "client" | "admin" | "superadmin"
-  organization?: string
-  position?: string
-  createdAt: string
-  isActive: boolean
+  role: string
+  password: string
 }
 
-export default function UsersPage() {
-  const [users, setUsers] = useState<User[]>([])
+export default function AdminsPage() {
+  const [users, setUsers] = useState<admin[]>([])
   const [isLoading, setIsLoading] = useState(true)
   const [searchTerm, setSearchTerm] = useState("")
   const [currentPage, setCurrentPage] = useState(1)
@@ -47,12 +44,12 @@ export default function UsersPage() {
   }
 
   const handleDeleteUser = async (userId: string) => {
-    if (confirm("Bu istifadəçini silmək istədiyinizə əminsiniz?")) {
+    if (confirm("Bu admini silmək istədiyinizə əminsiniz?")) {
       try {
         await apiClient.deleteUser(userId)
         loadUsers()
       } catch (error) {
-        console.error("Failed to delete user:", error)
+        console.error("Failed to delete admin:", error)
       }
     }
   }
@@ -77,23 +74,36 @@ export default function UsersPage() {
     }
   }
 
+  const getRoleText = (role: string) => {
+    switch (role) {
+      case "superadmin":
+        return "Super Admin"
+      case "admin":
+        return "Admin"
+      case "client":
+        return "Tədqiqatçı"
+      default:
+        return role
+    }
+  }
+
   return (
     <div className="space-y-6">
       <div className="flex justify-between items-center">
         <div>
-          <h1 className="text-3xl font-bold text-gray-900">İstifadəçilər</h1>
-          <p className="text-gray-600">Sistem istifadəçilərini idarə edin</p>
+          <h1 className="text-3xl font-bold text-gray-900">Adminlər</h1>
+          <p className="text-gray-600">Sistem adminlərini idarə edin</p>
         </div>
         <Button>
           <UserPlus className="h-4 w-4 mr-2" />
-          Yeni İstifadəçi
+          Yeni admin
         </Button>
       </div>
 
       <Card>
         <CardHeader>
-          <CardTitle>İstifadəçi Siyahısı</CardTitle>
-          <CardDescription>Bütün qeydiyyatlı istifadəçilərin siyahısı</CardDescription>
+          <CardTitle>Admin Siyahısı</CardTitle>
+          <CardDescription>Bütün qeydiyyatlı adminlərin siyahısı</CardDescription>
         </CardHeader>
         <CardContent>
           <div className="flex items-center space-x-2 mb-4">
@@ -121,24 +131,23 @@ export default function UsersPage() {
                   <TableHead className="text-center">Ad Soyad</TableHead>
                   <TableHead className="text-center">E-poçt</TableHead>
                   <TableHead className="text-center">Rol</TableHead>
-                  <TableHead className="text-center">Təşkilat</TableHead>
+                  <TableHead className="text-center">Status</TableHead>
                   <TableHead className="text-center">Qeydiyyat Tarixi</TableHead>
                   <TableHead className="text-center">Əməliyyatlar</TableHead>
+
                 </TableRow>
               </TableHeader>
               <TableBody>
-                {filteredUsers.map((user) => (
-                  <TableRow key={user.id}>
-                    <TableCell className="font-medium; text-center">
-                      {user.firstName} {user.lastName}
+                {filteredUsers.map((admin) => (
+                  <TableRow key={admin.id}>
+                    <TableCell className="font-medium">
+                      {admin.firstName} {admin.lastName}
                     </TableCell>
-                    <TableCell className="text-center">{user.email}</TableCell>
+                    <TableCell>{admin.email}</TableCell>
                     <TableCell>
-                      <Badge className="text-center">{(user.role)}</Badge>
+                      <Badge className={getRoleBadgeColor(admin.role)}>{getRoleText(admin.role)}</Badge>
                     </TableCell>
-                    <TableCell className="text-center">{user.organization}</TableCell>
-                    <TableCell className="text-center">{user.createdAt}</TableCell>
-                    <TableCell className="text-center">
+                    <TableCell className="text-right">
                       <DropdownMenu>
                         <DropdownMenuTrigger asChild>
                           <Button variant="ghost">
@@ -151,7 +160,7 @@ export default function UsersPage() {
                             <Edit className="h-4 w-4 mr-2" />
                             Redaktə et
                           </DropdownMenuItem>
-                          <DropdownMenuItem onClick={() => handleDeleteUser(user.id)}>
+                          <DropdownMenuItem onClick={() => handleDeleteUser(admin.id)}>
                             <Trash2 className="h-4 w-4 mr-2" />
                             Sil
                           </DropdownMenuItem>

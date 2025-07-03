@@ -49,7 +49,7 @@ export default function LoginPage() {
 
         switch (role) {
           case "superadmin":
-            destination = `/${locale}/superadmin/dashboard`
+            destination = `/${locale}/admin/dashboard`
             break
           case "admin":
             destination = `/${locale}/admin/dashboard`

@@ -11,12 +11,7 @@ import { usePathname, useRouter } from "next/navigation"
 import { useState } from "react"
 import { useLocale } from "next-intl"
 
-const navigation = [
-  { name: "Dashboard", href: "/admin/dashboard", icon: BarChart3 },
-  { name: "İstifadəçilər", href: "/admin/users", icon: Users },
-  { name: "Məqalələr", href: "/admin/articles", icon: FileText },
-  { name: "Parametrlər", href: "/admin/settings", icon: Settings },
-]
+
 
 export default function AdminLayout({
   children,
@@ -28,6 +23,16 @@ export default function AdminLayout({
   const pathname = usePathname()
   const router = useRouter()
   const locale = useLocale();
+
+
+
+  const navigation = [
+    { name: "Dashboard", href: `/${locale}/admin/dashboard`, icon: BarChart3 },
+    { name: "İstifadəçilər", href: `/${locale}/admin/users`, icon: Users },
+    { name: "Adminlər", href: `/${locale}/admin/admins`, icon: Users },
+    { name: "Məqalələr", href: "/admin/articles", icon: FileText },
+    { name: "Parametrlər", href: "/admin/settings", icon: Settings },
+  ]
 
   const handleLogout = () => {
     logout()

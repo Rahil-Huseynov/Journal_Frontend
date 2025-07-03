@@ -58,11 +58,9 @@ export function ProtectedRoute({
     );
   }
 
-  // İstifadəçi yoxdursa və ya rol icazəli deyil, heç nə göstərmə
   if (!user || !allowedRoles.includes(user.role)) {
     return null;
   }
 
-  // Hər şey qaydasındadırsa, uşaqları göstər
   return <>{children}</>;
 }

@@ -22,7 +22,6 @@ class ApiClient {
       },
     }
 
-    // Token varsa və vaxtı keçməyibsə Authorization başlığı əlavə et
     const token = tokenManager.getAccessToken()
     if (token && !tokenManager.isTokenExpired(token)) {
       config.headers = {
@@ -84,7 +83,6 @@ class ApiClient {
     }
   }
 
-  // Auth endpoints
   async login(email: string, password: string) {
     const formData = new FormData()
     formData.append("email", email)
@@ -105,6 +103,20 @@ class ApiClient {
     })
   }
 
+  async addjournalforUser(formData: FormData) {
+    return this.request("/journals/add", {
+      method: "POST",
+      body: formData,
+      headers: {},
+    })
+  }
+
+  async getCategories() {
+    return this.request("/categories", {
+      method: "GET",
+    })
+  }
+
   async refreshToken(refreshToken: string) {
     return this.request("/auth/refresh", {
       method: "POST",
@@ -116,7 +128,6 @@ class ApiClient {
     return this.request("/auth/me")
   }
 
-  // User management endpoints
   async getUsers(page = 1, limit = 10) {
     return this.request(`/users?page=${page}&limit=${limit}`)
   }

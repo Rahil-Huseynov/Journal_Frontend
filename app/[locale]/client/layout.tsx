@@ -23,8 +23,8 @@ export default function ClientLayout({
 
   const navigation = [
     { name: "Dashboard", href: `/${locale}/client/dashboard`, icon: BarChart3 },
-    { name: "Məqalələrim", href: `/${locale}/client/articles`, icon: FileText },
-    { name: "Yeni Məqalə", href: `/${locale}/client/articles/new`, icon: PlusCircle },
+    { name: "Məqalələrim", href: `/${locale}/client/myarticles`, icon: FileText },
+    { name: "Yeni Məqalə", href: `/${locale}/client/addarticles/`, icon: PlusCircle },
     { name: "Profil", href: `/${locale}/client/profile`, icon: User },
     { name: "Parametrlər", href: `/${locale}/client/settings`, icon: Settings },
   ];
@@ -123,7 +123,7 @@ export default function ClientLayout({
 
           {/* Page content */}
           <main className="py-6">
-            <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">{children}</div>
+            <div className="mx-auto px-4 sm:px-6 lg:px-8">{children}</div>
           </main>
         </div>
       </div>

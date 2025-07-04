@@ -18,7 +18,6 @@ export function LanguageSwitcher() {
   const pathname = usePathname()
 
  const handleLanguageChange = (newLocale: string) => {
-  // URL-dən cari locale hissəsini sil və yeni locale əlavə et
   const pathWithoutLocale = pathname.replace(`/${locale}`, '') || '/'
   router.push(`/${newLocale}${pathWithoutLocale}`)
   router.refresh()  

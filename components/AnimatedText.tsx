@@ -9,7 +9,7 @@ export default function AnimatedText({ texts, highlightClass = "text-blue-600" }
 
   const [displayedText, setDisplayedText] = useState("")
   const [index, setIndex] = useState(0)
-  const [forward, setForward] = useState(true)  // Animasiyanı irəli və ya geriyə aparmaq üçün
+  const [forward, setForward] = useState(true)
 
   useEffect(() => {
     let timeout
@@ -18,7 +18,6 @@ export default function AnimatedText({ texts, highlightClass = "text-blue-600" }
       if (index < fullText.length) {
         timeout = setTimeout(() => setIndex(index + 1), 80)
       } else {
-        // Bitdikdən sonra geri sönmə animasiyası üçün (optional)
         timeout = setTimeout(() => setForward(false), 1000)
       }
     } else {

@@ -27,19 +27,21 @@ import { useLocale, useTranslations } from "next-intl";
 import CountrySelect from "@/components/CountryCodeSelect";
 import "./page.css";
 import { apiClient } from "@/lib/api-client";
+import SuccessModal from "@/components/SuccessModal";
 
 const validators = {
   firstName: /^[A-Za-zƏÖŞÇÜİĞəöşçüığ'-]{2,30}$/,
   lastName: /^[A-Za-zƏÖŞÇÜİĞəöşçüığ'-]{2,30}$/,
-  fatherName: /^[A-Za-zƏÖŞÇÜİĞəöşçüığ'-]{2,30}$/,
+  fatherName: /^$|^[A-Za-zƏÖŞÇÜİĞəöşçüığ'-]{2,30}$/,
   email: /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/,
   phoneCode: /^\+?[0-9]{1,4}$/,
   phoneNumber: /^[0-9]{6,15}$/,
   organization: /^[\w\s.,'-]{2,100}$/,
   position: /^[\w\s.,'-]{2,100}$/,
   address: /^[\w\s.,'-]{2,100}$/,
-  fin: /^[A-Z0-9]{7,8}$/,
+  fin: /^[A-Z0-9]{7}$/,
   idSerial: /^[A-Z]{2}[0-9]{7}$/,
+  passportId: /^[A-Z0-9]{5,20}$/,
   password:
     /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/,
 };
@@ -48,7 +50,7 @@ const examples: { [key: string]: string } = {
   firstName: "Nümunə: Ayxan",
   lastName: "Nümunə: Məmmədov",
   fatherName: "Nümunə: Hüseyn",
-  email: "Nümunə: ornek@email.com",
+  email: "Nümunə: example@email.com",
   phoneCode: "Nümunə: +994",
   phoneNumber: "Nümunə: 501234567",
   organization: "Nümunə: Bakı Dövlət Universiteti",
@@ -56,6 +58,7 @@ const examples: { [key: string]: string } = {
   address: "Nümunə: Bakı, Nəsimi rayonu",
   fin: "Nümunə: AB123456",
   idSerial: "Nümunə: AA1234567",
+  passportId: "Nümunə: AZ1234567",
   password: "Minimum 8 simvol, böyük, kiçik hərf, rəqəm və xüsusi simvol",
   confirmPassword: "Şifrəniz ilə eyni olmalıdır",
 };
@@ -76,6 +79,8 @@ export default function RegisterPage() {
     address: "",
     fin: "",
     idSerial: "",
+    passportId: "",
+    isForeign: false,
   });
 
   const [errorMessages, setErrorMessages] = useState<{ [key: string]: string }>({});
@@ -84,7 +89,7 @@ export default function RegisterPage() {
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
-
+  const [successMessage, setSuccessMessage] = useState<string | null>(null);
   const t = useTranslations("Register");
   const locale = useLocale();
   const router = useRouter();
@@ -99,7 +104,8 @@ export default function RegisterPage() {
 
     if (field in validators) {
       if (!validateField(field as keyof typeof validators, value)) {
-        errorMsg = `Bu sahə üçün düzgün məlumat daxil edin. ${examples[field] || ""}`;
+        errorMsg = `Bu sahə üçün düzgün məlumat daxil edin. ${examples[field] || ""
+          }`;
       }
     }
 
@@ -107,21 +113,29 @@ export default function RegisterPage() {
       errorMsg = "Şifrələr uyğun deyil. " + examples.confirmPassword;
     }
 
-    if (field === "password" && formData.confirmPassword && value !== formData.confirmPassword) {
-      setErrorMessages(prev => ({
+    if (
+      field === "password" &&
+      formData.confirmPassword &&
+      value !== formData.confirmPassword
+    ) {
+      setErrorMessages((prev) => ({
         ...prev,
         confirmPassword: "Şifrələr uyğun deyil. " + examples.confirmPassword,
       }));
-    } else if (field === "password" && formData.confirmPassword && value === formData.confirmPassword) {
-      setErrorMessages(prev => ({
+    } else if (
+      field === "password" &&
+      formData.confirmPassword &&
+      value === formData.confirmPassword
+    ) {
+      setErrorMessages((prev) => ({
         ...prev,
         confirmPassword: "",
       }));
     }
 
-    setErrorMessages(prev => ({ ...prev, [field]: errorMsg }));
+    setErrorMessages((prev) => ({ ...prev, [field]: errorMsg }));
 
-    setFormData(prev => ({ ...prev, [field]: value }));
+    setFormData((prev) => ({ ...prev, [field]: value }));
   };
 
   const validateAllFields = () => {
@@ -130,13 +144,33 @@ export default function RegisterPage() {
     for (const key in validators) {
       const field = key as keyof typeof validators;
       const value = formData[field];
+      if (field === "fatherName" && !value.trim()) continue;
+      if (field === "passportId" && !formData.isForeign) continue;
+
+      if (field === "fin" && formData.isForeign) continue;
+      if (field === "idSerial" && formData.isForeign) continue;
+
       if (!validateField(field, value)) {
-        newErrors[field] = `Bu sahə üçün düzgün məlumat daxil edin. ${examples[field] || ""}`;
+        newErrors[field] = `Bu sahə üçün düzgün məlumat daxil edin. ${examples[field] || ""
+          }`;
       }
     }
 
     if (formData.password !== formData.confirmPassword) {
       newErrors.confirmPassword = "Şifrələr uyğun deyil. " + examples.confirmPassword;
+    }
+
+    if (!formData.isForeign) {
+      if (!validateField("fin", formData.fin)) {
+        newErrors.fin = `Düzgün FİN nömrəsi daxil edin. ${examples.fin}`;
+      }
+      if (!validateField("idSerial", formData.idSerial)) {
+        newErrors.idSerial = `Düzgün seriya nömrəsi daxil edin. ${examples.idSerial}`;
+      }
+    } else {
+      if (!validateField("passportId", formData.passportId)) {
+        newErrors.passportId = "Düzgün passport nömrəsi daxil edin.";
+      }
     }
 
     setErrorMessages(newErrors);
@@ -167,12 +201,22 @@ export default function RegisterPage() {
       multipartData.append("phoneCode", formData.phoneCode);
       multipartData.append("phoneNumber", formData.phoneNumber);
       multipartData.append("address", formData.address);
-      multipartData.append("fin", formData.fin);
-      multipartData.append("idSerial", formData.idSerial);
+      multipartData.append("isForeignCitizen", String(formData.isForeign));
+
+      if (formData.isForeign) {
+        multipartData.append("passportId", formData.passportId || "");
+      } else {
+        multipartData.append("fin", formData.fin || "");
+        multipartData.append("idSerial", formData.idSerial || "");
+      }
+
 
       const response = await apiClient.register(multipartData);
+      setSuccessMessage("Qeydiyyat uğurla tamamlandı!");
 
-      router.push(`/${locale}/auth/login`);
+      setTimeout(() => {
+        router.push(`/${locale}/auth/login`);
+      }, 2000);
     } catch (err: any) {
       setError(err.message || "Xəta baş verdi. Yenidən cəhd edin.");
     } finally {
@@ -228,9 +272,7 @@ export default function RegisterPage() {
                   className={getInputClass("firstName")}
                 />
                 {errorMessages.firstName && (
-                  <p className="text-red-600 text-sm">
-                    {errorMessages.firstName}
-                  </p>
+                  <p className="text-red-600 text-sm">{errorMessages.firstName}</p>
                 )}
               </div>
 
@@ -255,7 +297,6 @@ export default function RegisterPage() {
                   placeholder="Ata adınızı daxil edin"
                   value={formData.fatherName}
                   onChange={(e) => handleInputChange("fatherName", e.target.value)}
-                  required
                   className={getInputClass("fatherName")}
                 />
                 {errorMessages.fatherName && (
@@ -269,7 +310,7 @@ export default function RegisterPage() {
               <Input
                 id="email"
                 type="email"
-                placeholder="ornek@email.com"
+                placeholder="example@email.com"
                 value={formData.email}
                 onChange={(e) => handleInputChange("email", e.target.value)}
                 required
@@ -341,7 +382,9 @@ export default function RegisterPage() {
                     value={formData.phoneNumber}
                     onChange={(e) => handleInputChange("phoneNumber", e.target.value)}
                     required
-                    className={`${getInputClass("phoneCode")} ${getInputClass("phoneNumber")}`}
+                    className={`${getInputClass("phoneCode")} ${getInputClass(
+                      "phoneNumber"
+                    )}`}
                   />
                 </div>
                 {(errorMessages.phoneCode || errorMessages.phoneNumber) && (
@@ -367,120 +410,141 @@ export default function RegisterPage() {
               </div>
             </div>
 
+            {!formData.isForeign && (
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div className="space-y-1">
+                  <Label htmlFor="fin">FİN nömrəsi</Label>
+                  <Input
+                    id="fin"
+                    placeholder="FİN nömrəsi"
+                    value={formData.fin}
+                    onChange={(e) => handleInputChange("fin", e.target.value)}
+                    required={!formData.isForeign}
+                    className={getInputClass("fin")}
+                  />
+                  {errorMessages.fin && (
+                    <p className="text-red-600 text-sm">{errorMessages.fin}</p>
+                  )}
+                </div>
+
+                <div className="space-y-1">
+                  <Label htmlFor="idSerial">Şəxsiyyət vəsiqəsinin seriya nömrəsi</Label>
+                  <Input
+                    id="idSerial"
+                    placeholder="Şəxsiyyət vəsiqəsinin seriya nömrəsi"
+                    value={formData.idSerial}
+                    onChange={(e) => handleInputChange("idSerial", e.target.value)}
+                    required={!formData.isForeign}
+                    className={getInputClass("idSerial")}
+                  />
+                  {errorMessages.idSerial && (
+                    <p className="text-red-600 text-sm">{errorMessages.idSerial}</p>
+                  )}
+                </div>
+              </div>
+            )}
+
+            {formData.isForeign && (
+              <div className="space-y-1">
+                <Label htmlFor="passportId">Passport nömrəsi</Label>
+                <Input
+                  id="passportId"
+                  placeholder="Passport nömrənizi daxil edin"
+                  value={formData.passportId}
+                  onChange={(e) => handleInputChange("passportId", e.target.value)}
+                  required={formData.isForeign}
+                  className={getInputClass("passportId")}
+                />
+                {errorMessages.passportId && (
+                  <p className="text-red-600 text-sm">{errorMessages.passportId}</p>
+                )}
+              </div>
+            )}
+
+            <div className="mt-3 space-y-2 col-span-2">
+              <label className="inline-flex items-center gap-2 cursor-pointer">
+                <input
+                  type="checkbox"
+                  checked={formData.isForeign}
+                  onChange={(e) =>
+                    setFormData((prev) => ({
+                      ...prev,
+                      isForeign: e.target.checked,
+                      fin: e.target.checked ? "" : prev.fin,
+                      idSerial: e.target.checked ? "" : prev.idSerial,
+                      passportId: e.target.checked ? prev.passportId : "",
+                    }))
+                  }
+                  className="form-checkbox h-5 w-5 text-blue-600"
+                />
+                Azərbaycan vətəndaşı deyiləm
+              </label>
+
+
+            </div>
+
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div className="space-y-1">
-                <Label htmlFor="fin">FİN nömrəsi</Label>
-                <Input
-                  id="fin"
-                  placeholder="FİN nömrəsi"
-                  value={formData.fin}
-                  onChange={(e) => handleInputChange("fin", e.target.value)}
-                  required
-                  className={getInputClass("fin")}
-                />
-                {errorMessages.fin && (
-                  <p className="text-red-600 text-sm">{errorMessages.fin}</p>
+                <Label htmlFor="password">Şifrə</Label>
+                <div className="relative">
+                  <Input
+                    id="password"
+                    type={showPassword ? "text" : "password"}
+                    placeholder="Şifrənizi daxil edin"
+                    value={formData.password}
+                    onChange={(e) => handleInputChange("password", e.target.value)}
+                    required
+                    className={getInputClass("password")}
+                  />
+                  <button
+                    type="button"
+                    className="absolute right-2 top-2 text-gray-600"
+                    onClick={() => setShowPassword(!showPassword)}
+                    tabIndex={-1}
+                  >
+                    {showPassword ? <EyeOff /> : <Eye />}
+                  </button>
+                </div>
+                {errorMessages.password && (
+                  <p className="text-red-600 text-sm">{errorMessages.password}</p>
                 )}
               </div>
 
               <div className="space-y-1">
-                <Label htmlFor="idSerial">Şəxsiyyət vəsiqəsinin seriya nömrəsi</Label>
-                <Input
-                  id="idSerial"
-                  placeholder="Şəxsiyyət vəsiqəsinin seriya nömrəsi"
-                  value={formData.idSerial}
-                  onChange={(e) => handleInputChange("idSerial", e.target.value)}
-                  required
-                  className={getInputClass("idSerial")}
-                />
-                {errorMessages.idSerial && (
-                  <p className="text-red-600 text-sm">{errorMessages.idSerial}</p>
+                <Label htmlFor="confirmPassword">Şifrəni təsdiqlə</Label>
+                <div className="relative">
+                  <Input
+                    id="confirmPassword"
+                    type={showConfirmPassword ? "text" : "password"}
+                    placeholder="Şifrənizi yenidən daxil edin"
+                    value={formData.confirmPassword}
+                    onChange={(e) => handleInputChange("confirmPassword", e.target.value)}
+                    required
+                    className={getInputClass("confirmPassword")}
+                  />
+                  <button
+                    type="button"
+                    className="absolute right-2 top-2 text-gray-600"
+                    onClick={() => setShowConfirmPassword(!showConfirmPassword)}
+                    tabIndex={-1}
+                  >
+                    {showConfirmPassword ? <EyeOff /> : <Eye />}
+                  </button>
+                </div>
+                {errorMessages.confirmPassword && (
+                  <p className="text-red-600 text-sm">{errorMessages.confirmPassword}</p>
                 )}
               </div>
             </div>
-
-            <div className="space-y-1">
-              <Label htmlFor="password">Şifrə</Label>
-              <div className="relative">
-                <Input
-                  id="password"
-                  type={showPassword ? "text" : "password"}
-                  placeholder="Şifrənizi daxil edin"
-                  value={formData.password}
-                  onChange={(e) => handleInputChange("password", e.target.value)}
-                  required
-                  className={getInputClass("password")}
-                />
-                <Button
-                  type="button"
-                  variant="ghost"
-                  size="sm"
-                  className="absolute right-0 top-0 h-full px-3 py-2 hover:bg-transparent"
-                  onClick={() => setShowPassword(!showPassword)}
-                >
-                  {showPassword ? (
-                    <EyeOff className="h-4 w-4" />
-                  ) : (
-                    <Eye className="h-4 w-4" />
-                  )}
-                </Button>
-              </div>
-              {errorMessages.password && (
-                <p className="text-red-600 text-sm">{errorMessages.password}</p>
-              )}
-            </div>
-
-            <div className="space-y-1">
-              <Label htmlFor="confirmPassword">Şifrəni təsdiq edin</Label>
-              <div className="relative">
-                <Input
-                  id="confirmPassword"
-                  type={showConfirmPassword ? "text" : "password"}
-                  placeholder="Şifrənizi yenidən daxil edin"
-                  value={formData.confirmPassword}
-                  onChange={(e) =>
-                    handleInputChange("confirmPassword", e.target.value)
-                  }
-                  required
-                  className={getInputClass("confirmPassword")}
-                />
-                <Button
-                  type="button"
-                  variant="ghost"
-                  size="sm"
-                  className="absolute right-0 top-0 h-full px-3 py-2 hover:bg-transparent"
-                  onClick={() => setShowConfirmPassword(!showConfirmPassword)}
-                >
-                  {showConfirmPassword ? (
-                    <EyeOff className="h-4 w-4" />
-                  ) : (
-                    <Eye className="h-4 w-4" />
-                  )}
-                </Button>
-              </div>
-              {errorMessages.confirmPassword && (
-                <p className="text-red-600 text-sm">{errorMessages.confirmPassword}</p>
-              )}
-            </div>
           </CardContent>
-
-          <CardFooter className="flex flex-col space-y-4">
-            <Button type="submit" className="w-full" disabled={isLoading}>
-              {isLoading ? "Qeydiyyat edilir..." : "Qeydiyyat"}
+          <CardFooter className="flex justify-center">
+            <Button type="submit" disabled={isLoading}>
+              {isLoading ? "Göndərilir..." : "Qeydiyyat"}
             </Button>
-
-            <div className="text-center text-sm">
-              Artıq hesabınız var?{" "}
-              <Link
-                href={`/${locale}/auth/login`}
-                className="text-blue-600 hover:underline"
-              >
-                Giriş edin
-              </Link>
-            </div>
           </CardFooter>
         </form>
       </Card>
-    </div>
+      {successMessage && <SuccessModal message={successMessage} />}
+    </div >
   );
 }

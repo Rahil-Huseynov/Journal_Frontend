@@ -28,15 +28,7 @@ interface PageProps {
   }
 }
 
-// Fake API çağırışı nümunəsi
 async function fetchSeries(journalId: string, seriesId: string): Promise<Series | null> {
-  // Burada sənin əsl API çağırışını et:
-  // return fetch(`https://api.example.com/journals/${journalId}/series/${seriesId}`).then(res => {
-  //   if (!res.ok) return null
-  //   return res.json()
-  // })
-
-  // Fake data nümunəsi:
   const fakeData = {
     mathematics: {
       "pure-math": {

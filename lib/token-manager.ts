@@ -1,4 +1,3 @@
-// token-manager.ts
 interface TokenData {
   accessToken: string
   refreshToken: string

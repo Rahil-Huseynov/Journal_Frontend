@@ -1,4 +1,3 @@
-// app/i18n.ts
 import { notFound } from "next/navigation";
 import { getRequestConfig } from "next-intl/server";
 

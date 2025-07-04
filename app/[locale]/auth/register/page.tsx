@@ -201,7 +201,7 @@ export default function RegisterPage() {
       multipartData.append("phoneCode", formData.phoneCode);
       multipartData.append("phoneNumber", formData.phoneNumber);
       multipartData.append("address", formData.address);
-      multipartData.append("isForeignCitizen", String(formData.isForeign));
+      multipartData.append("isForeignCitizen", formData.isForeign ? "true" : "false");
 
       if (formData.isForeign) {
         multipartData.append("passportId", formData.passportId || "");

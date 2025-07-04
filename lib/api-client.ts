@@ -4,12 +4,10 @@ class ApiClient {
   private baseURL: string
 
   constructor() {
-    // BaseURL-in sonunda slash varsa onu silirik
     this.baseURL = (process.env.NEXT_PUBLIC_API_URL || "http://localhost:3001").replace(/\/+$/, "")
   }
 
   private async request(endpoint: string, options: RequestInit = {}) {
-    // endpoint mütləq önündə slash ilə gəlməlidir, məsələn "/auth/me"
     const url = `${this.baseURL}${endpoint}`
 
     const isFormData = options.body instanceof FormData
@@ -33,7 +31,6 @@ class ApiClient {
     try {
       let response = await fetch(url, config)
 
-      // 401 statusu və token varsa refresh token ilə yenilə
       if (response.status === 401 && token) {
         const refreshSuccess = await this.handleTokenRefresh()
         if (refreshSuccess) {
@@ -110,6 +107,13 @@ class ApiClient {
       headers: {},
     })
   }
+  async updateUser(userId: string, formData: FormData) {
+    return this.request(`/auth/users/${userId}`, {
+      method: 'PUT',
+      body: formData,
+      headers: {},  
+    });
+  }
 
   async getCategories() {
     return this.request("/categories", {
@@ -136,12 +140,7 @@ class ApiClient {
     return this.request(`/users/${id}`)
   }
 
-  async updateUser(id: string, userData: any) {
-    return this.request(`/users/${id}`, {
-      method: "PUT",
-      body: JSON.stringify(userData),
-    })
-  }
+
 
   async deleteUser(id: string) {
     return this.request(`/users/${id}`, {
@@ -149,7 +148,6 @@ class ApiClient {
     })
   }
 
-  // Articles endpoints
   async getArticles(page = 1, limit = 10) {
     return this.request(`/articles?page=${page}&limit=${limit}`)
   }
@@ -178,12 +176,10 @@ class ApiClient {
     })
   }
 
-  // Dashboard stats
   async getDashboardStats() {
     return this.request("/dashboard/stats")
   }
 
-  // Forgot password endpoints
   async forgotPassword(email: string) {
     return this.request("/auth/forgot-password", {
       method: "POST",

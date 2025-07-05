@@ -23,6 +23,9 @@ interface JournalForm {
     description_az: string
     description_en: string
     description_ru: string
+    keywords_en: string
+    keywords_az: string
+    keywords_ru: string
     status: string
     file: string
     categoryId: string
@@ -58,6 +61,9 @@ export default function ClientaddarticlesPage() {
         description_az: "",
         description_en: "",
         description_ru: "",
+        keywords_en: "",
+        keywords_az: "",
+        keywords_ru: "",
         status: "pending",
         file: "",
         categoryId: "",
@@ -119,6 +125,9 @@ export default function ClientaddarticlesPage() {
         formData.append("description_az", form.description_az)
         formData.append("description_en", form.description_en)
         formData.append("description_ru", form.description_ru)
+        formData.append("keywords_az", form.keywords_az);
+        formData.append("keywords_en", form.keywords_en);
+        formData.append("keywords_ru", form.keywords_ru);
         formData.append("status", form.status)
 
         if (file) {
@@ -140,6 +149,9 @@ export default function ClientaddarticlesPage() {
                 description_az: "",
                 description_en: "",
                 description_ru: "",
+                keywords_en: "",
+                keywords_az: "",
+                keywords_ru: "",
                 file: "",
                 status: "pending",
                 categoryId: "",
@@ -183,6 +195,24 @@ export default function ClientaddarticlesPage() {
                         { name: "description_az", label: "Təsvir (AZ)" },
                         { name: "description_en", label: "Description (EN)" },
                         { name: "description_ru", label: "Описание (RU)" },
+                    ].map((area) => (
+                        <div key={area.name}>
+                            <label className="block text-sm text-gray-600 mb-1">{area.label}</label>
+                            <textarea
+                                name={area.name}
+                                value={(form as any)[area.name]}
+                                onChange={handleChange}
+                                rows={3}
+                                required
+                                className="w-full p-3 border rounded-lg shadow-sm resize-none focus:outline-none focus:ring-2 focus:ring-blue-400 transition"
+                            />
+                        </div>
+                    ))}
+
+                    {[
+                        { name: "keywords_az", label: "Açar söz (AZ)" },
+                        { name: "keywords_en", label: "Keywords (EN)" },
+                        { name: "keywords_ru", label: "Ключевые слова (RU)" },
                     ].map((area) => (
                         <div key={area.name}>
                             <label className="block text-sm text-gray-600 mb-1">{area.label}</label>

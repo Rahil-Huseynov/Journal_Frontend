@@ -14,6 +14,9 @@ type Journal = {
     description_az: string;
     description_en: string;
     description_ru: string;
+    keywords_en: string;
+    keywords_az: string;
+    keywords_ru: string;
     file: string;
     userId: string;
     user: string;

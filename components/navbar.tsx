@@ -18,7 +18,7 @@ export function Navbar() {
     { name: t("home"), href: "/" },
     { name: t("features"), href: "/#features" },
     { name: t("services"), href: "/#services" },
-    { name: t("journals"), href: `/${locale}/journals`},
+    { name: t("journals"), href: `/${locale}/journals` },
     { name: t("about"), href: "/#about" },
     { name: t("contact"), href: "/#contact" },
   ]
@@ -38,7 +38,7 @@ export function Navbar() {
           </Link>
 
           {/* Desktop Navigation */}
-          <nav className="hidden md:flex space-x-8">
+          <nav className="hidden xl2:flex space-x-8">
             {navigation.map((item) => (
               <Link key={item.name} href={item.href} className="text-gray-500 hover:text-gray-900 transition-colors">
                 {item.name}
@@ -47,7 +47,7 @@ export function Navbar() {
           </nav>
 
           {/* Desktop Actions */}
-          <div className="hidden md:flex items-center space-x-4">
+          <div className="hidden xl2:hidden items-center space-x-4">
             <LanguageSwitcher />
             {user ? (
               <div className="flex items-center space-x-4">
@@ -73,14 +73,14 @@ export function Navbar() {
           </div>
 
           {/* Mobile menu button */}
-          <Button variant="ghost" size="sm" className="md:hidden" onClick={() => setIsOpen(!isOpen)}>
+          <Button variant="ghost" size="sm" className="xl2:hidden" onClick={() => setIsOpen(!isOpen)}>
             {isOpen ? <X className="h-6 w-6" /> : <Menu className="h-6 w-6" />}
           </Button>
         </div>
 
         {/* Mobile Navigation */}
         {isOpen && (
-          <div className="md:hidden">
+          <div className="xl2:hidden">
             <div className="px-2 pt-2 pb-3 space-y-1 sm:px-3 border-t">
               {navigation.map((item) => (
                 <Link

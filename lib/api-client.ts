@@ -186,10 +186,16 @@ class ApiClient {
       body: JSON.stringify({ email }),
     })
   }
-  
+
   async checkTokenForgotPassword(token: string) {
     return this.request(`/auth/check-token?token=${token}`, {
       method: "GET",
+    });
+  }
+
+  deleteUserJournal(id: number) {
+    return this.request(`/journals/delete/${id}`, {
+      method: "DELETE",
     });
   }
 

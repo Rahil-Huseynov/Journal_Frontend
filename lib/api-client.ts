@@ -111,7 +111,7 @@ class ApiClient {
     return this.request(`/auth/users/${userId}`, {
       method: 'PUT',
       body: formData,
-      headers: {},  
+      headers: {},
     });
   }
 
@@ -187,12 +187,14 @@ class ApiClient {
     })
   }
 
-  async resetPassword(token: string, password: string) {
-    return this.request("/auth/reset-password", {
-      method: "POST",
-      body: JSON.stringify({ token, password }),
-    })
+  async updatePassword(formData: FormData) {
+    return this.request(`/auth/users/password`, {
+      method: "PATCH",
+      body: formData,
+      headers: {},
+    });
   }
+
 }
 
 export const apiClient = new ApiClient()

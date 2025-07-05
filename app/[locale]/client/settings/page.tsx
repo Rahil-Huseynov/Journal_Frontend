@@ -10,6 +10,7 @@ import { useAuth } from "@/lib/auth-context";
 import CountrySelect from "@/components/CountryCodeSelect";
 import CitizenshipCountrySelect from "@/components/CitizenshipCountrySelect";
 import { useLocale } from "next-intl";
+import { Eye, EyeOff } from "lucide-react";
 
 export default function SettingsPage() {
     const { user } = useAuth() as { user: any };
@@ -41,12 +42,60 @@ export default function SettingsPage() {
     const finEmpty = !user.fin;
     const idSerialEmpty = !user.idSerial;
     const hasPassport = !!user.passportId;
+    const [passwordData, setPasswordData] = useState({ currentPassword: "", newPassword: "" });
+    const [passwordErrors, setPasswordErrors] = useState<{ [key: string]: string }>({});
+    const [passwordLoading, setPasswordLoading] = useState(false);
+    const [passwordSuccessMessage, setPasswordSuccessMessage] = useState<string | null>(null);
+    const [showCurrentPassword, setShowCurrentPassword] = useState(false);
+    const [showNewCurrentPassword, setshowNewCurrentPassword] = useState(false);
 
     const showForeignCitizenSelect = finEmpty && idSerialEmpty && !hasPassport;
 
     const finAndIdSerialReadOnly = hasPassport;
 
     const passportRequired = finEmpty && idSerialEmpty;
+
+    const handlePasswordChange = (field: string, value: string) => {
+        setPasswordData((prev) => ({ ...prev, [field]: value }));
+
+        if (field === "newPassword") {
+            const passwordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/;
+            if (!passwordRegex.test(value)) {
+                setPasswordErrors((prev) => ({ ...prev, newPassword: "Yeni şifrə ən azı 8 simvol olmalı, böyük və kiçik hərf, rəqəm və xüsusi simvol (@$!%*?&) içerməlidir." }));
+            } else {
+                setPasswordErrors((prev) => {
+                    const copy = { ...prev };
+                    delete copy.newPassword;
+                    return copy;
+                });
+            }
+        } else if (passwordErrors[field]) {
+            setPasswordErrors((prev) => {
+                const copy = { ...prev };
+                delete copy[field];
+                return copy;
+            });
+        }
+    };
+
+    const validatePasswordForm = () => {
+        const errors: { [key: string]: string } = {};
+        const passwordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/;
+
+        if (!passwordData.currentPassword.trim()) {
+            errors.currentPassword = "Hazırki şifrə daxil edilməlidir.";
+        }
+
+        if (!passwordData.newPassword.trim()) {
+            errors.newPassword = "Yeni şifrə daxil edilməlidir.";
+        } else if (!passwordRegex.test(passwordData.newPassword)) {
+            errors.newPassword =
+                "Yeni şifrə ən azı 8 simvol olmalı, böyük və kiçik hərf, rəqəm və xüsusi simvol (@$!%*?&) içerməlidir.";
+        }
+
+        return errors;
+    };
+
 
     const validateField = (field: string, value: string | boolean) => {
         if (field === "passportId" && passportRequired) {
@@ -84,6 +133,41 @@ export default function SettingsPage() {
             });
         }
     };
+
+    const handlePasswordSubmit = async (e: React.FormEvent) => {
+        e.preventDefault();
+        setPasswordSuccessMessage(null);
+
+        const errors = validatePasswordForm();
+        if (Object.keys(errors).length > 0) {
+            setPasswordErrors(errors);
+            return;
+        }
+
+        try {
+            setPasswordLoading(true);
+
+            const formData = new FormData();
+            formData.append("currentPassword", passwordData.currentPassword);
+            formData.append("newPassword", passwordData.newPassword);
+
+            await apiClient.updatePassword(formData);
+
+            setPasswordSuccessMessage("Şifrə uğurla yeniləndi.");
+            setPasswordData({ currentPassword: "", newPassword: "" });
+            setPasswordErrors({});
+        } catch (error: any) {
+            if (error.response?.data?.message) {
+                const message = error.response.data.message;
+                setPasswordErrors({ general: Array.isArray(message) ? message.join(" ") : message });
+            } else {
+                setPasswordErrors({ general: "Hazırki şifrə düzgün deyil. Xəta baş verdi. Yenidən cəhd edin." });
+            }
+        } finally {
+            setPasswordLoading(false);
+        }
+    };
+
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
@@ -357,6 +441,75 @@ export default function SettingsPage() {
                     </form>
                 </CardContent>
             </Card>
+            <Card className="shadow-none bg-transparent mt-12 relative">
+                <CardHeader>
+                    <CardTitle className="text-4xl font-extrabold text-indigo-800 mb-6">Şifrənin yenilənməsi</CardTitle>
+                </CardHeader>
+                <CardContent>
+                    <form onSubmit={handlePasswordSubmit} className="grid grid-cols-1 md:grid-cols-2 gap-8 relative">
+                        <div className="relative">
+                            <Label htmlFor="currentPassword" className="font-semibold mb-1 block text-gray-700">Hazırki şifrə</Label>
+                            <Input
+                                id="currentPassword"
+                                type={showCurrentPassword ? "text" : "password"}
+                                value={passwordData.currentPassword}
+                                onChange={(e) => handlePasswordChange("currentPassword", e.target.value)}
+                                placeholder="Hazırki şifrə"
+                                maxLength={30}
+                                className={`rounded-md shadow-sm ${passwordErrors.currentPassword ? "border-red-600 focus:ring-red-600" : "border-gray-300 focus:ring-indigo-500"}`}
+                            />
+                            <button
+                                type="button"
+                                className="absolute right-2 top-7 text-gray-600"
+                                onClick={() => setShowCurrentPassword(!showCurrentPassword)}
+                                tabIndex={-1}
+                            >
+                                {showCurrentPassword ? <EyeOff /> : <Eye />}
+                            </button>
+                            {passwordErrors.currentPassword && <p className="text-red-600 text-sm mt-1">{passwordErrors.currentPassword}</p>}
+                        </div>
+
+                        <div>
+                            <Label htmlFor="newPassword" className="font-semibold mb-1 block text-gray-700">Yeni şifrə</Label>
+                            <Input
+                                id="newPassword"
+                                type={showNewCurrentPassword ? "text" : "password"}
+                                value={passwordData.newPassword}
+                                onChange={(e) => handlePasswordChange("newPassword", e.target.value)}
+                                placeholder="Yeni şifrə"
+                                maxLength={30}
+                                className={`rounded-md shadow-sm ${passwordErrors.newPassword ? "border-red-600 focus:ring-red-600" : "border-gray-300 focus:ring-indigo-500"}`}
+                            />
+                            <button
+                                type="button"
+                                className="absolute right-2 top-7 text-gray-600"
+                                onClick={() => setshowNewCurrentPassword(!showNewCurrentPassword)}
+                                tabIndex={-1}
+                            >
+                                {showNewCurrentPassword ? <EyeOff /> : <Eye />}
+                            </button>
+                            {passwordErrors.newPassword && <p className="text-red-600 text-sm mt-1">{passwordErrors.newPassword}</p>}
+                        </div>
+
+                        {passwordErrors.general && (
+                            <p className="text-red-600 text-center mt-6 col-span-2">{passwordErrors.general}</p>
+                        )}
+
+                        <Button
+                            type="submit"
+                            disabled={passwordLoading}
+                            className="mt-8 w-full md:w-48 mx-auto block bg-indigo-600 hover:bg-indigo-700 text-white font-semibold rounded-md shadow-md transition col-span-2"
+                        >
+                            {passwordLoading ? "Yüklənir..." : "Şifrəni Yenilə"}
+                        </Button>
+
+                        {passwordSuccessMessage && (
+                            <p className="text-green-600 mt-6 text-center font-semibold col-span-2">{passwordSuccessMessage}</p>
+                        )}
+                    </form>
+                </CardContent>
+            </Card>
+
         </div>
     );
 }

@@ -33,6 +33,19 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     initializeAuth()
   }, [])
 
+  useEffect(() => {
+    if (!user) return
+
+    const interval = setInterval(() => {
+      const token = tokenManager.getAccessToken()
+      if (!token || tokenManager.isTokenExpired(token)) {
+        logout()
+      }
+    }, 1000) 
+
+    return () => clearInterval(interval)
+  }, [user])
+
   const initializeAuth = async () => {
     const token = tokenManager.getAccessToken()
     if (token && !tokenManager.isTokenExpired(token)) {
@@ -41,7 +54,10 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         setUser(userData)
       } catch (error) {
         tokenManager.clearTokens()
+        setUser(null)
       }
+    } else {
+      setUser(null)
     }
     setIsLoading(false)
   }

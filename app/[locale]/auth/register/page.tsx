@@ -82,7 +82,7 @@ export default function RegisterPage() {
     fin: "",
     idSerial: "",
     passportId: "",
-    citizenship: "",
+    citizenship: "Azerbaijan",
     isForeign: false,
   });
 

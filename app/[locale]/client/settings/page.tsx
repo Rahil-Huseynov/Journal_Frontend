@@ -8,9 +8,12 @@ import { Label } from "@/components/ui/label";
 import { apiClient } from "@/lib/api-client";
 import { useAuth } from "@/lib/auth-context";
 import CountrySelect from "@/components/CountryCodeSelect";
+import CitizenshipCountrySelect from "@/components/CitizenshipCountrySelect";
+import { useLocale } from "next-intl";
 
 export default function SettingsPage() {
     const { user } = useAuth() as { user: any };
+    const locale = useLocale()
 
     if (!user) {
         return <p>Yüklənir...</p>;
@@ -24,10 +27,12 @@ export default function SettingsPage() {
         phoneNumber: user.phoneNumber || "",
         organization: user.organization || "",
         position: user.position || "",
+        fin: user.fin || "",
         address: user.address || "",
         idSerial: user.idSerial || "",
         passportId: user.passportId || "",
         isForeignCitizen: user.isForeignCitizen || false,
+        citizenship: user.citizenship || "",
     });
 
     const [errorMessages, setErrorMessages] = useState<{ [key: string]: string }>({});
@@ -112,6 +117,7 @@ export default function SettingsPage() {
 
             await apiClient.updateUser(user.id.toString(), fd);
             setSuccessMessage("Məlumatlar uğurla yeniləndi.");
+            window.location.href = `/${locale}/client/profile`;
         } catch (error) {
             setErrorMessages({ general: "Xəta baş verdi. Yenidən cəhd edin." });
         } finally {
@@ -309,6 +315,29 @@ export default function SettingsPage() {
                                 className="rounded-md shadow-sm border-gray-300 focus:ring-indigo-500"
                             />
                         </div>
+
+                        <div className="space-y-1">
+                            <Label htmlFor="citizenship" className="font-semibold block text-gray-700">
+                                Vətəndaşlıq
+                            </Label>
+                            <CitizenshipCountrySelect
+                                value={formData.citizenship}
+                                onChange={(country: string, isForeign: boolean) =>
+                                    setFormData((prev) => ({
+                                        ...prev,
+                                        citizenship: country,
+                                        isForeignCitizen: isForeign,
+                                        fin: isForeign ? "" : prev.fin,
+                                        idSerial: isForeign ? "" : prev.idSerial,
+                                        passportId: isForeign ? prev.passportId : "",
+                                    }))
+                                }
+                            />
+                            {errorMessages.citizenship && (
+                                <p className="text-red-600 text-sm mt-1">{errorMessages.citizenship}</p>
+                            )}
+                        </div>
+
 
                         {errorMessages.general && (
                             <p className="text-red-600 text-center mt-6 col-span-2">{errorMessages.general}</p>

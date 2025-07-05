@@ -28,6 +28,7 @@ import CountrySelect from "@/components/CountryCodeSelect";
 import "./page.css";
 import { apiClient } from "@/lib/api-client";
 import SuccessModal from "@/components/SuccessModal";
+import CitizenshipCountrySelect from "@/components/CitizenshipCountrySelect";
 
 const validators = {
   firstName: /^[A-Za-zƏÖŞÇÜİĞəöşçüığ'-]{2,30}$/,
@@ -61,6 +62,7 @@ const examples: { [key: string]: string } = {
   passportId: "Nümunə: AZ1234567",
   password: "Minimum 8 simvol, böyük, kiçik hərf, rəqəm və xüsusi simvol",
   confirmPassword: "Şifrəniz ilə eyni olmalıdır",
+  citizenship: "Almanya"
 };
 
 export default function RegisterPage() {
@@ -80,6 +82,7 @@ export default function RegisterPage() {
     fin: "",
     idSerial: "",
     passportId: "",
+    citizenship: "",
     isForeign: false,
   });
 
@@ -202,6 +205,7 @@ export default function RegisterPage() {
       multipartData.append("phoneNumber", formData.phoneNumber);
       multipartData.append("address", formData.address);
       multipartData.append("isForeignCitizen", formData.isForeign ? "true" : "false");
+      multipartData.append("citizenship", formData.citizenship);
 
       if (formData.isForeign) {
         multipartData.append("passportId", formData.passportId || "");
@@ -445,19 +449,40 @@ export default function RegisterPage() {
             )}
 
             {formData.isForeign && (
-              <div className="space-y-1">
-                <Label htmlFor="passportId">Passport nömrəsi</Label>
-                <Input
-                  id="passportId"
-                  placeholder="Passport nömrənizi daxil edin"
-                  value={formData.passportId}
-                  onChange={(e) => handleInputChange("passportId", e.target.value)}
-                  required={formData.isForeign}
-                  className={getInputClass("passportId")}
-                />
-                {errorMessages.passportId && (
-                  <p className="text-red-600 text-sm">{errorMessages.passportId}</p>
-                )}
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div className="space-y-1">
+                  <Label htmlFor="passportId">Passport nömrəsi</Label>
+                  <Input
+                    id="passportId"
+                    placeholder="Passport nömrənizi daxil edin"
+                    value={formData.passportId}
+                    onChange={(e) => handleInputChange("passportId", e.target.value)}
+                    required={formData.isForeign}
+                    className={getInputClass("passportId")}
+                  />
+                  {errorMessages.passportId && (
+                    <p className="text-red-600 text-sm">{errorMessages.passportId}</p>
+                  )}
+                </div>
+                <div className="space-y-1">
+                  <Label htmlFor="citizenship">Vətəndaşlıq</Label>
+                  <CitizenshipCountrySelect
+                    value={formData.citizenship}
+                    onChange={(country, isForeign) =>
+                      setFormData((prev) => ({
+                        ...prev,
+                        citizenship: country,
+                        isForeign,
+                        fin: isForeign ? "" : prev.fin,
+                        idSerial: isForeign ? "" : prev.idSerial,
+                        passportId: isForeign ? prev.passportId : "",
+                      }))
+                    }
+                  />
+                  {errorMessages.citizens && (
+                    <p className="text-red-600 text-sm">{errorMessages.citizenship}</p>
+                  )}
+                </div>
               </div>
             )}
 
@@ -543,8 +568,9 @@ export default function RegisterPage() {
             </Button>
           </CardFooter>
         </form>
-      </Card>
-      {successMessage && <SuccessModal message={successMessage} />}
+      </Card >
+      {successMessage && <SuccessModal message={successMessage} />
+      }
     </div >
   );
 }

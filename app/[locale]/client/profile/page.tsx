@@ -23,6 +23,7 @@ type User = {
   passportId?: string
   isForeignCitizen: boolean
   createdAt: string
+  citizenship: string
 }
 
 export default function ClientProfilePage() {
@@ -82,11 +83,7 @@ export default function ClientProfilePage() {
               <ProfileItem
                 label="Vətəndaşlıq"
                 value={
-                  user.isForeignCitizen ? (
-                    <Badge variant="destructive">Xarici vətəndaş</Badge>
-                  ) : (
-                    <Badge variant="default">Azərbaycan vətəndaşı</Badge>
-                  )
+                  <Badge variant="outline">{user.citizenship}</Badge>
                 }
               />
               <ProfileItem

@@ -186,6 +186,12 @@ class ApiClient {
       body: JSON.stringify({ email }),
     })
   }
+  
+  async checkTokenForgotPassword(token: string) {
+    return this.request(`/auth/check-token?token=${token}`, {
+      method: "GET",
+    });
+  }
 
   async updatePassword(formData: FormData) {
     return this.request(`/auth/users/password`, {
@@ -194,6 +200,15 @@ class ApiClient {
       headers: {},
     });
   }
+  async resetPassword(token: string, newPassword: string) {
+    const response = await this.request('/auth/reset-password', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ token, newPassword }),
+    });
+    return response;
+  }
+
 
 }
 

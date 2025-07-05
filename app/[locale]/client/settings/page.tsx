@@ -147,12 +147,12 @@ export default function SettingsPage() {
         try {
             setPasswordLoading(true);
 
+            
             const formData = new FormData();
             formData.append("currentPassword", passwordData.currentPassword);
             formData.append("newPassword", passwordData.newPassword);
-
+            
             await apiClient.updatePassword(formData);
-
             setPasswordSuccessMessage("Şifrə uğurla yeniləndi.");
             setPasswordData({ currentPassword: "", newPassword: "" });
             setPasswordErrors({});

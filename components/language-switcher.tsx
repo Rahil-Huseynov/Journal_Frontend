@@ -4,7 +4,7 @@ import { Button } from "@/components/ui/button"
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu"
 import { Globe } from "lucide-react"
 import { useLocale } from "next-intl"
-import { useRouter, usePathname } from "next/navigation"
+import { useRouter, usePathname, useSearchParams } from "next/navigation"
 
 const languages = [
   { code: "az", name: "Azərbaycan", flag: "🇦🇿" },
@@ -16,12 +16,14 @@ export function LanguageSwitcher() {
   const locale = useLocale()
   const router = useRouter()
   const pathname = usePathname()
+  const searchParams = useSearchParams()
 
- const handleLanguageChange = (newLocale: string) => {
-  const pathWithoutLocale = pathname.replace(`/${locale}`, '') || '/'
-  router.push(`/${newLocale}${pathWithoutLocale}`)
-  router.refresh()  
-}
+  const handleLanguageChange = (newLocale: string) => {
+    const pathWithoutLocale = pathname.replace(`/${locale}`, '') || '/'
+    const queryString = searchParams.toString()
+    router.push(`/${newLocale}${pathWithoutLocale}${queryString ? `?${queryString}` : ''}`)
+    router.refresh()
+  }
 
   const currentLanguage = languages.find((lang) => lang.code === locale)
 

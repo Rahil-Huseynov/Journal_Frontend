@@ -1,40 +1,45 @@
-"use client"
+"use client";
 
-import type React from "react"
-
-import { useState } from "react"
-import { Button } from "@/components/ui/button"
-import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card"
-import { Input } from "@/components/ui/input"
-import { Label } from "@/components/ui/label"
-import { Alert, AlertDescription } from "@/components/ui/alert"
-import { BookOpen, ArrowLeft } from "lucide-react"
-import Link from "next/link"
-import { useTranslations } from "next-intl"
-import { apiClient } from "@/lib/api-client"
+import React, { useState } from "react";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardFooter,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
+import { Input } from "@/components/ui/input";
+import { Button } from "@/components/ui/button";
+import { Alert, AlertDescription } from "@/components/ui/alert";
+import { BookOpen, ArrowLeft } from "lucide-react";
+import Link from "next/link";
+import { useLocale, useTranslations } from "next-intl";
+import { apiClient } from "@/lib/api-client";
 
 export default function ForgotPasswordPage() {
-  const [email, setEmail] = useState("")
-  const [isLoading, setIsLoading] = useState(false)
-  const [message, setMessage] = useState("")
-  const [error, setError] = useState("")
-  const t = useTranslations("Auth")
+  const [email, setEmail] = useState("");
+  const [isLoading, setIsLoading] = useState(false);
+  const [message, setMessage] = useState("");
+  const [error, setError] = useState("");
+  const t = useTranslations("Auth");
+  const locale = useLocale();
 
   const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault()
-    setIsLoading(true)
-    setError("")
-    setMessage("")
+    e.preventDefault();
+    setIsLoading(true);
+    setError("");
+    setMessage("");
 
     try {
-      await apiClient.forgotPassword(email)
-      setMessage("Şifrə sıfırlama linki e-poçt ünvanınıza göndərildi.")
+      await apiClient.forgotPassword(email);
+      setMessage("Şifrə sıfırlama linki e-poçt ünvanınıza göndərildi.");
     } catch (err: any) {
-      setError(err.message || "Xəta baş verdi. Yenidən cəhd edin.")
+      setError(err.message || "Xəta baş verdi. Yenidən cəhd edin.");
     } finally {
-      setIsLoading(false)
+      setIsLoading(false);
     }
-  }
+  };
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 flex items-center justify-center p-4">
@@ -42,11 +47,16 @@ export default function ForgotPasswordPage() {
         <CardHeader className="text-center">
           <div className="flex items-center justify-center mb-4">
             <BookOpen className="h-8 w-8 text-blue-600" />
-            <span className="ml-2 text-2xl font-bold text-gray-900">ScientificWorks</span>
+            <span className="ml-2 text-2xl font-bold text-gray-900">
+              ScientificWorks
+            </span>
           </div>
           <CardTitle className="text-2xl">{t("resetPassword")}</CardTitle>
-          <CardDescription>E-poçt ünvanınızı daxil edin və şifrə sıfırlama linki alın</CardDescription>
+          <CardDescription>
+            E-poçt ünvanınızı daxil edin və şifrə sıfırlama linki alın
+          </CardDescription>
         </CardHeader>
+
         <form onSubmit={handleSubmit}>
           <CardContent className="space-y-4">
             {error && (
@@ -62,7 +72,9 @@ export default function ForgotPasswordPage() {
             )}
 
             <div className="space-y-2">
-              <Label htmlFor="email">{t("email")}</Label>
+              <label htmlFor="email" className="block text-sm font-medium">
+                {t("email")}
+              </label>
               <Input
                 id="email"
                 type="email"
@@ -79,7 +91,10 @@ export default function ForgotPasswordPage() {
               {isLoading ? "Göndərilir..." : "Şifrə sıfırlama linki göndər"}
             </Button>
 
-            <Link href="/auth/login" className="flex items-center justify-center text-sm text-blue-600 hover:underline">
+            <Link
+              href={`/${locale}/auth/login`}
+              className="flex items-center justify-center text-sm text-blue-600 hover:underline"
+            >
               <ArrowLeft className="h-4 w-4 mr-2" />
               {t("backToLogin")}
             </Link>
@@ -87,5 +102,5 @@ export default function ForgotPasswordPage() {
         </form>
       </Card>
     </div>
-  )
+  );
 }

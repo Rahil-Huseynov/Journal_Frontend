@@ -146,6 +146,36 @@ class ApiClient {
     })
   }
 
+  async getSubCategories() {
+    return this.request("/subcategories", {
+      method: "GET",
+    })
+  }
+
+  async addSubCategories(formData: FormData) {
+    return this.request(`/subcategories/add`, {
+      method: "POST",
+      body: formData,
+    })
+
+  }
+
+  async deleteSubCategory(id: number) {
+    return this.request(`/subcategories/${id}`, {
+      method: "DELETE",
+    })
+
+  }
+
+  async updateSubCategories(formData: FormData, editId: number) {
+    return this.request(`/subcategories/${editId}`, {
+      method: "PUT",
+      body: formData,
+    })
+
+
+  }
+
   async refreshToken(refreshToken: string) {
     return this.request("/auth/refresh", {
       method: "POST",

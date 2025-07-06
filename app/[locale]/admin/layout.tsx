@@ -30,7 +30,8 @@ export default function AdminLayout({
     { name: "Dashboard", href: `/${locale}/admin/dashboard`, icon: BarChart3 },
     { name: "İstifadəçilər", href: `/${locale}/admin/users`, icon: Users },
     { name: "Adminlər", href: `/${locale}/admin/admins`, icon: Users },
-    { name: "Jurnallar", href: `/${locale}/admin/category`, icon: Users },
+    { name: "Jurnal əlavə et", href: `/${locale}/admin/category`, icon: Users },
+    { name: "Jurnal Nömrələri əlavə et", href: `/${locale}/admin/subcategory`, icon: Users },
     { name: "Məqalələr", href: "/admin/articles", icon: FileText },
     { name: "Parametrlər", href: "/admin/settings", icon: Settings },
   ]

@@ -51,7 +51,13 @@ export function Navbar() {
             <LanguageSwitcher />
             {user ? (
               <div className="flex items-center space-x-4">
-                <Link href={`/${locale}/${user.role}/dashboard`}>
+                <Link
+                  href={
+                    user.role === "superadmin"
+                      ? `/${locale}/admin/dashboard`
+                      : `/${locale}/${user.role}/dashboard`
+                  }
+                >
                   <Button variant="outline" size="sm">
                     Dashboard
                   </Button>

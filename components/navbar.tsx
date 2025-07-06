@@ -47,7 +47,7 @@ export function Navbar() {
           </nav>
 
           {/* Desktop Actions */}
-          <div className="hidden xl2:hidden items-center space-x-4">
+          <div className="hidden xl2:flex items-center space-x-4">
             <LanguageSwitcher />
             {user ? (
               <div className="flex items-center space-x-4">

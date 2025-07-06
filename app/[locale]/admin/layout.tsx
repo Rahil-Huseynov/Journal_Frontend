@@ -30,6 +30,7 @@ export default function AdminLayout({
     { name: "Dashboard", href: `/${locale}/admin/dashboard`, icon: BarChart3 },
     { name: "İstifadəçilər", href: `/${locale}/admin/users`, icon: Users },
     { name: "Adminlər", href: `/${locale}/admin/admins`, icon: Users },
+    { name: "Jurnallar", href: `/${locale}/admin/category`, icon: Users },
     { name: "Məqalələr", href: "/admin/articles", icon: FileText },
     { name: "Parametrlər", href: "/admin/settings", icon: Settings },
   ]
@@ -127,7 +128,7 @@ export default function AdminLayout({
 
           {/* Page content */}
           <main className="py-6">
-            <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">{children}</div>
+            <div className="w-full px-4 sm:px-6 lg:px-8">{children}</div>
           </main>
         </div>
       </div>

@@ -4,7 +4,7 @@ class ApiClient {
   private baseURL: string
 
   constructor() {
-    this.baseURL = (process.env.NEXT_PUBLIC_API_URL || "http://localhost:3001").replace(/\/+$/, "")
+    this.baseURL = process.env.NEXT_PUBLIC_API_URL as string;
   }
 
   private async request(endpoint: string, options: RequestInit = {}) {
@@ -113,6 +113,31 @@ class ApiClient {
       body: formData,
       headers: {},
     });
+  }
+
+  async addcategory(formData: FormData) {
+    return this.request("/categories/add", {
+      method: "POST",
+      body: formData,
+      headers: {}
+    })
+
+  }
+
+  async deletecategory(id: number) {
+    return this.request(`/categories/${id}`, {
+      method: "delete",
+    })
+
+  }
+
+
+  async updatecategory(formData: FormData, id: number) {
+    return this.request(`/categories/${id}`, {
+      method: "PUT",
+      body: formData,
+    })
+
   }
 
   async getCategories() {

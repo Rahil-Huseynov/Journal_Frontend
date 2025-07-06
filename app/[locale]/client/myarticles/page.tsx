@@ -112,7 +112,7 @@ export default function ClientarticlesPage() {
 
                                     <div className="flex flex-wrap gap-4 text-sm text-gray-600 mb-4">
                                         <a
-                                            href={`http://localhost:3001${journal.file}`}
+                                            href={`${process.env.NEXT_PUBLIC_API_URL}${journal.file}`}
                                             target="_blank"
                                             rel="noopener noreferrer"
                                             className="inline-block px-5 py-2 bg-blue-600 text-white rounded-lg font-semibold hover:bg-green-700 transition"
@@ -178,7 +178,7 @@ export default function ClientarticlesPage() {
                             {new Date(selectedJournal.createdAt).toLocaleString("az-AZ")}
                         </p>
                         <a
-                            href={`http://localhost:3001${selectedJournal.file}`}
+                            href={`${process.env.NEXT_PUBLIC_API_URL}${selectedJournal.file}`}
                             target="_blank"
                             rel="noopener noreferrer"
                             className="inline-block mt-4 px-5 py-2 bg-blue-600 text-white rounded-lg font-semibold hover:bg-green-700 transition"

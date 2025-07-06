@@ -131,6 +131,64 @@ class ApiClient {
 
   }
 
+  async getAdmins(currentPage: number, searchTerm: string) {
+    const query = new URLSearchParams({
+      page: currentPage.toString(),
+      limit: "10",
+      search: searchTerm.trim(),
+    });
+
+    const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/auth/admins?${query}`);
+
+    if (!res.ok) throw new Error("Failed to fetch users");
+
+    const data = await res.json();
+
+    return {
+      users: data.users || [],
+      totalPages: data.totalPages || 1,
+    };
+  }
+
+
+  async deleteAdmin(userId: string) {
+    return this.request(`/auth/admin/${userId}`, {
+      method: "delete",
+    })
+
+  }
+
+  async addAdmin(formData: FormData) {
+    return this.request(`/auth/admin/signup`, {
+      method: "POST",
+      body: formData,
+
+    })
+
+  }
+
+  async updateAdmin(editAdmin: {
+    id: string;
+    firstName: string;
+    lastName: string;
+    email: string;
+    role: string;
+    password?: string;
+  }) {
+    const { id, ...data } = editAdmin;
+
+    if (!data.password) {
+      delete data.password;
+    }
+
+    return this.request(`/auth/admin/${id}`, {
+      method: "PUT",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(data),
+    });
+  }
 
   async updatecategory(formData: FormData, id: number) {
     return this.request(`/categories/${id}`, {

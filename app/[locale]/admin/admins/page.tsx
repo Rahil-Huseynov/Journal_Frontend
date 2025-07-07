@@ -25,6 +25,8 @@ import {
   UserPlus,
   Edit,
   Trash2,
+  EyeOff,
+  Eye,
 } from "lucide-react";
 import { apiClient } from "@/lib/api-client";
 
@@ -43,7 +45,6 @@ export default function AdminsPage() {
   const [searchTerm, setSearchTerm] = useState("");
   const [currentPage, setCurrentPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
-
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
   const [loadingSubmit, setLoadingSubmit] = useState(false);
@@ -343,26 +344,11 @@ export default function AdminsPage() {
   );
 }
 
-function AdminModal({
-  admin,
-  onChange,
-  onClose,
-  onSubmit,
-  loading,
-  title,
-  message,
-}: {
-  admin: any;
-  onChange: any;
-  onClose: () => void;
-  onSubmit: (e: React.FormEvent) => void;
-  loading: boolean;
-  title: string;
-  message: string | null;
-}) {
+function AdminModal({ admin, onChange, onClose, onSubmit, loading, title, message, }: { admin: any; onChange: any; onClose: () => void; onSubmit: (e: React.FormEvent) => void; loading: boolean; title: string; message: string | null; }) {
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   return (
     <div
-      className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50"
+      className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 !m-0"
       onClick={onClose}
     >
       <div
@@ -409,11 +395,11 @@ function AdminModal({
               required
             />
           </div>
-          {"password" in admin && (
-            <div>
-              <label className="block mb-1 font-medium" htmlFor="password">
-                Şifrə {admin.id ? "(istəyə bağlı)" : ""}
-              </label>
+          <div>
+            <label className="block mb-1 font-medium" htmlFor="password">
+              Şifrə {admin.id ? "(istəyə bağlı)" : ""}
+            </label>
+            <div className="relative">
               <Input
                 id="password"
                 name="password"
@@ -424,8 +410,16 @@ function AdminModal({
                 {...(admin.id ? {} : { required: true })}
                 placeholder={admin.id ? "Şifrəni dəyişmək üçün daxil edin" : ""}
               />
+              <button
+                type="button"
+                className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-600"
+                onClick={() => setShowConfirmPassword(!showConfirmPassword)}
+                tabIndex={-1}
+              >
+                {showConfirmPassword ? <EyeOff size={20} /> : <Eye size={20} />}
+              </button>
             </div>
-          )}
+          </div>
           <div>
             <label className="block mb-1 font-medium" htmlFor="role">
               Rol

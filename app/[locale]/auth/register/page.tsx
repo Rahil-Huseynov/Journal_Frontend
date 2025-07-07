@@ -1,24 +1,11 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardFooter,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
+import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { BookOpen, Eye, EyeOff } from "lucide-react";
 import Link from "next/link";
@@ -74,6 +61,7 @@ export default function RegisterPage() {
     password: "",
     confirmPassword: "",
     role: "client",
+    usertype: "Tədqiqatçı",
     organization: "",
     position: "",
     phoneCode: "",
@@ -97,6 +85,10 @@ export default function RegisterPage() {
   const locale = useLocale();
   const router = useRouter();
 
+  const userTypeOptions = [
+    { value: "client", label: "Tədqiqatçı" },
+  ];
+
   const validateField = (field: keyof typeof validators, value: string) => {
     const regex = validators[field];
     return regex.test(value);
@@ -107,8 +99,7 @@ export default function RegisterPage() {
 
     if (field in validators) {
       if (!validateField(field as keyof typeof validators, value)) {
-        errorMsg = `Bu sahə üçün düzgün məlumat daxil edin. ${examples[field] || ""
-          }`;
+        errorMsg = `Bu sahə üçün düzgün məlumat daxil edin. ${examples[field] || ""}`;
       }
     }
 
@@ -138,8 +129,21 @@ export default function RegisterPage() {
 
     setErrorMessages((prev) => ({ ...prev, [field]: errorMsg }));
 
-    setFormData((prev) => ({ ...prev, [field]: value }));
-  };
+    if (field === "role") {
+      const selected = userTypeOptions.find((item) => item.value === value);
+      setFormData((prev) => ({
+        ...prev,
+        role: value,
+        usertype: selected?.label || "",
+      }));
+    } else {
+      setFormData((prev) => ({
+        ...prev,
+        [field]: value,
+      }));
+    }
+  }
+
 
   const validateAllFields = () => {
     const newErrors: { [key: string]: string } = {};
@@ -199,6 +203,7 @@ export default function RegisterPage() {
       multipartData.append("email", formData.email);
       multipartData.append("password", formData.password);
       multipartData.append("role", formData.role);
+      multipartData.append("usertype", formData.usertype);
       multipartData.append("organization", formData.organization);
       multipartData.append("position", formData.position);
       multipartData.append("phoneCode", formData.phoneCode);
@@ -213,7 +218,6 @@ export default function RegisterPage() {
         multipartData.append("fin", formData.fin || "");
         multipartData.append("idSerial", formData.idSerial || "");
       }
-
 
       const response = await apiClient.register(multipartData);
       setSuccessMessage("Qeydiyyat uğurla tamamlandı!");
@@ -230,6 +234,10 @@ export default function RegisterPage() {
 
   const getInputClass = (field: string) =>
     errorMessages[field] ? "border-red-600 focus:ring-red-600" : "";
+
+  useEffect(() => {
+    console.log("🔍 Current formData:", formData);
+  }, [formData]);
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 flex items-center justify-center p-4">
@@ -308,7 +316,6 @@ export default function RegisterPage() {
                 )}
               </div>
             </div>
-
             <div className="space-y-1">
               <Label htmlFor="email">E-poçt</Label>
               <Input
@@ -326,16 +333,15 @@ export default function RegisterPage() {
             </div>
 
             <div className="space-y-1">
-              <Label htmlFor="role">Rol</Label>
-              <Select
-                value={formData.role}
-                onValueChange={(value) => handleInputChange("role", value)}
-              >
+              <Label htmlFor="role">İstifadəçi növü</Label>
+              <Select value={formData.role} onValueChange={(v) => handleInputChange("role", v)}>
                 <SelectTrigger>
                   <SelectValue placeholder="Rolunuzu seçin" />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="client">Tədqiqatçı</SelectItem>
+                  {userTypeOptions.map((item) => (
+                    <SelectItem key={item.value} value={item.value}>{item.label}</SelectItem>
+                  ))}
                 </SelectContent>
               </Select>
             </div>
@@ -479,7 +485,7 @@ export default function RegisterPage() {
                       }))
                     }
                   />
-                  {errorMessages.citizens && (
+                  {errorMessages.citizenship && (
                     <p className="text-red-600 text-sm">{errorMessages.citizenship}</p>
                   )}
                 </div>
@@ -504,8 +510,6 @@ export default function RegisterPage() {
                 />
                 Azərbaycan vətəndaşı deyiləm
               </label>
-
-
             </div>
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -568,9 +572,8 @@ export default function RegisterPage() {
             </Button>
           </CardFooter>
         </form>
-      </Card >
-      {successMessage && <SuccessModal message={successMessage} />
-      }
+      </Card>
+      {successMessage && <SuccessModal message={successMessage} />}
     </div >
   );
 }

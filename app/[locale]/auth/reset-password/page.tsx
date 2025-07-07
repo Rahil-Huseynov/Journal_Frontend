@@ -13,7 +13,7 @@ import {
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Alert, AlertDescription } from "@/components/ui/alert";
-import { BookOpen } from "lucide-react";
+import { BookOpen, Eye, EyeOff } from "lucide-react";
 import Link from "next/link";
 import { useLocale, useTranslations } from "next-intl";
 import { apiClient } from "@/lib/api-client";
@@ -24,7 +24,7 @@ export default function ResetPasswordPage() {
   const router = useRouter();
   const locale = useLocale();
   const t = useTranslations("Auth");
-
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const [newPassword, setNewPassword] = useState("");
   const [message, setMessage] = useState("");
   const [error, setError] = useState("");
@@ -87,7 +87,7 @@ export default function ResetPasswordPage() {
       setNewPassword("");
       setTimeout(() => {
         window.location.href = `/${locale}/auth/login`;
-      }, 1000); 
+      }, 1000);
     } catch (err: any) {
       setError(err.message || "Xəta baş verdi");
     } finally {
@@ -134,19 +134,28 @@ export default function ResetPasswordPage() {
               >
                 Yeni şifrə
               </label>
-              <Input
-                id="password"
-                type="password"
-                placeholder="Yeni şifrə"
-                value={newPassword}
-                onChange={(e) => {
-                  setNewPassword(e.target.value);
-                  setIsValid(passwordRegex.test(e.target.value));
-                }}
-                required
-                className={`${!isValid ? "border-red-500 focus:ring-red-500" : ""
-                  }`}
-              />
+              <div className="relative">
+                <Input
+                  id="password"
+                  type={showConfirmPassword ? "text" : "password"}
+                  placeholder="Yeni şifrə"
+                  value={newPassword}
+                  onChange={(e) => {
+                    setNewPassword(e.target.value);
+                    setIsValid(passwordRegex.test(e.target.value));
+                  }}
+                  required
+                  className={`${!isValid ? "border-red-500 focus:ring-red-500" : ""} pr-10`} // sağ tərəfə boşluq əlavə edirik
+                />
+                <button
+                  type="button"
+                  className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-600"
+                  onClick={() => setShowConfirmPassword(!showConfirmPassword)}
+                  tabIndex={-1}
+                >
+                  {showConfirmPassword ? <EyeOff size={20} /> : <Eye size={20} />}
+                </button>
+              </div>
               {!isValid && (
                 <p className="text-red-600 text-xs mt-1">
                   Şifrə ən az 8 simvol olmalı, böyük hərf, kiçik hərf, rəqəm və

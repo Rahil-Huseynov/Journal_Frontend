@@ -246,8 +246,8 @@ class ApiClient {
   }
 
   async getUsers(page = 1, limit = 10) {
-    return this.request(`/users?page=${page}&limit=${limit}`)
-  }
+  return this.request(`/auth/users?page=${page}&limit=${limit}`)
+}
 
   async getUserById(id: string) {
     return this.request(`/users/${id}`)

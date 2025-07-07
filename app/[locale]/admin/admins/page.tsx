@@ -29,6 +29,9 @@ import {
   Eye,
 } from "lucide-react";
 import { apiClient } from "@/lib/api-client";
+import { useAuth } from "@/lib/auth-context";
+import { useRouter } from "next/navigation";
+import { useLocale } from "next-intl";
 
 interface Admin {
   id: string;
@@ -50,6 +53,15 @@ export default function AdminsPage() {
   const [loadingSubmit, setLoadingSubmit] = useState(false);
   const [loadingEditSubmit, setLoadingEditSubmit] = useState(false);
   const [message, setMessage] = useState<string | null>(null);
+  const { user } = useAuth()
+  const router = useRouter()
+  const locale = useLocale();
+
+  useEffect(() => {
+    if (user && user.role !== "superadmin") {
+      router.push(`/${locale}/admin/dashboard`) 
+    }
+  }, [user, router])
 
   const [newAdmin, setNewAdmin] = useState({
     firstName: "",

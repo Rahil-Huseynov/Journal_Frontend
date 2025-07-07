@@ -32,8 +32,8 @@ export default function AdminLayout({
       : []),
     { name: "Jurnal əlavə et", href: `/${locale}/admin/category`, icon: Users },
     { name: "Jurnal Nömrələri əlavə et", href: `/${locale}/admin/subcategory`, icon: Users },
-    { name: "Məqalələr", href: "/admin/articles", icon: FileText },
-    { name: "Parametrlər", href: "/admin/settings", icon: Settings },
+    { name: "Məqalələr", href: `/${locale}/admin/articles`, icon: FileText },
+    { name: "Parametrlər", href: `/${locale}/admin/settings`, icon: Settings },
   ]
 
   const handleLogout = () => {

@@ -19,7 +19,6 @@ type SubCategory = {
     description_en: string;
     description_ru: string;
     categoryId: number;
-    file?: string;
 };
 
 type Category = {
@@ -41,8 +40,6 @@ export default function SubCategoryCreatePage() {
     });
 
     const [editForm, setEditForm] = useState({ ...form });
-
-    const [file, setFile] = useState<File | null>(null);
     const [categories, setCategories] = useState<Category[]>([]);
     const [subcategories, setSubcategories] = useState<SubCategory[]>([]);
     const [loading, setLoading] = useState(false);
@@ -94,8 +91,6 @@ export default function SubCategoryCreatePage() {
             Object.entries(form).forEach(([key, value]) => {
                 if (value !== "") formData.append(key, value);
             });
-            if (file) formData.append("file", file);
-
             await apiClient.addSubCategories(formData);
 
             setMessage("✅ Alt kateqoriya uğurla əlavə olundu!");
@@ -108,8 +103,6 @@ export default function SubCategoryCreatePage() {
                 description_ru: "",
                 categoryId: "",
             });
-            setFile(null);
-
             const updated = await apiClient.getSubCategories();
             setSubcategories(updated);
 
@@ -134,7 +127,6 @@ export default function SubCategoryCreatePage() {
             description_ru: sub.description_ru,
             categoryId: sub.categoryId.toString(),
         });
-        setFile(null);
         setMessage(null);
         setIsModalOpen(true);
     };
@@ -151,8 +143,6 @@ export default function SubCategoryCreatePage() {
             Object.entries(editForm).forEach(([key, value]) => {
                 if (value !== "") formData.append(key, value);
             });
-            if (file) formData.append("file", file);
-
             await apiClient.updateSubCategories(formData, editId);
             setMessage("✅ Alt kateqoriya uğurla redaktə olundu!");
             setIsModalOpen(false);
@@ -232,11 +222,6 @@ export default function SubCategoryCreatePage() {
                             </select>
                         </div>
 
-                        <div>
-                            <Label htmlFor="file">Fayl Yüklə</Label>
-                            <Input type="file" id="file" onChange={(e) => setFile(e.target.files?.[0] || null)} />
-                        </div>
-
                         <div className="col-span-full">
                             <Button
                                 type="submit"
@@ -269,18 +254,6 @@ export default function SubCategoryCreatePage() {
                                 <p className="text-sm text-gray-500 mt-1">
                                     📂 Kateqoriya: <span className="font-semibold">{category?.title_az || "Tapılmadı"}</span>
                                 </p>
-                                {sub.file && (
-                                    <div className="mt-2">
-                                        <a
-                                            href={`${process.env.NEXT_PUBLIC_API_URL}/uploads/subcategories/${sub.file}`}
-                                            target="_blank"
-                                            rel="noopener noreferrer"
-                                            className="text-blue-600 underline hover:text-blue-800"
-                                        >
-                                            📄 Faylı Yüklə
-                                        </a>
-                                    </div>
-                                )}
                             </div>
                             <div className="grid gap-2">
                                 <Button variant="outline" onClick={() => openEditModal(sub)} className="mt-2 md:mt-0">
@@ -348,11 +321,6 @@ export default function SubCategoryCreatePage() {
                                         </option>
                                     ))}
                                 </select>
-                            </div>
-
-                            <div>
-                                <Label htmlFor="fileEdit">Yeni Fayl Yüklə</Label>
-                                <Input type="file" id="fileEdit" onChange={(e) => setFile(e.target.files?.[0] || null)} />
                             </div>
 
                             <div className="col-span-full flex justify-end gap-3">

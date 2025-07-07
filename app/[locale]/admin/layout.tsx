@@ -26,14 +26,14 @@ export default function AdminLayout({
 
   const navigation = [
     { name: "Dashboard", href: `/${locale}/admin/dashboard`, icon: BarChart3 },
+    { name: "Jurnal əlavə et", href: `/${locale}/admin/category`, icon: Users },
+    { name: "Jurnal Nömrələri əlavə et", href: `/${locale}/admin/subcategory`, icon: Users },
+    { name: "Global SubCategory", href: `/${locale}/admin/globalsubcategory`, icon: FileText },
+    { name: "Məqalələr", href: `/${locale}/admin/articles`, icon: FileText },
     { name: "İstifadəçilər", href: `/${locale}/admin/users`, icon: Users },
     ...(user?.role === "superadmin"
       ? [{ name: "Adminlər", href: `/${locale}/admin/admins`, icon: Users }]
       : []),
-    { name: "Jurnal əlavə et", href: `/${locale}/admin/category`, icon: Users },
-    { name: "Jurnal Nömrələri əlavə et", href: `/${locale}/admin/subcategory`, icon: Users },
-    { name: "Məqalələr", href: `/${locale}/admin/articles`, icon: FileText },
-    { name: "Parametrlər", href: `/${locale}/admin/settings`, icon: Settings },
   ]
 
   const handleLogout = () => {

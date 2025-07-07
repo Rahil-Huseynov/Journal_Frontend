@@ -225,6 +225,20 @@ class ApiClient {
 
   }
 
+  async updateGlobalCategory(id: number, formData: FormData) {
+    return this.request(`/globalsubcategory/${id}`, {
+      method: "PUT",
+      body: formData,
+    });
+  }
+
+
+  async deleteGlobalCategory(id: number) {
+    return this.request(`/globalsubcategory/${id}`, {
+      method: "DELETE",
+    });
+  }
+
   async updateSubCategories(formData: FormData, editId: number) {
     return this.request(`/subcategories/${editId}`, {
       method: "PUT",
@@ -246,8 +260,8 @@ class ApiClient {
   }
 
   async getUsers(page = 1, limit = 10) {
-  return this.request(`/auth/users?page=${page}&limit=${limit}`)
-}
+    return this.request(`/auth/users?page=${page}&limit=${limit}`)
+  }
 
   async getUserById(id: string) {
     return this.request(`/users/${id}`)
@@ -274,6 +288,18 @@ class ApiClient {
       method: "POST",
       body: JSON.stringify(articleData),
     })
+  }
+
+
+  async createGlobalCategory(formData: FormData) {
+    return this.request("/globalsubcategory", {
+      method: "POST",
+      body: formData,
+    })
+  }
+
+  async getGlobalSubCategories() {
+    return this.request("/globalsubcategory", { method: "GET" });
   }
 
   async updateArticle(id: string, articleData: any) {

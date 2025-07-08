@@ -107,6 +107,14 @@ class ApiClient {
       headers: {},
     })
   }
+  async updateJournalStatus(id: number, status: string, reason?: string) {
+    return this.request(`/journals/update-status/${id}`, {
+      method: "PATCH",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ status, reason }),
+    });
+  }
+
   async updateUser(userId: string, formData: FormData) {
     return this.request(`/auth/users/${userId}`, {
       method: 'PUT',
@@ -331,6 +339,16 @@ class ApiClient {
       method: "GET",
     });
   }
+
+  async updateUserJournal(id: number, formData: FormData) {
+    return this.request(`/journals/update/${id}`, {
+      method: "PUT", 
+      body: formData,
+      headers: {},
+    });
+  }
+
+
 
   deleteUserJournal(id: number) {
     return this.request(`/journals/delete/${id}`, {

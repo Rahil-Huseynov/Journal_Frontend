@@ -247,13 +247,11 @@ class ApiClient {
     });
   }
 
-  async updateSubCategories(formData: FormData, editId: number) {
-    return this.request(`/subcategories/${editId}`, {
+  async updateSubCategories(formData: FormData, id: number) {
+    return this.request(`/subcategories/update/${id}`, {
       method: "PUT",
       body: formData,
     })
-
-
   }
 
   async refreshToken(refreshToken: string) {

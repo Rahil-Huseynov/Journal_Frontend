@@ -146,16 +146,16 @@ export default function SubCategoryCreatePage() {
 
     try {
       const formData = new FormData();
+
       Object.entries(editForm).forEach(([key, value]) => {
         if (value !== "") {
-          formData.append(key, value);
+          formData.append(key, value.toString());
         }
       });
 
       await apiClient.updateSubCategories(formData, editId);
       setMessage("✅ Alt kateqoriya uğurla redaktə olundu!");
       setIsModalOpen(false);
-
       const updated = await apiClient.getSubCategories();
       setSubcategories(updated);
 

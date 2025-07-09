@@ -341,13 +341,12 @@ class ApiClient {
   }
 
   async updateUserJournal(id: number, formData: FormData) {
-    return this.request(`/journals/update/${id}`, {
-      method: "PUT", 
+    return this.request(`/journals/${id}`, {
+      method: "PUT",
       body: formData,
       headers: {},
     });
   }
-
 
 
   deleteUserJournal(id: number) {

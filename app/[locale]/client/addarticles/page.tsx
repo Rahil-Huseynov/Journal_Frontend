@@ -14,6 +14,7 @@ type Category = {
 type SubCategory = {
   id: number
   title_az: string
+  status: string
 }
 
 interface JournalForm {
@@ -258,56 +259,57 @@ export default function ClientaddarticlesPage() {
               onChange={handleChange}
               required
               disabled={!selectedCategory}
-              className={`w-full p-3 border rounded-lg shadow-sm transition ${
-                selectedCategory
-                  ? "focus:outline-none focus:ring-2 focus:ring-blue-400"
-                  : "bg-gray-100 text-gray-400 cursor-not-allowed"
-              }`}
+              className={`w-full p-3 border rounded-lg shadow-sm transition ${selectedCategory
+                ? "focus:outline-none focus:ring-2 focus:ring-blue-400"
+                : "bg-gray-100 text-gray-400 cursor-not-allowed"
+                }`}
             >
               <option value="">Seçin...</option>
               {selectedCategory?.subCategories.map((sub) => (
-                <option key={sub.id} value={sub.id}>
+                <option key={sub.id} value={sub.id} disabled={sub.status === "blocked"} >
                   {sub.title_az}
+                  {sub.status === "blocked" ? " (Bloklanıb)" : ""}
                 </option>
               ))}
-            </select>
-          </div>
-
-          <div>
-            <label className="block text-sm text-gray-600 mb-1">PDF və ya şəkil faylı</label>
-            <input
-              type="file"
-              accept="application/pdf,image/*"
-              onChange={handleFileChange}
-              required
-              className="w-full p-3 border rounded-lg shadow-sm bg-white cursor-pointer file:text-blue-600"
-            />
-          </div>
-
-          <button
-            type="submit"
-            disabled={loading}
-            className="w-full py-3 text-white bg-blue-600 hover:bg-blue-700 rounded-lg transition font-medium"
-          >
-            {loading ? "Yüklənir..." : "Jurnalı Yarat"}
-          </button>
-        </form>
+          </select>
       </div>
 
-      {alertMessage && (
-        <div className="fixed top-6 right-6 z-50">
-          <div className="bg-green-500 text-white px-6 py-4 rounded-lg shadow-lg flex items-center gap-4 animate-fade-in-out transition-all duration-300 max-w-sm">
-            <span className="flex-grow">{alertMessage}</span>
-            <button
-              onClick={() => setAlertMessage(null)}
-              className="text-white font-bold text-xl leading-none hover:text-gray-200"
-              aria-label="Close alert"
-            >
-              ×
-            </button>
-          </div>
+      <div>
+        <label className="block text-sm text-gray-600 mb-1">PDF və ya şəkil faylı</label>
+        <input
+          type="file"
+          accept="application/pdf,image/*"
+          onChange={handleFileChange}
+          required
+          className="w-full p-3 border rounded-lg shadow-sm bg-white cursor-pointer file:text-blue-600"
+        />
+      </div>
+
+      <button
+        type="submit"
+        disabled={loading}
+        className="w-full py-3 text-white bg-blue-600 hover:bg-blue-700 rounded-lg transition font-medium"
+      >
+        {loading ? "Yüklənir..." : "Jurnalı Yarat"}
+      </button>
+    </form>
+      </div >
+
+    { alertMessage && (
+      <div className="fixed top-6 right-6 z-50">
+        <div className="bg-green-500 text-white px-6 py-4 rounded-lg shadow-lg flex items-center gap-4 animate-fade-in-out transition-all duration-300 max-w-sm">
+          <span className="flex-grow">{alertMessage}</span>
+          <button
+            onClick={() => setAlertMessage(null)}
+            className="text-white font-bold text-xl leading-none hover:text-gray-200"
+            aria-label="Close alert"
+          >
+            ×
+          </button>
         </div>
-      )}
-    </div>
+      </div>
+    )
+}
+    </div >
   )
 }

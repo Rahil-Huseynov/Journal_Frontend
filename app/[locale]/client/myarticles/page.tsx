@@ -16,15 +16,19 @@ type Journal = {
     description_az: string
     description_en: string
     description_ru: string
-    keywords_en: string | null
-    keywords_az: string | null
-    keywords_ru: string | null
+    keywords_az: string | null;
+    keywords_en: string | null;
+    keywords_ru: string | null;
+
     file: string
     userId: string
     approved: string
     status: string
     categoryId?: number
     subCategoryId?: number
+    category: Category[];
+    subCategories: SubCategory[];
+
 }
 
 type User = {
@@ -52,6 +56,7 @@ type SubCategory = {
     title_en: string
     title_ru: string
     categoryId: number
+    status?: string
 }
 
 export default function ClientarticlesPage() {
@@ -104,6 +109,35 @@ export default function ClientarticlesPage() {
         }
         fetchCategories()
     }, [])
+
+    useEffect(() => {
+        const interval = setInterval(async () => {
+            try {
+                const updatedCategories = await apiClient.getCategories();
+                setCategories(updatedCategories);
+
+                const currentCategory = updatedCategories.find(
+                    (c: any) => c.id === formData.categoryId
+                );
+
+                if (currentCategory) {
+                    setSubCategories(currentCategory.subCategories || []);
+                    const subCatStillValid = currentCategory.subCategories.some(
+                        (sc: any) => sc.id === formData.subCategoryId
+                    );
+                    if (!subCatStillValid) {
+                        setFormData((prev) => ({ ...prev, subCategoryId: 0 }));
+                    }
+                }
+            } catch (error) {
+                console.error("Alt kateqoriyalar yenilənmədi:", error);
+            }
+        }, 1000);
+
+        return () => clearInterval(interval);
+    }, [formData.categoryId, formData.subCategoryId]);
+
+
     useEffect(() => {
         if (!formData.categoryId) {
             setSubCategories([])
@@ -114,7 +148,8 @@ export default function ClientarticlesPage() {
         const cat = categories.find((c) => c.id === formData.categoryId)
         if (cat) {
             setSubCategories(cat.subCategories || [])
-            if (!cat.subCategories.find((sc) => sc.id === formData.subCategoryId)) {
+            const subCatStillValid = cat.subCategories.some((sc) => sc.id === formData.subCategoryId)
+            if (!subCatStillValid) {
                 setFormData((prev) => ({ ...prev, subCategoryId: 0 }))
             }
         } else {
@@ -127,8 +162,11 @@ export default function ClientarticlesPage() {
         const key = `${base}_${locale}`
         return obj[key] || obj[`${base}_az`] || ""
     }
+
     const openEditModal = (journal: Journal) => {
         setSelectedJournal(journal)
+        const cat = categories.find((c) => c.id === journal.categoryId)
+        setSubCategories(cat?.subCategories || [])
         setFormData({
             title_az: journal.title_az || "",
             title_en: journal.title_en || "",
@@ -145,6 +183,7 @@ export default function ClientarticlesPage() {
         })
     }
 
+
     const handleInputChange = (
         e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>
     ) => {
@@ -154,30 +193,46 @@ export default function ClientarticlesPage() {
             [name]: name === "categoryId" || name === "subCategoryId" ? Number(value) : value,
         }))
     }
+
     const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         if (!e.target.files || e.target.files.length === 0) return
         setFormData((prev) => ({ ...prev, file: e.target.files![0] }))
     }
     const handleSave = async () => {
         if (!selectedJournal) return
+        if (!formData.categoryId || formData.categoryId === 0) {
+            setAlertMessage("Zəhmət olmasa bir kateqoriya seçin");
+            setShowAlert(true);
+            setTimeout(() => setShowAlert(false), 3000);
+            return;
+        }
+
+        if (!formData.subCategoryId || formData.subCategoryId === 0) {
+            setAlertMessage("Zəhmət olmasa bir alt kateqoriya seçin");
+            setShowAlert(true);
+            setTimeout(() => setShowAlert(false), 3000);
+            return;
+        }
 
         try {
-            const data = new FormData()
-            data.append("title_az", formData.title_az)
-            data.append("title_en", formData.title_en)
-            data.append("title_ru", formData.title_ru)
-            data.append("description_az", formData.description_az)
-            data.append("description_en", formData.description_en)
-            data.append("description_ru", formData.description_ru)
-            data.append("keywords_az", formData.keywords_az)
-            data.append("keywords_en", formData.keywords_en)
-            data.append("keywords_ru", formData.keywords_ru)
-            data.append("categoryId", String(formData.categoryId))
-            data.append("subCategoryId", String(formData.subCategoryId))
+            const data = new FormData();
 
-            if (formData.file && typeof formData.file !== "string") {
-                data.append("file", formData.file)
-            }
+            data.append("title_az", formData.title_az);
+            data.append("title_en", formData.title_en);
+            data.append("title_ru", formData.title_ru);
+            data.append("description_az", formData.description_az);
+            data.append("description_en", formData.description_en);
+            data.append("description_ru", formData.description_ru);
+            data.append("keywords_az", formData.keywords_az);
+            data.append("keywords_en", formData.keywords_en);
+            data.append("keywords_ru", formData.keywords_ru);
+            data.append("categoryIds[]", String(formData.categoryId));
+            data.append("subCategoryIds[]", String(formData.subCategoryId));
+
+            data.append("status", "Redaktə edildi");
+            data.append("message", "");
+            data.append("file", formData.file);
+
 
             await apiClient.updateUserJournal(selectedJournal.id, data)
             setAlertMessage("Jurnal uğurla yeniləndi")
@@ -214,6 +269,8 @@ export default function ClientarticlesPage() {
             setTimeout(() => setShowAlert(false), 3000)
         }
     }
+    const keywords = selectedJournal ? selectedJournal[`keywords_${locale}` as keyof Journal] : null;
+
 
     return (
         <div className="w-full mx-auto px-4 py-10">
@@ -266,18 +323,27 @@ export default function ClientarticlesPage() {
                                         </a>
 
                                         <button
-                                            onClick={() => openEditModal(journal)}
-                                            className="inline-block px-5 py-2 bg-yellow-600 text-white rounded-lg font-semibold hover:bg-yellow-700 transition"
-                                        >
-                                            Edit
-                                        </button>
-
-                                        <button
                                             onClick={() => setSelectedJournal(journal)}
                                             className="inline-block px-5 py-2 bg-orange-600 text-white rounded-lg font-semibold hover:bg-green-700 transition"
                                         >
                                             Bax
                                         </button>
+                                        {journal.status === "edit" && (
+                                            <button
+                                                onClick={() => openEditModal(journal)}
+                                                className="inline-block px-5 py-2 bg-yellow-600 text-white rounded-lg font-semibold hover:bg-yellow-700 transition"
+                                            >
+                                                Edit
+                                            </button>
+                                        )}
+
+                                        {journal.status === "payment" && (
+                                            <button
+                                                className="inline-block px-5 py-2 bg-green-500 text-white rounded-lg font-semibold hover:bg-green-800 transition"
+                                            >
+                                                Ödəniş et
+                                            </button>
+                                        )}
 
                                         {journal.status === "pending" && (
                                             <button
@@ -319,7 +385,7 @@ export default function ClientarticlesPage() {
                             <strong>Təsvir:</strong> {getLocalizedField(selectedJournal, "description")}
                         </p>
                         <p className="text-gray-700 mb-2">
-                            <strong>Açar sözlər:</strong> {selectedJournal[`keywords_${locale}` as keyof Journal] || "Yoxdur"}
+                            <strong>Açar sözlər:</strong> {(typeof keywords === "string" && keywords.trim() !== "") ? keywords : "Yoxdur"}
                         </p>
                         <p className="text-gray-600 mb-2">
                             <strong>Status:</strong> {selectedJournal.status}
@@ -344,7 +410,7 @@ export default function ClientarticlesPage() {
                     className="fixed inset-0 z-50 bg-black bg-opacity-40 flex items-center justify-center px-4"
                     onClick={() => {
                         setSelectedJournal(null)
-                        setFormData((prev) => ({ ...prev, title_az: "" })) // reset edit mode marker
+                        setFormData((prev) => ({ ...prev, title_az: "" }))
                     }}
                 >
                     <div
@@ -510,7 +576,6 @@ export default function ClientarticlesPage() {
                                     </a>
                                 )}
                             </div>
-
                             <div>
                                 <label htmlFor="categoryId" className="block font-semibold mb-1">
                                     Kateqoriya
@@ -522,7 +587,9 @@ export default function ClientarticlesPage() {
                                     onChange={handleInputChange}
                                     className="w-full border border-gray-300 rounded px-3 py-2"
                                 >
-                                    <option value={0}>Seçin</option>
+                                    <option value={0} disabled={formData.categoryId !== 0}>
+                                        Seçin
+                                    </option>
                                     {categories.map((cat) => (
                                         <option key={cat.id} value={cat.id}>
                                             {getLocalizedField(cat, "title")}
@@ -530,7 +597,14 @@ export default function ClientarticlesPage() {
                                     ))}
                                 </select>
 
+                                {selectedJournal?.category && selectedJournal.category.length > 0 && (
+                                    <div className="mt-2 text-sm text-gray-600">
+                                        <strong>Kateqoriya:</strong> {getLocalizedField(selectedJournal.category[0], "title")}
+                                    </div>
+                                )}
                             </div>
+
+
 
                             <div>
                                 <label htmlFor="subCategoryId" className="block font-semibold mb-1">
@@ -544,14 +618,29 @@ export default function ClientarticlesPage() {
                                     className="w-full border border-gray-300 rounded px-3 py-2"
                                     disabled={subCategories.length === 0}
                                 >
-                                    <option value={0}>Seçin</option>
+                                    <option value={0} disabled={formData.subCategoryId !== 0}>
+                                        Seçin
+                                    </option>
                                     {subCategories.map((sub) => (
-                                        <option key={sub.id} value={sub.id}>
+                                        <option
+                                            key={sub.id}
+                                            value={sub.id}
+                                            disabled={sub.status === "blocked"}
+                                        >
                                             {getLocalizedField(sub, "title")}
+                                            {sub.status === "blocked" ? " (Bloklanıb)" : ""}
                                         </option>
                                     ))}
                                 </select>
+
+                                {selectedJournal?.subCategories && selectedJournal.subCategories.length > 0 && (
+                                    <div className="mt-2 text-sm text-gray-600">
+                                        <strong>Alt Kateqoriya:</strong>{" "}
+                                        {getLocalizedField(selectedJournal.subCategories[0], "title")}
+                                    </div>
+                                )}
                             </div>
+
                         </div>
 
                         <div className="mt-6 flex justify-end gap-4">

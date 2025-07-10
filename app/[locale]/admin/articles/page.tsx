@@ -131,10 +131,12 @@ const CategoryListPage = () => {
         if (!currentJournal) return;
 
         try {
-            await apiClient.createMessage({
-                problems: message,
-                userJournalId: currentJournal.id,
-            });
+            if (message) {
+                await apiClient.createMessage({
+                    problems: message,
+                    userJournalId: currentJournal.id,
+                });
+            }
             alert("Mesaj və status uğurla göndərildi");
             await apiClient.updateJournalStatus(currentJournal.id, selectedStatus);
             window.location.href = `/${locale}/admin/articles`;

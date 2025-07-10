@@ -26,9 +26,15 @@ type Journal = {
     status: string
     categoryId?: number
     subCategoryId?: number
+    message: string
     category: Category[];
     subCategories: SubCategory[];
-
+    messages?: {
+        id: number
+        createdAt: string
+        problems: string
+        userJournalId: number
+    }[]
 }
 
 type User = {
@@ -70,6 +76,7 @@ export default function ClientarticlesPage() {
 
     const [categories, setCategories] = useState<Category[]>([])
     const [subCategories, setSubCategories] = useState<SubCategory[]>([])
+    const [messageModalJournal, setMessageModalJournal] = useState<Journal | null>(null)
 
     const [formData, setFormData] = useState<{
         title_az: string
@@ -312,6 +319,8 @@ export default function ClientarticlesPage() {
                                         </span>
                                     </div>
 
+                                    <p className="text-red-700 font-extrabold mb-5">{journal.message}</p>
+
                                     <div className="flex flex-wrap gap-4 text-sm text-gray-600 mb-4">
                                         <a
                                             href={`${process.env.NEXT_PUBLIC_API_URL}${journal.file}`}
@@ -331,11 +340,22 @@ export default function ClientarticlesPage() {
                                         {journal.status === "edit" && (
                                             <button
                                                 onClick={() => openEditModal(journal)}
-                                                className="inline-block px-5 py-2 bg-yellow-600 text-white rounded-lg font-semibold hover:bg-yellow-700 transition"
+                                                className="inline-block px-5 py-2 bg-yellow-600 text-white rounded-lg font-semibold hover:bg-green-700 transition"
                                             >
                                                 Edit
                                             </button>
                                         )}
+
+                                        {journal.status === "edit" && (
+                                            <button
+                                                onClick={() => setMessageModalJournal(journal)}
+                                                className="inline-block px-5 py-2 bg-red-600 text-white rounded-lg font-semibold hover:bg-green-700 transition"
+                                            >
+                                                Problemlərə bax
+                                            </button>
+                                        )}
+
+
 
                                         {journal.status === "payment" && (
                                             <button
@@ -348,7 +368,7 @@ export default function ClientarticlesPage() {
                                         {journal.status === "pending" && (
                                             <button
                                                 onClick={() => setJournalToDelete(journal)}
-                                                className="inline-block px-5 py-2 bg-red-600 text-white rounded-lg font-semibold hover:bg-red-700 transition"
+                                                className="inline-block px-5 py-2 bg-red-600 text-white rounded-lg font-semibold hover:bg-green-700 transition"
                                             >
                                                 Sil
                                             </button>
@@ -401,6 +421,43 @@ export default function ClientarticlesPage() {
                         >
                             Faylı Aç
                         </a>
+                    </div>
+                </div>
+            )}
+            {messageModalJournal && (
+                <div
+                    className="fixed inset-0 z-50 bg-black bg-opacity-40 flex items-center justify-center px-4"
+                    onClick={() => setMessageModalJournal(null)}
+                >
+                    <div
+                        className="bg-white rounded-xl p-6 max-w-2xl w-full shadow-2xl relative max-h-[90vh] overflow-auto"
+                        onClick={(e) => e.stopPropagation()}
+                    >
+                        <button
+                            onClick={() => setMessageModalJournal(null)}
+                            className="absolute top-3 right-3 text-gray-500 hover:text-red-600 text-xl"
+                        >
+                            ✖
+                        </button>
+                        <h2 className="text-2xl font-bold mb-4 text-red-800">🛠 Problemlər</h2>
+
+                        {messageModalJournal.messages && messageModalJournal.messages.length > 0 ? (
+                            <ul className="space-y-4">
+                                {messageModalJournal.messages.sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()).map((msg) => (
+                                    <li
+                                        key={msg.id}
+                                        className="border-l-4 border-red-500 bg-red-50 p-4 rounded shadow"
+                                    >
+                                        <p className="text-gray-800 whitespace-pre-line">{msg.problems}</p>
+                                        <p className="text-sm text-gray-500 mt-2">
+                                            {new Date(msg.createdAt).toLocaleString("az-AZ")}
+                                        </p>
+                                    </li>
+                                ))}
+                            </ul>
+                        ) : (
+                            <p className="text-gray-600 italic">Heç bir problem mesajı yoxdur.</p>
+                        )}
                     </div>
                 </div>
             )}
@@ -698,5 +755,7 @@ export default function ClientarticlesPage() {
                 </div>
             )}
         </div>
+
     )
+
 }

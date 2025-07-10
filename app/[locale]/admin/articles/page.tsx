@@ -2,7 +2,7 @@
 
 import React, { useEffect, useState } from "react";
 import { apiClient } from "@/lib/api-client";
-import { ChevronDown, ChevronRight, Pencil, Trash } from "lucide-react";
+import { ChevronDown, ChevronRight, Eye, Pencil, Trash } from "lucide-react";
 import {
     Dialog,
     DialogContent,
@@ -12,6 +12,13 @@ import {
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { useLocale } from "next-intl";
+
+interface Message {
+    id: number;
+    createdAt: string;
+    problems: string;
+    userJournalId: number;
+}
 
 interface Journal {
     id: number;
@@ -28,6 +35,7 @@ interface Journal {
     file: string;
     createdAt: string;
     updatedAt: string;
+    messages?: Message[];
 }
 
 interface SubCategory {
@@ -58,6 +66,8 @@ const CategoryListPage = () => {
     const [currentJournal, setCurrentJournal] = useState<Journal | null>(null);
     const [selectedStatus, setSelectedStatus] = useState<string>("");
     const [message, setMessage] = useState<string>("");
+    const [viewModalOpen, setViewModalOpen] = useState(false);
+    const [viewMessages, setViewMessages] = useState<Message[]>([]);
     const locale = useLocale();
 
     useEffect(() => {
@@ -151,6 +161,20 @@ const CategoryListPage = () => {
     const handleModalClose = () => {
         setEditModalOpen(false);
         setCurrentJournal(null);
+    };
+    const formatDate = (dateString: string) => {
+        const d = new Date(dateString);
+        const pad = (n: number) => n.toString().padStart(2, '0');
+
+        const day = pad(d.getDate());
+        const month = pad(d.getMonth() + 1);
+        const year = d.getFullYear();
+
+        const hours = pad(d.getHours());
+        const minutes = pad(d.getMinutes());
+        const seconds = pad(d.getSeconds());
+
+        return `${day}.${month}.${year}, ${hours}:${minutes}:${seconds}`;
     };
 
     return (
@@ -254,15 +278,28 @@ const CategoryListPage = () => {
                                                                                 className="bg-yellow-500 hover:bg-yellow-600 text-white px-2 py-1 rounded"
                                                                                 title="Redaktə et"
                                                                             >
-                                                                                <Pencil size={16} />
+                                                                                <Pencil size={20} />
                                                                             </button>
                                                                             <button
                                                                                 onClick={() => handleDelete(j.id)}
                                                                                 className="bg-red-500 hover:bg-red-600 text-white px-2 py-1 rounded"
                                                                                 title="Sil"
                                                                             >
-                                                                                <Trash size={16} />
+                                                                                <Trash size={20} />
                                                                             </button>
+
+                                                                            <button
+                                                                                onClick={() => {
+                                                                                    setCurrentJournal(j);
+                                                                                    setViewMessages(j.messages || []);
+                                                                                    setViewModalOpen(true);
+                                                                                }}
+                                                                                className="bg-green-500 hover:bg-green-600 text-white px-2 py-1 rounded"
+                                                                                title="Bax"
+                                                                            >
+                                                                                <Eye size={20} />
+                                                                            </button>
+
                                                                         </div>
                                                                     </td>
                                                                 </tr>
@@ -312,6 +349,35 @@ const CategoryListPage = () => {
                     )}
                 </DialogContent>
             </Dialog>
+
+            <Dialog open={viewModalOpen} onOpenChange={() => setViewModalOpen(false)}>
+                <DialogContent className="w-full max-w-4xl h-[85vh] p-6 overflow-hidden bg-white">
+                    <DialogHeader>
+                        <DialogTitle className="text-2xl font-bold text-center text-blue-900">
+                            Admin Mesaj Paneli
+                        </DialogTitle>
+                    </DialogHeader>
+
+                    <div className="flex flex-col h-[70vh] overflow-y-auto mt-4 px-4 py-3 bg-gray-100 rounded-2xl border border-gray-300 shadow-inner space-y-5">
+                        {viewMessages.length === 0 ? (
+                            <p className="text-center text-lg text-gray-500">Heç bir mesaj yoxdur</p>
+                        ) : (
+                            viewMessages.sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()).map((msg) => (
+                                <div
+                                    key={msg.id}
+                                    className="self-end w-full bg-blue-200 text-gray-900 px-5 py-4 rounded-3xl shadow-md"
+                                >
+                                    <p className="text-base md:text-lg">{msg.problems}</p>
+                                    <p className="text-gray-500 text-xs mt-1">{formatDate(msg.createdAt)}</p>
+                                </div>
+                            ))
+                        )}
+                    </div>
+                </DialogContent>
+            </Dialog>
+
+
+
         </div>
     );
 };

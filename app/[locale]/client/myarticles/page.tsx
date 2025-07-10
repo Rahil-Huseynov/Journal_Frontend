@@ -277,6 +277,20 @@ export default function ClientarticlesPage() {
         }
     }
     const keywords = selectedJournal ? selectedJournal[`keywords_${locale}` as keyof Journal] : null;
+    const formatDate = (dateString: string) => {
+        const d = new Date(dateString);
+        const pad = (n: number) => n.toString().padStart(2, '0');
+
+        const day = pad(d.getDate());
+        const month = pad(d.getMonth() + 1);
+        const year = d.getFullYear();
+
+        const hours = pad(d.getHours());
+        const minutes = pad(d.getMinutes());
+        const seconds = pad(d.getSeconds());
+
+        return `${day}.${month}.${year}, ${hours}:${minutes}:${seconds}`;
+    };
 
 
     return (
@@ -450,7 +464,7 @@ export default function ClientarticlesPage() {
                                     >
                                         <p className="text-gray-800 whitespace-pre-line">{msg.problems}</p>
                                         <p className="text-sm text-gray-500 mt-2">
-                                            {new Date(msg.createdAt).toLocaleString("az-AZ")}
+                                            <p className="text-gray-500 text-xs mt-1">{formatDate(msg.createdAt)}</p>
                                         </p>
                                     </li>
                                 ))}

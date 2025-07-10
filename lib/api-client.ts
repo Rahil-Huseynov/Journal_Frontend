@@ -261,6 +261,18 @@ class ApiClient {
     })
   }
 
+  
+  async createMessage(data: { problems: string; userJournalId: number }) {
+    return this.request("/messages", {
+        method: "POST",
+        headers: {
+            "Content-Type": "application/json",
+        },
+        body: JSON.stringify(data),
+    })
+  }
+
+
   async getCurrentUser() {
     return this.request("/auth/me")
   }

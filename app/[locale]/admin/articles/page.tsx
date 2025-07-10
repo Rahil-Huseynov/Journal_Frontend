@@ -113,6 +113,8 @@ const CategoryListPage = () => {
         setEditModalOpen(true);
     };
 
+
+
     const handleDelete = async (journalId: number) => {
         if (!confirm("Bu jurnalı silmək istədiyinizdən əminsiniz?")) return;
 
@@ -129,13 +131,18 @@ const CategoryListPage = () => {
         if (!currentJournal) return;
 
         try {
-            await apiClient.updateJournalStatus(currentJournal.id, selectedStatus, message);
-            window.location.href = `/${locale}/admin/articles`
+            await apiClient.createMessage({
+                problems: message,
+                userJournalId: currentJournal.id,
+            });
+            alert("Mesaj və status uğurla göndərildi");
+            await apiClient.updateJournalStatus(currentJournal.id, selectedStatus);
+            window.location.href = `/${locale}/admin/articles`;
             setEditModalOpen(false);
             setCurrentJournal(null);
             await fetchCategories();
         } catch (error) {
-            console.error("Status yenilənmədi", error);
+            console.error("Əməliyyat zamanı xəta baş verdi", error);
         }
     };
 
@@ -189,6 +196,7 @@ const CategoryListPage = () => {
                                                 <p className="text-sm text-gray-500">Jurnal yoxdur</p>
                                             ) : (
                                                 <div className="overflow-x-auto mb-16">
+                                                    <p><span>{sub.count}/{sub.requireCount}</span></p>
                                                     <table className="min-w-full text-sm border border-gray-200">
                                                         <thead className="bg-gray-100">
                                                             <tr>

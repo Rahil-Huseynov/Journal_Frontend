@@ -8,8 +8,10 @@ import { apiClient } from "@/lib/api-client"
 
 interface DashboardStats {
   totalUsers: number
-  totalArticles: number
+  totalUserJournals: number
   activeUsers: number
+  todayUpdatedUsers:number
+  activeUserJournals:number
   pendingArticles: number
   recentActivity: Array<{
     id: string
@@ -64,8 +66,6 @@ export default function AdminDashboard() {
         <h1 className="text-3xl font-bold text-gray-900">Admin Dashboard</h1>
         <p className="text-gray-600">Sistem statistikaları və son fəaliyyətlər</p>
       </div>
-
-      {/* Stats Cards */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
@@ -74,7 +74,6 @@ export default function AdminDashboard() {
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold">{stats?.totalUsers || 0}</div>
-            <p className="text-xs text-muted-foreground">+12% keçən aydan</p>
           </CardContent>
         </Card>
 
@@ -84,8 +83,7 @@ export default function AdminDashboard() {
             <FileText className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">{stats?.totalArticles || 0}</div>
-            <p className="text-xs text-muted-foreground">+8% keçən aydan</p>
+            <div className="text-2xl font-bold">{stats?.totalUserJournals || 0}</div>
           </CardContent>
         </Card>
 
@@ -95,8 +93,7 @@ export default function AdminDashboard() {
             <TrendingUp className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">{stats?.activeUsers || 0}</div>
-            <p className="text-xs text-muted-foreground">+5% keçən həftədən</p>
+            <div className="text-2xl font-bold">{stats?.todayUpdatedUsers || 0}</div>
           </CardContent>
         </Card>
 
@@ -106,13 +103,10 @@ export default function AdminDashboard() {
             <Activity className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">{stats?.pendingArticles || 0}</div>
-            <p className="text-xs text-muted-foreground">Təsdiq gözləyir</p>
+            <div className="text-2xl font-bold">{stats?.activeUserJournals || 0}</div>
           </CardContent>
         </Card>
       </div>
-
-      {/* Recent Activity */}
       <Card>
         <CardHeader>
           <CardTitle>Son Fəaliyyətlər</CardTitle>

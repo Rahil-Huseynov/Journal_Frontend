@@ -352,7 +352,9 @@ class ApiClient {
   }
 
   async getDashboardStats() {
-    return this.request("/dashboard/stats")
+    return this.request("/auth/admin/statistics", {
+      method: "GET",
+    })
   }
 
   async forgotPassword(email: string) {

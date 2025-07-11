@@ -1,6 +1,6 @@
 import createNextIntlPlugin from 'next-intl/plugin';
 
-const withNextIntl = createNextIntlPlugin(); 
+const withNextIntl = createNextIntlPlugin();
 
 /** @type {import('next').NextConfig} */
 const nextConfig = {
@@ -13,7 +13,11 @@ const nextConfig = {
   },
   images: {
     unoptimized: true,
-  }
+  },
+  i18n: {
+    locales: ['en', 'az', 'ru'],
+    defaultLocale: 'az',
+  },
 };
 
 export default withNextIntl(nextConfig);

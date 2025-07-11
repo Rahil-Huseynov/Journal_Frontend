@@ -34,6 +34,7 @@ export default function AdminLayout({
     ...(user?.role === "superadmin"
       ? [{ name: "Adminlər", href: `/${locale}/admin/admins`, icon: Users }]
       : []),
+    { name: "Xəbərlər", href: `/${locale}/admin/news`, icon: FileText },
   ]
 
   const handleLogout = () => {

@@ -284,7 +284,7 @@ class ApiClient {
   }
 
   async updateJournalOrder(id: number, order: number) {
-     return this.request(`/journals/${id}/order`, {
+    return this.request(`/journals/${id}/order`, {
       method: 'PUT',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ order }),
@@ -354,6 +354,27 @@ class ApiClient {
   async getDashboardStats() {
     return this.request("/auth/admin/statistics", {
       method: "GET",
+    })
+  }
+
+
+  async getNews() {
+    return this.request("/news", {
+      method: "GET",
+    });
+  }
+
+
+  async addnews(formData: FormData) {
+    return this.request("/news", {
+      method: 'POST',
+      body: formData,
+    })
+  }
+
+  async deletenews(id: number) {
+    return this.request(`/news/${id}`, {
+      method: "DELETE",
     })
   }
 

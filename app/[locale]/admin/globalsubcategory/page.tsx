@@ -12,6 +12,7 @@ type SubCategory = {
   description_en?: string;
   description_ru?: string;
   categoryId: number;
+  count?: number;
 };
 
 type GlobalSubCategory = {
@@ -27,6 +28,15 @@ type GlobalSubCategory = {
   subCategoryId: number;
 };
 
+type UserJournal = {
+  id: number;
+  title_az?: string;
+  status?: string;
+  count?: number;
+  subCategoryId: number;
+  order?: number;
+};
+
 type FileMap = Record<number, File | null>;
 
 export default function GlobalSubCategoryPublisher() {
@@ -35,9 +45,16 @@ export default function GlobalSubCategoryPublisher() {
   const [globalSubs, setGlobalSubs] = useState<GlobalSubCategory[]>([]);
   const [editModalOpen, setEditModalOpen] = useState(false);
   const [editData, setEditData] = useState<Partial<GlobalSubCategory> & { file?: File | null }>({});
+  const [sortModalOpen, setSortModalOpen] = useState(false);
+  const [currentSubCategoryId, setCurrentSubCategoryId] = useState<number | null>(null);
+  const [finishedJournals, setFinishedJournals] = useState<UserJournal[]>([]);
+  const [counts, setCounts] = useState<Record<number, number>>({});
+  const [subCategoryMaxCount, setSubCategoryMaxCount] = useState<number>(0);
+
   useEffect(() => {
     fetchData();
   }, []);
+
   async function fetchData() {
     try {
       const subs = await apiClient.getSubCategories();
@@ -49,12 +66,14 @@ export default function GlobalSubCategoryPublisher() {
       console.error(error);
     }
   }
+
   function handleFileChange(e: ChangeEvent<HTMLInputElement>, subCategoryId: number) {
     if (e.target.files && e.target.files.length > 0) {
       const file = e.target.files[0];
       setFiles((prev) => ({ ...prev, [subCategoryId]: file }));
     }
   }
+
   async function handlePublish(subCategory: SubCategory) {
     const file = files[subCategory.id];
     if (!file) {
@@ -84,12 +103,11 @@ export default function GlobalSubCategoryPublisher() {
       alert("Xəta: " + (error as Error).message);
     }
   }
+
   function openEditModal(globalSub: GlobalSubCategory) {
     setEditData({
       ...globalSub,
       file: null,
-      categoryId: globalSub.categoryId,
-      subCategoryId: globalSub.subCategoryId,
     });
     setEditModalOpen(true);
   }
@@ -103,7 +121,7 @@ export default function GlobalSubCategoryPublisher() {
   }
   function handleEditFileChange(e: ChangeEvent<HTMLInputElement>) {
     if (e.target.files && e.target.files.length > 0) {
-      setEditData((prev: any) => ({
+      setEditData((prev) => ({
         ...prev,
         file: e.target.files![0],
       }));
@@ -120,7 +138,10 @@ export default function GlobalSubCategoryPublisher() {
     formData.append("description_az", editData.description_az || "");
     formData.append("description_en", editData.description_en || "");
     formData.append("description_ru", editData.description_ru || "");
-    formData.append("categoryId", editData.categoryId !== undefined && editData.categoryId !== null ? editData.categoryId.toString() : "");
+    formData.append(
+      "categoryId",
+      editData.categoryId !== undefined && editData.categoryId !== null ? editData.categoryId.toString() : ""
+    );
     if (editData.file) {
       formData.append("file", editData.file);
     }
@@ -144,6 +165,83 @@ export default function GlobalSubCategoryPublisher() {
       alert("Xəta: " + (error as Error).message);
     }
   }
+
+  async function openSortModal(subCategoryId: number) {
+    setCurrentSubCategoryId(subCategoryId);
+    setSortModalOpen(true);
+
+    try {
+      const journals: UserJournal[] = await apiClient.getUserFilterJournals({
+        status: "finished",
+        subCategoryId: subCategoryId,
+      });
+      setFinishedJournals(journals);
+
+      const initialCounts: Record<number, number> = {};
+      journals.forEach((j) => {
+        initialCounts[j.id] = j.order ?? 0;
+      });
+      setCounts(initialCounts);
+      const sub = subCategories.find((s) => s.id === subCategoryId);
+      if (!sub) return;
+      const maxCount = sub.count ?? 0;
+      setSubCategoryMaxCount(maxCount);
+    } catch (error) {
+      alert("Statusu 'finished' olan jurnal tapılmadı");
+      setFinishedJournals([]);
+      setCounts({});
+    }
+  }
+
+  function closeSortModal() {
+    setSortModalOpen(false);
+    setCurrentSubCategoryId(null);
+    setFinishedJournals([]);
+    setCounts({});
+  }
+
+  function handleCountChange(e: ChangeEvent<HTMLInputElement>, journalId: number) {
+    const value = Number(e.target.value);
+    if (value > subCategoryMaxCount) {
+      alert(`Order dəyəri ${subCategoryMaxCount}-dan çox ola bilməz.`);
+      return;
+    }
+    setCounts((prev) => ({ ...prev, [journalId]: value }));
+  }
+
+  async function handleSaveCounts() {
+    try {
+      const usedOrders = new Set<number>();
+      const duplicates: number[] = [];
+
+      for (const id in counts) {
+        const order = counts[Number(id)];
+        if (usedOrders.has(order)) {
+          duplicates.push(order);
+        } else {
+          usedOrders.add(order);
+        }
+      }
+
+      if (duplicates.length > 0) {
+        alert(`Eyni order dəyərləri təkrar olunmamalıdır. Təkrar dəyərlər: ${duplicates.join(", ")}`);
+        return;
+      }
+
+      for (const journalId in counts) {
+        const orderValue = counts[Number(journalId)];
+        await apiClient.updateJournalOrder(Number(journalId), orderValue);
+      }
+
+      alert("Saylar uğurla yadda saxlanıldı");
+      closeSortModal();
+    } catch (error) {
+      alert("Sayları yadda saxlama zamanı xəta baş verdi");
+    }
+  }
+
+
+
   return (
     <div className="w-full p-8 bg-white rounded-lg shadow-lg">
       <div>
@@ -152,7 +250,17 @@ export default function GlobalSubCategoryPublisher() {
           <table className="min-w-full divide-y divide-gray-200 border border-gray-300 shadow-sm border-separate text-[inherit]">
             <thead className="bg-gray-50">
               <tr>
-                {["Başlıq (AZ)", "Başlıq (EN)", "Başlıq (RU)", "Açıqlama (AZ)", "Açıqlama (EN)", "Açıqlama (RU)", "Fayl əlavə et", "Yayımla"].map((title) => (
+                {[
+                  "Başlıq (AZ)",
+                  "Başlıq (EN)",
+                  "Başlıq (RU)",
+                  "Açıqlama (AZ)",
+                  "Açıqlama (EN)",
+                  "Açıqlama (RU)",
+                  "Fayl əlavə et",
+                  "Yayımla",
+                  "Sırala",
+                ].map((title) => (
                   <th
                     key={title}
                     className="px-6 py-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider"
@@ -185,6 +293,14 @@ export default function GlobalSubCategoryPublisher() {
                       className="px-4 py-2 bg-green-600 text-white rounded-md hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-green-500"
                     >
                       Yayımla
+                    </button>
+                  </td>
+                  <td className="px-6 py-4">
+                    <button
+                      onClick={() => openSortModal(sub.id)}
+                      className="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    >
+                      Sırala
                     </button>
                   </td>
                 </tr>
@@ -224,7 +340,7 @@ export default function GlobalSubCategoryPublisher() {
                     <td className="px-6 py-4 text-gray-700">{g.description_ru}</td>
                     <td className="px-6 py-4">
                       <a
-                        href={`${process.env.NEXT_PUBLIC_API_URL}/uploads/globalsubcategory/${g.file}`}
+                        href={`${process.env.NEXT_PUBLIC_API_URL}/uploads/globalsubcategory/${typeof g.file === "string" ? g.file : ""}`}
                         target="_blank"
                         rel="noopener noreferrer"
                         className="text-blue-600 hover:underline"
@@ -337,14 +453,53 @@ export default function GlobalSubCategoryPublisher() {
                 >
                   Ləğv et
                 </button>
-                <button
-                  type="submit"
-                  className="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700"
-                >
+                <button type="submit" className="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700">
                   Yadda saxla
                 </button>
               </div>
             </form>
+          </div>
+        </div>
+      )}
+      {sortModalOpen && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+          <div className="bg-white rounded-lg p-6 max-w-2xl w-full max-h-[80vh] overflow-y-auto">
+            <h2 className="text-xl font-semibold mb-4">
+              SubCategory ID: {currentSubCategoryId} üçün Statusu "finished" olan jurnallar
+            </h2>
+
+            {finishedJournals.length === 0 && (
+              <p className="italic text-gray-500">Heç bir finished jurnal tapılmadı.</p>
+            )}
+
+            {finishedJournals.map((journal) => (
+              <div key={journal.id} className="flex items-center justify-between mb-3">
+                <span>{journal.title_az || `Journal ID: ${journal.id}`}</span>
+                <input
+                  type="number"
+                  min={0}
+                  max={subCategoryMaxCount} 
+                  value={counts[journal.id] ?? 0}
+                  onChange={(e) => handleCountChange(e, journal.id)}
+                  className="w-20 border border-gray-300 rounded px-2 py-1 appearance-none [&::-webkit-inner-spin-button]:appearance-none [&::-webkit-outer-spin-button]:appearance-none"
+                />
+              </div>
+            ))}
+
+            <div className="mt-6 flex justify-end space-x-4">
+              <button
+                onClick={closeSortModal}
+                className="px-4 py-2 border rounded border-gray-400 hover:bg-gray-100"
+              >
+                Bağla
+              </button>
+              <button
+                onClick={handleSaveCounts}
+                className="px-4 py-2 bg-green-600 text-white rounded hover:bg-green-700"
+              >
+                Yadda saxla
+              </button>
+            </div>
           </div>
         </div>
       )}

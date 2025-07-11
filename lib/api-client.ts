@@ -261,17 +261,35 @@ class ApiClient {
     })
   }
 
-  
+
   async createMessage(data: { problems: string; userJournalId: number }) {
     return this.request("/messages", {
-        method: "POST",
-        headers: {
-            "Content-Type": "application/json",
-        },
-        body: JSON.stringify(data),
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(data),
     })
   }
 
+  async getUserFilterJournals(filter: { status?: string; subCategoryId?: number }) {
+    const queryParams = new URLSearchParams();
+
+    if (filter.status) queryParams.append("status", filter.status);
+    if (filter.subCategoryId !== undefined) queryParams.append("subCategoryId", String(filter.subCategoryId));
+
+    return this.request(`/journals/filter?${queryParams.toString()}`, {
+      method: "GET",
+    });
+  }
+
+  async updateJournalOrder(id: number, order: number) {
+     return this.request(`/journals/${id}/order`, {
+      method: 'PUT',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ order }),
+    });
+  }
 
   async getCurrentUser() {
     return this.request("/auth/me")

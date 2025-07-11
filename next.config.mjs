@@ -14,10 +14,6 @@ const nextConfig = {
   images: {
     unoptimized: true,
   },
-  i18n: {
-    locales: ['en', 'az', 'ru'],
-    defaultLocale: 'az',
-  },
 };
 
 export default withNextIntl(nextConfig);

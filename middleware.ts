@@ -1,5 +1,5 @@
 import createMiddleware from 'next-intl/middleware';
-import { locales, defaultLocale } from './i18n/request';
+import { locales, defaultLocale } from './request';
 
 export default createMiddleware({
   locales,

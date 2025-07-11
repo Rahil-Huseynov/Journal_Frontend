@@ -4,9 +4,13 @@ import { Badge } from "@/components/ui/badge"
 import { BookOpen, Users, Award, TrendingUp, ArrowRight, CheckCircle } from "lucide-react"
 import Link from "next/link"
 import { useLocale } from "next-intl"
+import { unstable_setRequestLocale } from "next-intl/server"
+export const dynamic = 'force-dynamic';
+
 
 export default function LandingPage() {
   const locale = useLocale();
+  unstable_setRequestLocale(locale);
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100">

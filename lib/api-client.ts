@@ -160,7 +160,7 @@ class ApiClient {
     })
   }
 
-  async updateAuthor(id: number, formData:FormData) {
+  async updateAuthor(id: number, formData: FormData) {
     return this.request(`/author/${id}`, {
       method: 'PUT',
       body: formData
@@ -174,17 +174,11 @@ class ApiClient {
       search: searchTerm.trim(),
     });
 
-    const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/auth/admins?${query}`);
-
-    if (!res.ok) throw new Error("Failed to fetch users");
-
-    const data = await res.json();
-
-    return {
-      users: data.users || [],
-      totalPages: data.totalPages || 1,
-    };
+    return this.request(`/auth/admins?${query.toString()}`, {
+      method: "GET",
+    });
   }
+
 
 
   async deleteAdmin(userId: string) {

@@ -1,3 +1,4 @@
+import { id } from "date-fns/locale";
 import { tokenManager } from "./token-manager"
 
 class ApiClient {
@@ -131,12 +132,39 @@ class ApiClient {
     })
 
   }
+  async addAuthor(data: any) {
+    return this.request('/author', {
+      method: 'POST',
+      body: data,
+    });
+  }
+
+  async getAuthor() {
+    return this.request('/author', {
+      method: 'GET',
+    });
+  }
+
 
   async deletecategory(id: number) {
     return this.request(`/categories/${id}`, {
       method: "delete",
     })
 
+  }
+
+
+  async deleteAuthor(id: number) {
+    return this.request(`/author/${id}`, {
+      method: "delete",
+    })
+  }
+
+  async updateAuthor(id: number, formData:FormData) {
+    return this.request(`/author/${id}`, {
+      method: 'PUT',
+      body: formData
+    });
   }
 
   async getAdmins(currentPage: number, searchTerm: string) {

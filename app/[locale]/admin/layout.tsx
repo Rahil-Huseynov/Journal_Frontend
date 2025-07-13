@@ -35,6 +35,8 @@ export default function AdminLayout({
       ? [{ name: "Adminlər", href: `/${locale}/admin/admins`, icon: Users }]
       : []),
     { name: "Xəbərlər", href: `/${locale}/admin/news`, icon: FileText },
+    { name: "Müəllif", href: `/${locale}/admin/author`, icon: Users },
+
   ]
 
   const handleLogout = () => {

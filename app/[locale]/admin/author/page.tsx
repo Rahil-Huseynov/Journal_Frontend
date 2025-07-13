@@ -1,14 +1,21 @@
 'use client'
 
+import CitizenshipCountrySelect from '@/components/CitizenshipCountrySelect';
 import { apiClient } from '@/lib/api-client';
 import { id } from 'date-fns/locale';
 import React, { useEffect, useState } from 'react';
+
+interface CitizenshipCountrySelectProps {
+    value: string;
+    onChange: (value: string) => void;
+}
 
 interface Author {
     id: number;
     firstName: string | null;
     lastName: string | null;
-    about?: string | null;
+    workplace?: string | null;
+    country?: string | null;
 }
 
 interface Category {
@@ -30,7 +37,8 @@ export default function CategoryPage() {
     const [formData, setFormData] = useState({
         firstName: '',
         lastName: '',
-        about: '',
+        workplace: '',
+        country: '',
     });
 
     useEffect(() => {
@@ -48,7 +56,7 @@ export default function CategoryPage() {
 
     const handleCloseModal = () => {
         setShowModal(false);
-        setFormData({ firstName: '', lastName: '', about: '' });
+        setFormData({ firstName: '', lastName: '', workplace: '', country: '' });
     };
 
     const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
@@ -62,7 +70,8 @@ export default function CategoryPage() {
         const data = new FormData();
         data.append('firstName', formData.firstName);
         data.append('lastName', formData.lastName);
-        data.append('about', formData.about);
+        data.append('workplace', formData.workplace);
+        data.append('country', formData.country)
         data.append('categoryIds', JSON.stringify([selectedCategoryId]));
 
         try {
@@ -110,8 +119,8 @@ export default function CategoryPage() {
         const formData = new FormData();
         formData.append('firstName', editingAuthor.firstName || '');
         formData.append('lastName', editingAuthor.lastName || '');
-        formData.append('about', editingAuthor.about || '');
-
+        formData.append('workplace', editingAuthor.workplace || '');
+        formData.append('country', editingAuthor.country || '');
         try {
             await apiClient.updateAuthor(editingAuthor.id, formData)
 
@@ -170,7 +179,11 @@ export default function CategoryPage() {
                         <div className="space-y-3">
                             <input type="text" name="firstName" placeholder="Ad" value={formData.firstName} onChange={handleChange} className="w-full border px-3 py-2 rounded" />
                             <input type="text" name="lastName" placeholder="Soyad" value={formData.lastName} onChange={handleChange} className="w-full border px-3 py-2 rounded" />
-                            <textarea name="about" placeholder="Haqqında" value={formData.about} onChange={handleChange} className="w-full border px-3 py-2 rounded" />
+                            <textarea name="workplace" placeholder="İş yeri" value={formData.workplace} onChange={handleChange} className="w-full border px-3 py-2 rounded resize-none" />
+                            <CitizenshipCountrySelect
+                                value={formData.country}
+                                onChange={(value: string) => setFormData(prev => ({ ...prev, country: value }))}
+                            />
                         </div>
                         <div className="mt-4 flex justify-end space-x-2">
                             <button onClick={handleCloseModal} className="px-4 py-2 border rounded text-gray-600 hover:bg-gray-100">Bağla</button>
@@ -185,7 +198,7 @@ export default function CategoryPage() {
                                         <li key={author.id} className="flex justify-between items-center border p-3 rounded-md shadow-sm hover:shadow-md">
                                             <div>
                                                 <p className="font-medium">{author.firstName} {author.lastName}</p>
-                                                {author.about && <p className="text-sm text-gray-600">{author.about}</p>}
+                                                {author.workplace && <p className="text-sm text-gray-600">{author.workplace}</p>}
                                             </div>
                                             <div className="flex space-x-2">
                                                 <button onClick={() => handleEditAuthor(author)} className="px-3 py-1 bg-yellow-400 text-white rounded hover:bg-yellow-500 text-sm">Redaktə et</button>
@@ -206,7 +219,15 @@ export default function CategoryPage() {
                         <div className="space-y-3">
                             <input type="text" name="firstName" value={editingAuthor.firstName || ''} onChange={e => setEditingAuthor(prev => prev && { ...prev, firstName: e.target.value })} placeholder="Ad" className="w-full border px-3 py-2 rounded" />
                             <input type="text" name="lastName" value={editingAuthor.lastName || ''} onChange={e => setEditingAuthor(prev => prev && { ...prev, lastName: e.target.value })} placeholder="Soyad" className="w-full border px-3 py-2 rounded" />
-                            <textarea name="about" value={editingAuthor.about || ''} onChange={e => setEditingAuthor(prev => prev && { ...prev, about: e.target.value })} placeholder="Haqqında" className="w-full border px-3 py-2 rounded" />
+                            <textarea name="workplace" value={editingAuthor.workplace || ''} onChange={e => setEditingAuthor(prev => prev && { ...prev, workplace: e.target.value })} placeholder="İş yeri" className="w-full border px-3 py-2 rounded resize-none" />
+                            <CitizenshipCountrySelect
+                                value={editingAuthor?.country || ''}
+                                onChange={(value: string) =>
+                                    setEditingAuthor((prev) =>
+                                        prev ? { ...prev, country: value } : prev
+                                    )
+                                }
+                            />
                         </div>
                         <div className="mt-4 flex justify-end space-x-2">
                             <button onClick={closeEditModal} className="px-4 py-2 border rounded text-gray-600 hover:bg-gray-100">Bağla</button>

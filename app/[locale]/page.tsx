@@ -172,7 +172,23 @@ export default function LandingPage() {
           </div>
         </div>
       </section>
-      
+
+      {/* CTA Section */}
+      <section className="py-20 bg-blue-600">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+          <h2 className="text-3xl md:text-4xl font-bold text-white mb-4">Elmi Karyeranızı İndi Başladın</h2>
+          <p className="text-xl text-blue-100 mb-8 max-w-2xl mx-auto">
+            Minlərlə tədqiqatçının qoşulduğu platformada yerinizi alın və elmi təsiriniziartırın
+          </p>
+          <Link href={`/${locale}/auth/register`}>
+            <Button size="lg" variant="secondary">
+              Pulsuz Qeydiyyat
+              <ArrowRight className="ml-2 h-4 w-4" />
+            </Button>
+          </Link>
+        </div>
+      </section>
+
       {/* Footer */}
       <footer className="bg-gray-900 text-white py-12">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">

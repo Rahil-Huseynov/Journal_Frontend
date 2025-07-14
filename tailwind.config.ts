@@ -90,13 +90,15 @@ const config: Config = {
 				'accordion-up': 'accordion-up 0.2s ease-out'
 			}
 		},
-	    screens: {
+		screens: {
 			'sm': '640px',
 			'md': '768px',
 			'lg': '1024px',
 			'xl': '1280px',
 			'xl2': '1300px',
 			'2xl': '1536px',
+			'custom900': { 'max': '900px' },
+
 		},
 
 	},

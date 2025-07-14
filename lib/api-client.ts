@@ -139,6 +139,13 @@ class ApiClient {
     });
   }
 
+  async getCategoryById(id: string) {
+    return this.request(`/categories/${id}`, {
+      method: 'GET',
+    })
+  }
+
+
   async getAuthor() {
     return this.request('/author', {
       method: 'GET',

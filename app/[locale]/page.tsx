@@ -7,6 +7,30 @@ import { BookOpen, Users, Award, TrendingUp, ArrowRight, CheckCircle } from "luc
 import Link from "next/link"
 import { useLocale, useTranslations } from "next-intl"
 import AnimatedText from "@/components/AnimatedText"
+import { useEffect, useState } from "react"
+import { apiClient } from "@/lib/api-client"
+
+
+interface News {
+  title_az: string;
+  title_en: string;
+  title_ru: string;
+  description_az: string;
+  description_en: string;
+  description_ru: string;
+  image: string;
+}
+
+interface Category {
+  title_az: string;
+  title_en: string;
+  title_ru: string;
+  description_az: string;
+  description_en: string;
+  description_ru: string;
+  image: string;
+}
+
 
 export default function LandingPage() {
   const t = useTranslations()
@@ -18,6 +42,36 @@ export default function LandingPage() {
       after: t("Hero.text.after")
     }
   ];
+
+  const [news, setNews] = useState<News[]>([]);
+
+  const [categories, setCategories] = useState<Category[]>([]);
+
+  useEffect(() => {
+    const fetchData = async () => {
+      const data = await apiClient.getCategories();
+      setCategories(data);
+    };
+    fetchData();
+  }, []);
+
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const categories = await apiClient.getNews();
+        setNews(categories);
+      } catch (error) {
+        console.error("Error fetching news:", error);
+      }
+    };
+    fetchData();
+  }, []);
+  function truncate(text: string, maxLength: number) {
+    if (text.length <= maxLength) return text;
+    return text.slice(0, maxLength) + "...";
+  }
+
+
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100">
@@ -47,145 +101,92 @@ export default function LandingPage() {
         </div>
       </section>
 
-
-
-      {/* Features Section */}
-      <section id="features" className="py-20 bg-white">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <section id="categories" className="py-24 bg-gray-50">
+        <div className="max-w-[1400px] mx-auto px-6 lg:px-8">
           <div className="text-center mb-16">
-            <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-4">Niyə ScientificWorks?</h2>
-            <p className="text-xl text-gray-600 max-w-2xl mx-auto">
-              Elmi tədqiqatçılar üçün xüsusi olaraq hazırlanmış güclü alətlər və xidmətlər
+            <h2 className="text-4xl font-extrabold tracking-tight text-gray-900 sm:text-5xl">
+              Bütün Jurnallar
+            </h2>
+            <p className="mt-4 text-lg text-gray-600 max-w-2xl mx-auto">
+              Platformadakı bütün elmi jurnallarla tanış olun
             </p>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
-            <Card className="text-center">
-              <CardHeader>
-                <BookOpen className="h-12 w-12 text-blue-600 mx-auto mb-4" />
-                <CardTitle>Məqalə Paylaşımı</CardTitle>
-              </CardHeader>
-              <CardContent>
-                <CardDescription>
-                  Elmi məqalələrinizi asanlıqla yükləyin və geniş auditoriya ilə paylaşın
-                </CardDescription>
-              </CardContent>
-            </Card>
-
-            <Card className="text-center">
-              <CardHeader>
-                <Users className="h-12 w-12 text-green-600 mx-auto mb-4" />
-                <CardTitle>Akademik Şəbəkə</CardTitle>
-              </CardHeader>
-              <CardContent>
-                <CardDescription>Digər tədqiqatçılarla əlaqə qurun və birgə layihələr həyata keçirin</CardDescription>
-              </CardContent>
-            </Card>
-
-            <Card className="text-center">
-              <CardHeader>
-                <Award className="h-12 w-12 text-purple-600 mx-auto mb-4" />
-                <CardTitle>Sertifikatlaşdırma</CardTitle>
-              </CardHeader>
-              <CardContent>
-                <CardDescription>İşləriniz üçün rəsmi sertifikatlar əldə edin və karyeranızı gücləndin</CardDescription>
-              </CardContent>
-            </Card>
-
-            <Card className="text-center">
-              <CardHeader>
-                <TrendingUp className="h-12 w-12 text-orange-600 mx-auto mb-4" />
-                <CardTitle>Analitika</CardTitle>
-              </CardHeader>
-              <CardContent>
-                <CardDescription>İşlərinizin təsirini izləyin və detallı statistikalar əldə edin</CardDescription>
-              </CardContent>
-            </Card>
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-10">
+            {categories.map((category, index) => (
+              <div
+                key={index}
+                className="bg-white rounded-xl shadow-lg ring-1 ring-gray-200 overflow-hidden transform transition duration-300 hover:scale-[1.03] hover:shadow-2xl cursor-pointer"
+              >
+                <img
+                  src={`${process.env.NEXT_PUBLIC_API_URL}/uploads/categories/${category.image}`}
+                  alt={category[`title_${locale}`]}
+                  className="w-full h-72 object-cover"
+                />
+                <div className="p-6 flex flex-col justify-between h-56">
+                  <div>
+                    <h3 className="text-xl font-semibold text-gray-900 mb-3 line-clamp-2">
+                      {category[`title_${locale}`]}
+                    </h3>
+                    <p className="text-gray-700 text-sm leading-relaxed line-clamp-4">
+                      {truncate(category[`description_${locale}`] || "", 120)}
+                    </p>
+                  </div>
+                  <div className="flex justify-center">
+                    <button className="mt-4 self-start px-4 py-2 bg-blue-600 text-white rounded-md text-sm font-medium hover:bg-blue-700 transition">
+                      Daha çox oxu
+                    </button>
+                  </div>
+                </div>
+              </div>
+            ))}
           </div>
         </div>
       </section>
 
-      {/* Services Section */}
-      <section id="services" className="py-20 bg-gray-50">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+
+      <section id="news" className="py-24 bg-white">
+        <div className="max-w-7xl mx-auto px-6 lg:px-8">
           <div className="text-center mb-16">
-            <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-4">Xidmətlərimiz</h2>
-            <p className="text-xl text-gray-600 max-w-2xl mx-auto">
-              Elmi fəaliyyətinizi dəstəkləyən geniş xidmət spektri
-            </p>
+            <h2 className="text-4xl font-extrabold tracking-tight text-gray-900 sm:text-5xl">
+              Son Xəbərlər
+            </h2>
           </div>
 
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-12">
-            <div>
-              <h3 className="text-2xl font-bold text-gray-900 mb-6">Tədqiqatçılar üçün</h3>
-              <div className="space-y-4">
-                <div className="flex items-start">
-                  <CheckCircle className="h-6 w-6 text-green-500 mt-1 mr-3" />
-                  <div>
-                    <h4 className="font-semibold text-gray-900">Məqalə Dərc Etmə</h4>
-                    <p className="text-gray-600">Elmi məqalələrinizi peşəkar formatda dərc edin</p>
-                  </div>
-                </div>
-                <div className="flex items-start">
-                  <CheckCircle className="h-6 w-6 text-green-500 mt-1 mr-3" />
-                  <div>
-                    <h4 className="font-semibold text-gray-900">Həmkar Axtarışı</h4>
-                    <p className="text-gray-600">Sahənizdə işləyən digər tədqiqatçıları tapın</p>
-                  </div>
-                </div>
-                <div className="flex items-start">
-                  <CheckCircle className="h-6 w-6 text-green-500 mt-1 mr-3" />
-                  <div>
-                    <h4 className="font-semibold text-gray-900">Layihə İdarəetməsi</h4>
-                    <p className="text-gray-600">Tədqiqat layihələrinizi effektiv idarə edin</p>
-                  </div>
-                </div>
-              </div>
-            </div>
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-10">
+            {news.slice(0, 4).map((item, index) => (
+              <div
+                key={index}
+                className="bg-white rounded-2xl overflow-hidden shadow-sm hover:shadow-md transition-shadow duration-300 border border-gray-200"
+              >
+                {/* Şəkil */}
+                <img
+                  src={`${process.env.NEXT_PUBLIC_API_URL}/uploads/news/${item.image}`}
+                  alt={item[`title_${locale}`]}
+                  className="w-full p-1 h-56 object-contain transition-transform duration-500 hover:scale-105"
+                />
 
-            <div>
-              <h3 className="text-2xl font-bold text-gray-900 mb-6">Təşkilatlar üçün</h3>
-              <div className="space-y-4">
-                <div className="flex items-start">
-                  <CheckCircle className="h-6 w-6 text-blue-500 mt-1 mr-3" />
-                  <div>
-                    <h4 className="font-semibold text-gray-900">Korporativ Hesab</h4>
-                    <p className="text-gray-600">Təşkilatınız üçün xüsusi hesab və imkanlar</p>
-                  </div>
-                </div>
-                <div className="flex items-start">
-                  <CheckCircle className="h-6 w-6 text-blue-500 mt-1 mr-3" />
-                  <div>
-                    <h4 className="font-semibold text-gray-900">Analitik Hesabatlar</h4>
-                    <p className="text-gray-600">Detallı performans və təsir hesabatları</p>
-                  </div>
-                </div>
-                <div className="flex items-start">
-                  <CheckCircle className="h-6 w-6 text-blue-500 mt-1 mr-3" />
-                  <div>
-                    <h4 className="font-semibold text-gray-900">API İnteqrasiyası</h4>
-                    <p className="text-gray-600">Mövcud sistemlərinizlə inteqrasiya</p>
-                  </div>
+                {/* Məzmun */}
+                <div className="p-5">
+                  <h3 className="text-lg font-semibold text-gray-900 mb-2">
+                    {item[`title_${locale}`]}
+                  </h3>
+                  <p className="text-sm text-gray-600 line-clamp-3">
+                    {item[`description_${locale}`]}
+                  </p>
                 </div>
               </div>
-            </div>
+            ))}
           </div>
-        </div>
-      </section>
-
-      {/* CTA Section */}
-      <section className="py-20 bg-blue-600">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
-          <h2 className="text-3xl md:text-4xl font-bold text-white mb-4">Elmi Karyeranızı İndi Başladın</h2>
-          <p className="text-xl text-blue-100 mb-8 max-w-2xl mx-auto">
-            Minlərlə tədqiqatçının qoşulduğu platformada yerinizi alın və elmi təsiriniziartırın
-          </p>
-          <Link href={`/${locale}/auth/register`}>
-            <Button size="lg" variant="secondary">
-              Pulsuz Qeydiyyat
-              <ArrowRight className="ml-2 h-4 w-4" />
-            </Button>
-          </Link>
+          <div className="flex justify-center mt-10">
+            <Link
+              href="/news"
+              className="inline-flex items-center gap-2 px-6 py-3 bg-blue-600 text-white text-sm font-medium rounded-full shadow-md hover:bg-blue-700 transition duration-300"
+            >
+              Bütün Xəbərlər
+              <ArrowRight className="w-4 h-4" />
+            </Link>
+          </div>
         </div>
       </section>
 

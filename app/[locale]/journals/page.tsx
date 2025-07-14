@@ -1,56 +1,92 @@
-"use client"
+'use client'
 
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
-import { Badge } from "@/components/ui/badge"
-import { ArrowRight } from "lucide-react"
-import Link from "next/link"
+import { useEffect, useState } from 'react'
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
+import { Badge } from '@/components/ui/badge'
+import { ArrowRight } from 'lucide-react'
+import Link from 'next/link'
+import { apiClient } from '@/lib/api-client'
 
-const journals = [
-  {
-    id: "mathematics",
-    name: "Riyaziyyat",
-    description: "Riyazi elmlər və tətbiqi riyaziyyat",
-    color: "bg-blue-100 text-blue-800",
-    series: [
-      { id: "pure-math", name: "Saf Riyaziyyat" },
-      { id: "applied-math", name: "Tətbiqi Riyaziyyat" },
-    ],
-  },
-  {
-    id: "physics",
-    name: "Fizika",
-    description: "Nəzəri və eksperimental fizika",
-    color: "bg-green-100 text-green-800",
-    series: [
-      { id: "quantum-physics", name: "Kvant Fizikası" },
-      { id: "astrophysics", name: "Astrofizika" },
-    ],
-  },
-]
+interface Category {
+  id: number
+  title_az: string
+  title_en: string
+  title_ru: string
+  description_az: string
+  description_en: string
+  description_ru: string
+  image: string
+}
 
 export default function JournalsPage({ params }: { params: { locale: string } }) {
+  const [categories, setCategories] = useState<Category[]>([])
+
+  useEffect(() => {
+    const fetchCategories = async () => {
+      try {
+        const response = await apiClient.getCategories()
+        setCategories(response)
+      } catch (error) {
+        console.error('Error fetching categories:', error)
+      }
+    }
+
+    fetchCategories()
+  }, [])
+
+  const getLocaleText = (category: Category) => {
+    switch (params.locale) {
+      case 'en':
+        return {
+          title: category.title_en,
+          description: category.description_en,
+        }
+      case 'ru':
+        return {
+          title: category.title_ru,
+          description: category.description_ru,
+        }
+      default:
+        return {
+          title: category.title_az,
+          description: category.description_az,
+        }
+    }
+  }
+
   return (
-    <div className="min-h-screen bg-gray-50 py-12">
-      <div className="max-w-5xl mx-auto px-4">
-        <h1 className="text-4xl font-bold mb-10">Jurnallar</h1>
-        <div className="space-y-8">
-          {journals.map((journal) => {
-            const firstSeries = journal.series[0]
+    <div className="min-h-screen bg-white py-16 px-4 sm:px-6 lg:px-8">
+      <div className="max-w-6xl mx-auto">
+        <h1 className="text-4xl font-bold tracking-tight text-gray-900 mb-12">Jurnallar</h1>
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
+          {categories.map((category) => {
+            const { title, description } = getLocaleText(category)
+
             return (
-              <Card key={journal.id}>
-                <CardHeader>
-                  <div className="flex justify-between items-center">
-                    <CardTitle>{journal.name}</CardTitle>
-                    <Badge className={journal.color}>1 seriya</Badge>
+              <Card
+                key={category.id}
+                className="hover:shadow-lg transition-shadow rounded-2xl overflow-hidden border border-gray-200">
+                {category.image && (
+                  <img
+                    src={`${process.env.NEXT_PUBLIC_API_URL}/uploads/categories/${category.image}`}
+                    alt={title}
+                    className="h-50 w-full object-contain p-1"
+                  />
+                )}
+                <CardHeader className="p-5">
+                  <div className="flex justify-between items-start">
+                    <CardTitle className="text-lg font-semibold">{title}</CardTitle>
                   </div>
-                  <CardDescription>{journal.description}</CardDescription>
+                  <CardDescription className="mt-2 text-gray-600 text-sm line-clamp-3">
+                    {description}
+                  </CardDescription>
                 </CardHeader>
-                <CardContent>
+                <CardContent className="p-5 pt-0">
                   <Link
-                    href={`/${params.locale}/journals/${journal.id}/${firstSeries.id}`}
-                    className="inline-flex items-center text-blue-700 font-medium"
+                    href={`/${params.locale}/journals/${category.id}`}
+                    className="inline-flex items-center text-indigo-600 hover:text-indigo-800 font-medium transition"
                   >
-                    {firstSeries.name}
+                    Daha ətraflı
                     <ArrowRight className="ml-2 h-4 w-4" />
                   </Link>
                 </CardContent>

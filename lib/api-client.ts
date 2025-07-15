@@ -145,6 +145,19 @@ class ApiClient {
     })
   }
 
+   async getNews() {
+    const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/news`);
+    if (!res.ok) throw new Error("Xəbərləri yükləmək mümkün olmadı");
+    return res.json();
+  }
+  
+  async getNewsById(id: number) {
+    const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/news/${id}`);
+    if (!res.ok) throw new Error("Xəbər tapılmadı");
+    return res.json();
+  }
+
+
 
   async getAuthor() {
     return this.request('/author', {
@@ -385,14 +398,6 @@ class ApiClient {
       method: "GET",
     })
   }
-
-
-  async getNews() {
-    return this.request("/news", {
-      method: "GET",
-    });
-  }
-
 
   async addnews(formData: FormData) {
     return this.request("/news", {

@@ -23,7 +23,7 @@ export default async function NewsPage() {
           <Link href={`/news/${item.id}`} key={item.id}>
             <div className="bg-white shadow-md rounded-xl overflow-hidden hover:shadow-lg transition">
               <img
-                src={`${process.env.NEXT_PUBLIC_API_URL}/uploads/${item.image}`}
+                src={`${process.env.NEXT_PUBLIC_API_URL}/uploads/news/${item.image}`}
                 alt={item.title_az}
                 className="w-full h-48 object-cover"
               />

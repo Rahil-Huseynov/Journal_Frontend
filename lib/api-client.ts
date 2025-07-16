@@ -139,7 +139,7 @@ class ApiClient {
     });
   }
 
-  async getCategoryById(id: string) {
+  async getCategoryById(id: number) {
     return this.request(`/categories/${id}`, {
       method: 'GET',
     })

@@ -97,6 +97,8 @@ const config: Config = {
 			'xl': '1280px',
 			'xl2': '1300px',
 			'2xl': '1536px',
+			'max-custom-xl': { 'max': '1349px' },  
+			'min-custom-xl': { 'min': '1350px' },
 			'custom900': { 'max': '900px' },
 
 		},

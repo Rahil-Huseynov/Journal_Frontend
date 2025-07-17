@@ -145,12 +145,12 @@ class ApiClient {
     })
   }
 
-   async getNews() {
+  async getNews() {
     const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/news`);
     if (!res.ok) throw new Error("Xəbərləri yükləmək mümkün olmadı");
     return res.json();
   }
-  
+
   async getNewsById(id: number) {
     const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/news/${id}`);
     if (!res.ok) throw new Error("Xəbər tapılmadı");
@@ -378,6 +378,10 @@ class ApiClient {
 
   async getGlobalSubCategories() {
     return this.request("/globalsubcategory", { method: "GET" });
+  }
+
+  async getGlobalSubCategoriesfilter(id:number) {
+    return this.request(`/globalsubcategory/${id}`, { method: "GET" });
   }
 
   async updateArticle(id: string, articleData: any) {

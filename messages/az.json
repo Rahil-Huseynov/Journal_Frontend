@@ -8,7 +8,8 @@
     "contact": "Əlaqə",
     "login": "Giriş",
     "register": "Qeydiyyat",
-    "logout": "Çıxış"
+    "logout": "Çıxış",
+    "news" : "Xəbərlər"
   },
   "Hero": {
     "badge": "Elmi İşlər Platforması",

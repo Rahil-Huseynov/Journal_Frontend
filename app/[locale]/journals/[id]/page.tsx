@@ -4,6 +4,7 @@ import { useState, useEffect } from "react";
 import { useParams, useRouter } from "next/navigation";
 import { useLocale } from "next-intl";
 import { apiClient } from "@/lib/api-client";
+import Link from "next/link";
 
 interface Author {
   id: number;
@@ -89,14 +90,13 @@ export default function JournalDetailPage() {
       {category.globalSubCategory.length === 0 ? (
         <p>Bu kateqoriyaya aid global alt kateqoriya tapılmadı.</p>
       ) : (
-        <div className="min-custom-xl:flex max-custom-xl:grid max-custom-xl:grid-cols-1 gap-6 space-y-6">
+        <div className="min-custom-xl:grid min-custom-xl:grid-cols-2 max-custom-xl:grid max-custom-xl:grid-cols-1 gap-6 space-y-6">
           <div className="grid gap-6">
             {category.globalSubCategory.map((sub) => (
               <div
                 key={sub.id}
                 className="w-full border rounded-xl p-6 shadow hover:shadow-md transition grid grid-cols-12 gap-6"
               >
-                {/* Sol: Şəkil */}
                 <div className="col-span-3">
                   {sub.image ? (
                     <img
@@ -111,7 +111,6 @@ export default function JournalDetailPage() {
                   )}
                 </div>
 
-                {/* Orta: Başlıq və təsvir */}
                 <div className="flex justify-between flex-col col-span-6">
                   <div className=" col-span-6 w-full ">
                     <h3 className="text-2xl break-words font-semibold mb-2">{getText(sub, "title")}</h3>
@@ -123,9 +122,12 @@ export default function JournalDetailPage() {
                       className="px-5 py-2 bg-blue-600 text-white font-medium rounded-md hover:bg-blue-700 transition duration-300">
                       Yüklə
                     </button>
-                    <button className="px-5 py-2 border border-blue-600 text-blue-600 font-medium rounded-md hover:bg-blue-100 transition duration-300">
+                    <Link
+                      className="px-5 py-2 border border-blue-600 text-blue-600 font-medium rounded-md hover:bg-blue-100 transition duration-300"
+                      href={`/${locale}/journals/${category.id}/${sub.id}`}>
                       Bax
-                    </button>
+                    </Link>
+
                   </div>
                 </div>
 
@@ -133,8 +135,7 @@ export default function JournalDetailPage() {
             ))}
           </div>
 
-          {/* Sağ: Müəlliflər */}
-          <div className="col-span-3 max-w-[800px] min-w-[800px] h-full border rounded-xl p-6 overflow-x-auto">
+          <div className="border rounded-xl p-6 overflow-x-auto">
             <h4 className="text-lg text-center font-semibold mb-2">Redaksiya heyəti</h4>
             {category.authors.length === 0 ? (
               <p className="text-gray-500 text-sm">Müəllif tapılmadı.</p>

@@ -20,8 +20,6 @@ export default function ClientDashboardPage() {
           <p className="mt-1 text-sm text-gray-600">Rolunuz: <strong>{user?.role}</strong></p>
         </CardContent>
       </Card>
-
-      {/* Əlavə məlumat və ya statistikalar üçün burada əlavə komponentlər yerləşdirə bilərsiniz */}
     </div>
   )
 }

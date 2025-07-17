@@ -255,7 +255,6 @@ export default function SubCategoryCreatePage() {
         </CardContent>
       </Card>
 
-      {/* SubCategory listi və redaktə modalı */}
       <div className="space-y-4">
         <h2 className="text-2xl font-semibold text-indigo-700 mb-4">Alt Kateqoriyalar</h2>
         {subcategories.length === 0 && <p>Alt kateqoriya yoxdur.</p>}

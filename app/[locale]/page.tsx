@@ -22,6 +22,7 @@ interface News {
 }
 
 interface Category {
+  id: number;
   title_az: string;
   title_en: string;
   title_ru: string;
@@ -116,26 +117,60 @@ export default function LandingPage() {
             {categories.map((category, index) => (
               <div
                 key={index}
-                className="bg-white rounded-xl shadow-lg ring-1 ring-gray-200 overflow-hidden transform transition duration-300 hover:scale-[1.03] hover:shadow-2xl cursor-pointer"
+                className="bg-white rounded-xl shadow-lg ring-1 ring-gray-200 overflow-hidden transform transition duration-300 hover:scale-[1.03] hover:shadow-2xl"
               >
-                <img
-                  src={`${process.env.NEXT_PUBLIC_API_URL}/uploads/categories/${category.image}`}
-                  alt={category[`title_${locale}`]}
-                  className="w-full h-72 object-cover"
-                />
+                <div className="flex justify-center">
+                  <div className="h-[350px] w-[300px]">
+                    <img
+                      src={`${process.env.NEXT_PUBLIC_API_URL}/uploads/categories/${category.image}`}
+                      alt={category[`title_${locale}`]}
+                      className="w-full h-full object-contain rounded-md mb-4"
+                    />
+                  </div>
+                </div>
+
                 <div className="p-6 flex flex-col justify-between h-56">
-                  <div>
-                    <h3 className="text-xl font-semibold text-gray-900 mb-3 line-clamp-2">
-                      {category[`title_${locale}`]}
-                    </h3>
-                    <p className="text-gray-700 text-sm leading-relaxed line-clamp-4">
-                      {truncate(category[`description_${locale}`] || "", 120)}
+                  <div className="mt-5">
+                    <h2 className="text-xl font-semibold mb-2 break-words">
+                      {truncate(category[`title_${locale}`] || "", 100)}
+
+                    </h2>
+                    <p className="text-sm text-gray-700 break-words">
+                      {truncate(category[`description_${locale}`] || "", 100)}
                     </p>
                   </div>
-                  <div className="flex justify-center">
-                    <button className="mt-4 self-start px-4 py-2 bg-blue-600 text-white rounded-md text-sm font-medium hover:bg-blue-700 transition">
-                      Daha çox oxu
-                    </button>
+                  <div className="flex justify-center mt-6">
+                    <Link
+                      href={`/${locale}/journals/${category.id}`}
+                      className="
+                    inline-flex items-center justify-center
+                    px-5 py-2
+                    bg-white text-blue-600
+                    border border-blue-600
+                    font-medium
+                    rounded-md
+                    shadow-sm
+                    hover:bg-blue-50
+                    active:scale-95
+                    transition
+                    duration-150
+                  "
+                    >
+                      Daha ətraflı
+                      <svg
+                        className="ml-2 w-4 h-4"
+                        fill="none"
+                        stroke="currentColor"
+                        strokeWidth="2"
+                        viewBox="0 0 24 24"
+                      >
+                        <path
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                          d="M9 5l7 7-7 7"
+                        />
+                      </svg>
+                    </Link>
                   </div>
                 </div>
               </div>

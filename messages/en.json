@@ -8,7 +8,8 @@
     "contact": "Contact",
     "login": "Login",
     "register": "Register",
-    "logout": "Logout"
+    "logout": "Logout",
+    "news" : "News"
   },
   "Hero": {
     "badge": "Scientific Works Platform",

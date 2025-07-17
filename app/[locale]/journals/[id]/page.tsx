@@ -90,7 +90,7 @@ export default function JournalDetailPage() {
       {category.globalSubCategory.length === 0 ? (
         <p>Bu kateqoriyaya aid global alt kateqoriya tapılmadı.</p>
       ) : (
-        <div className="min-custom-xl:grid min-custom-xl:grid-cols-2 max-custom-xl:grid max-custom-xl:grid-cols-1 gap-6 space-y-6">
+        <div className="min-custom-xl:grid min-custom-xl:items-center min-custom-xl:grid-cols-2 max-custom-xl:grid max-custom-xl:grid-cols-1 gap-6 space-y-6">
           <div className="grid gap-6">
             {category.globalSubCategory.map((sub) => (
               <div
@@ -100,7 +100,7 @@ export default function JournalDetailPage() {
                 <div className="col-span-3">
                   {sub.image ? (
                     <img
-                      src={`${process.env.NEXT_PUBLIC_API_URL}/uploads/globalsubcategory/${sub.image}`}
+                      src={`${process.env.NEXT_PUBLIC_API_URL}/uploads/subcategory/${sub.image}`}
                       alt={getText(sub, "title")}
                       className="w-full h-40 object-cover rounded-md"
                     />

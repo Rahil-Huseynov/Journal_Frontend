@@ -11,6 +11,7 @@ type SubCategory = {
   description_az?: string;
   description_en?: string;
   description_ru?: string;
+  image?: string;
   categoryId: number;
   count?: number;
 };
@@ -88,6 +89,7 @@ export default function GlobalSubCategoryPublisher() {
     formData.append("description_az", subCategory.description_az || "");
     formData.append("description_en", subCategory.description_en || "");
     formData.append("description_ru", subCategory.description_ru || "");
+    formData.append("image", subCategory.image || "");
     formData.append("categoryId", subCategory.categoryId.toString());
     formData.append("subCategoryId", subCategory.id.toString());
     formData.append("file", file);
@@ -478,7 +480,7 @@ export default function GlobalSubCategoryPublisher() {
                 <input
                   type="number"
                   min={0}
-                  max={subCategoryMaxCount} 
+                  max={subCategoryMaxCount}
                   value={counts[journal.id] ?? 0}
                   onChange={(e) => handleCountChange(e, journal.id)}
                   className="w-20 border border-gray-300 rounded px-2 py-1 appearance-none [&::-webkit-inner-spin-button]:appearance-none [&::-webkit-outer-spin-button]:appearance-none"

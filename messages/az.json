@@ -2,14 +2,14 @@
   "Navigation": {
     "home": "Ana səhifə",
     "features": "Xüsusiyyətlər",
-    "services": "Xidmətlər",
+    "instructions": "Müəlliflər üçün təlimat",
     "journals": "Jurnallar",
     "about": "Haqqımızda",
     "contact": "Əlaqə",
     "login": "Giriş",
     "register": "Qeydiyyat",
     "logout": "Çıxış",
-    "news" : "Xəbərlər"
+    "news": "Xəbərlər"
   },
   "Hero": {
     "badge": "Elmi İşlər Platforması",
@@ -58,5 +58,40 @@
   },
   "Register": {
     "back": "Geri"
+  },
+  
+  "InstructionsForUsers": {
+    "metaTitle": "Məqalələrə Baxılma Proseduru",
+    "header":"MÜƏLLİFLƏR ÜÇÜN TƏLİMAT",
+    "title": "MƏQALƏLƏRƏ BAXILMA PROSEDURU",
+    "intro": "Məqalə müəlliflərinin nəzərinə çatdırılır ki, hər bir məqalə üzərindəki iş bir neçə mərhələdən ibarətdir. Redaksiyaya daxil olunmuş məqalə ilkin baxış zamanı elmi əhəmiyyət kəsb etmirsə, müəllifə bu barədə tez bir zamanda məlumat verilir. Məqalə maraq doğurursa, iki nəfər mütəxəssis rəyçi təyin olunaraq anonim qiymətləndirməyə göndərilir. Müəllifin statusu, mənsubiyyəti və digər şəxsi məlumatlar nəzərə alınmadan aparılan bu proses&nbsp;adətən <strong>2‑3 ay</strong> davam edir. Baxış tamamlandıqdan sonra redaksiya heyəti rəy, qeyd və yekun qərarı müəlliflərə göndərir.",
+    "resultsTitle": "Rəylərdə məqalənin vəziyyəti barədə qeydlər",
+    "results": [
+      "Bəzi kiçik düzəlişlərə ehtiyac var",
+      "Məqalə yenidən ətraflı şəkildə işlənilməlidir",
+      "Dərc etməkdən imtina edilir"
+    ],
+    "reasonsTitle": "Məqalənin dərc olunmamasının əsas səbəbləri",
+    "reasons": [
+      "Tədqiqatda elmi yenilik yoxdur",
+      "Tədqiqat digər elmi əsərlərdən köçürülüb və ya plagiat aşkar edilib",
+      "Ədəbiyyat kifayət qədər ətraflı deyil, köhnə mənbələrə üstünlük verilib, yeni ədəbiyyata istinadlar azdır",
+      "İş metodoloji cəhətdən səhv qurulub, məqalənin strukturu qeyri-dəqiqdir və akademik üslubdan əhəmiyyətli dərəcədə kənarlaşmalar var"
+    ],
+    "guidelines": "Rəyçilərin tövsiyələri mümkün qədər nəzərə alınmalıdır. Müəllif hər hansı tənqidlə razı deyilsə, əsaslandırılmış şəkildə redaksiyaya müraciət edə bilər. Rəyçilərdən biri məqalənin dərcinin lehinə, digəri əleyhinə olarsa, son qərarı jurnalın redaktoru verir.",
+    "aakTitle": "Ali Attestasiya Komissiyasının (AAK) tələbləri",
+    "aakList": [
+      "Məqalələr AZ, RU, TR və EN dillərində çap və elektron variantda təqdim olunmalıdır; məqalənin dilindən əlavə <strong>ən azı iki dildə xülasə</strong> verilməlidir.",
+      "Xülasələr bir‑birinin eynisi olmalı, elmi və qrammatik baxımdan ciddi redaktə edilməlidir.",
+      "Mövzuya uyğun elmi mənbələrə istinad verilməli, ədəbiyyat əlifba və ya mətndə rast gəlinmə ardıcıllığı ilə nömrələnməlidir.",
+      "Məqalə mətnləri Times New Roman 14 pt, 1,5 intervalla: AZ dilində Latin, RU dilində Kiril, EN dilində US əlifbası ilə yığılmalıdır.",
+      "Məqalələr antiplagiat yoxlamasından və gizli rəy prosesindən sonra sahə redaktoru tərəfindən çapa təqdim olunur.",
+      "UOT və ya PACS kodları, habelə açar sözlər <strong>üç dildə</strong> göstərilməlidir.",
+      "Məqalədə müəllif(lər)in adı‑soyadı, işlədiyi müəssisə, ünvan və e‑poçt ünvanı yer almalıdır.",
+      "Ədəbiyyat siyahısında son 5‑10 ilin elmi mənbələrinə üstünlük verilməlidir.",
+      "Baxılan elm sahəsində qabaqcıl xarici ölkə müəlliflərinin məqalələrinin dərcinə də yer verilir.",
+      "Jurnal yalnız öz profilinə uyğun məqalələri dərc edir."
+    ],
+    "finalNote": "Yuxarıdakı şərtlərə uyğun olmayan məqalələr redaksiya heyəti tərəfindən qəbul edilmir."
   }
 }

@@ -2,14 +2,14 @@
   "Navigation": {
     "home": "Home",
     "features": "Features",
-    "services": "Services",
+    "instructions": "Instruction for authors",
     "journals": "Journals",
     "about": "About",
     "contact": "Contact",
     "login": "Login",
     "register": "Register",
     "logout": "Logout",
-    "news" : "News"
+    "news": "News"
   },
   "Hero": {
     "badge": "Scientific Works Platform",
@@ -56,8 +56,41 @@
     "viewSeries": "View Series",
     "totalArticles": "articles"
   },
-  
-  "Register":{
+  "Register": {
     "back": "Back"
+  },
+  "InstructionsForUsers": {
+    "metaTitle": "Article Review Procedure",
+    "header":"INSTRUCTION FOR AUTHORS",
+    "title": "ARTICLE REVIEW PROCEDURE",
+    "intro": "Authors are informed that each submitted article goes through several stages. If the editorial board finds the article scientifically insignificant at the initial screening, the author is notified promptly. If the topic is of interest, two expert reviewers are appointed for double‑blind evaluation. The author’s status, affiliation and other personal data are not considered during review; the process usually takes <strong>2‑3 months</strong>. After a thorough analysis, comments and the decision are sent to the authors.",
+    "resultsTitle": "Possible reviewer decisions",
+    "results": [
+      "Minor revisions required",
+      "Major revisions required",
+      "Rejected"
+    ],
+    "reasonsTitle": "Main reasons for rejection",
+    "reasons": [
+      "No scientific novelty",
+      "Copied from other works or plagiarism detected",
+      "Literature review is weak or outdated; few recent sources cited",
+      "Methodological flaws, poor structure, significant deviation from academic style"
+    ],
+    "guidelines": "Authors should follow reviewers’ recommendations whenever possible. If authors disagree with any criticism, they may appeal with justification. When reviewers disagree (one for, one against), the final decision rests with the editor‑in‑chief.",
+    "aakTitle": "Requirements of the Higher Attestation Commission (HAC)",
+    "aakList": [
+      "Articles must be submitted in AZ, RU, TR or EN; plus abstracts in <strong>at least two additional languages</strong>.",
+      "Abstracts must be identical in content and grammatically correct.",
+      "Relevant references must be provided; bibliography listed alphabetically or in citation order.",
+      "Text in Times New Roman 14 pt, 1.5 line spacing: Latin (AZ), Cyrillic (RU), US English (EN).",
+      "After anti‑plagiarism and peer review, the field editor submits the article for publication.",
+      "UOT/PACS codes and keywords must be given in <strong>three languages</strong>.",
+      "Author name(s), affiliation, address and e‑mail must be indicated.",
+      "Give preference to sources published in the last 5‑10 years.",
+      "Articles from leading foreign researchers in the field are also welcome.",
+      "Only manuscripts within the journal’s scope are accepted."
+    ],
+    "finalNote": "Submissions that do not meet these requirements will be rejected by the editorial board."
   }
 }

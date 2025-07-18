@@ -146,7 +146,7 @@ export default function CategoryPage() {
                         onClick={() => handleOpenModal(cat.id)}
                     >
                         <img
-                            src={`${process.env.NEXT_PUBLIC_API_URL}/uploads/categories/${cat.image}`}
+                            src={`${process.env.NEXT_PUBLIC_API_URL_FOR_IMAGE}/uploads/categories/${cat.image}`}
                             alt="Şəkil"
                             className="w-100 h-100 object-cover rounded-md border"
                         />

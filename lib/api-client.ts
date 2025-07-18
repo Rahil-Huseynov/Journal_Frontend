@@ -101,6 +101,13 @@ class ApiClient {
     })
   }
 
+  async getlogs(page: number, limit: number) {
+    return this.request(`/logs?page=${page}&limit=${limit}`, {
+      method: 'GET',
+    });
+  }
+
+
   async addjournalforUser(formData: FormData) {
     return this.request("/journals/add", {
       method: "POST",
@@ -380,7 +387,7 @@ class ApiClient {
     return this.request("/globalsubcategory", { method: "GET" });
   }
 
-  async getGlobalSubCategoriesfilter(id:number) {
+  async getGlobalSubCategoriesfilter(id: number) {
     return this.request(`/globalsubcategory/${id}`, { method: "GET" });
   }
 

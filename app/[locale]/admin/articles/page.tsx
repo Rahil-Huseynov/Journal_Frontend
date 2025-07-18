@@ -191,7 +191,7 @@ const CategoryListPage = () => {
                         className="cursor-pointer flex items-center gap-4 bg-gradient-to-r from-blue-100 to-blue-50 hover:from-blue-200 transition p-4"
                     >
                         <img
-                            src={`${process.env.NEXT_PUBLIC_API_URL}/uploads/categories/${category.image}`}
+                            src={`${process.env.NEXT_PUBLIC_API_URL_FOR_IMAGE}/uploads/categories/${category.image}`}
                             alt={category.title_az}
                             className="w-20 h-20 object-cover rounded-xl shadow-md"
                         />

@@ -21,7 +21,7 @@ export default async function NewsDetailPage({ params }: { params: { id: string 
         <article className="prose prose-lg prose-amber mx-auto dark:prose-invert">
           {/* Şəkil */}
           <img
-            src={`${process.env.NEXT_PUBLIC_API_URL}/uploads/news/${news.image}`}
+            src={`${process.env.NEXT_PUBLIC_API_URL_FOR_IMAGE}/uploads/news/${news.image}`}
             alt={news.title_az}
             className="w-full max-h-[400px] object-cover rounded-lg mb-8 shadow-md"
             loading="lazy"

@@ -107,7 +107,7 @@ export default function JournalsInGlobalSubCategories() {
         <div className="w-full xl:w-1/4">
           {selectedSubCategory.image ? (
             <img
-              src={`${process.env.NEXT_PUBLIC_API_URL}/uploads/globalsubcategory/${selectedSubCategory.image}`}
+              src={`${process.env.NEXT_PUBLIC_API_URL_FOR_IMAGE}/uploads/globalsubcategory/${selectedSubCategory.image}`}
               alt={getText(selectedSubCategory, "title")}
               className="w-full h-48 xl:h-64 object-cover rounded-xl"
             />

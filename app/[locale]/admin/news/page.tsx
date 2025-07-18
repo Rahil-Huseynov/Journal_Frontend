@@ -291,7 +291,7 @@ export default function AddNewsPage() {
                     </p>
                     {news.image && (
                       <img
-                        src={`${process.env.NEXT_PUBLIC_API_URL}/uploads/news/${news.image}`}
+                        src={`${process.env.NEXT_PUBLIC_API_URL_FOR_IMAGE}/uploads/news/${news.image}`}
                         alt="Xəbər şəkli"
                         className="mt-2 max-h-24 rounded-lg object-contain"
                       />

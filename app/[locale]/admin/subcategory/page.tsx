@@ -288,8 +288,8 @@ export default function SubCategoryCreatePage() {
               <div className="flex items-center gap-6">
                 <div className="w-[150px]">
                   <img
-                    src={`${process.env.NEXT_PUBLIC_API_URL}/uploads/subcategory/${sub.image}`}
-                    alt={`${process.env.NEXT_PUBLIC_API_URL}/uploads/subcategory/${sub.image}`} />
+                    src={`${process.env.NEXT_PUBLIC_API_URL_FOR_IMAGE}/uploads/subcategory/${sub.image}`}
+                    alt={`${process.env.NEXT_PUBLIC_API_URL_FOR_IMAGE}/uploads/subcategory/${sub.image}`} />
                 </div>
                 <div>
                   <p className="font-medium text-indigo-700">{sub.title_az}</p>

@@ -31,11 +31,14 @@ export default function AdminLayout({
     { name: "Global SubCategory", href: `/${locale}/admin/globalsubcategory`, icon: FileText },
     { name: "Məqalələr", href: `/${locale}/admin/articles`, icon: FileText },
     { name: "İstifadəçilər", href: `/${locale}/admin/users`, icon: Users },
-    ...(user?.role === "superadmin"
-      ? [{ name: "Adminlər", href: `/${locale}/admin/admins`, icon: Users }]
-      : []),
     { name: "Xəbərlər", href: `/${locale}/admin/news`, icon: FileText },
     { name: "Müəllif", href: `/${locale}/admin/author`, icon: Users },
+    ...(user?.role === "superadmin"
+      ? [
+        { name: "Adminlər", href: `/${locale}/admin/admins`, icon: Users },
+        { name: "Logs", href: `/${locale}/admin/logs`, icon: Users }
+      ]
+      : []),
 
   ]
 

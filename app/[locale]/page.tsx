@@ -122,7 +122,7 @@ export default function LandingPage() {
                 <div className="flex justify-center">
                   <div className="h-[350px] w-[300px]">
                     <img
-                      src={`${process.env.NEXT_PUBLIC_API_URL}/uploads/categories/${category.image}`}
+                      src={`${process.env.NEXT_PUBLIC_API_URL_FOR_IMAGE}/uploads/categories/${category.image}`}
                       alt={category[`title_${locale}`]}
                       className="w-full h-full object-contain rounded-md mb-4"
                     />

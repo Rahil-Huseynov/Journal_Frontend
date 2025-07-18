@@ -100,7 +100,7 @@ export default function JournalDetailPage() {
                 <div className="col-span-3">
                   {sub.image ? (
                     <img
-                      src={`${process.env.NEXT_PUBLIC_API_URL}/uploads/subcategory/${sub.image}`}
+                      src={`${process.env.NEXT_PUBLIC_API_URL_FOR_IMAGE}/uploads/subcategory/${sub.image}`}
                       alt={getText(sub, "title")}
                       className="w-full h-40 object-cover rounded-md"
                     />

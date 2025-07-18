@@ -264,7 +264,7 @@ export default function CreateCategoryPage() {
                                                         <p className="text-sm text-gray-600">{sub[`description_${locale}`]}</p>
                                                         {sub.image && (
                                                             <img
-                                                                src={`${process.env.NEXT_PUBLIC_API_URL}/uploads/categories/${sub.image}`}
+                                                                src={`${process.env.NEXT_PUBLIC_API_URL_FOR_IMAGE}/uploads/categories/${sub.image}`}
                                                                 alt="Şəkil"
                                                                 className="mt-2 w-24 h-24 object-cover rounded"
                                                             />

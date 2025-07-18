@@ -7,7 +7,7 @@ import { AuthProvider } from "@/lib/auth-context"
 const inter = Inter({ subsets: ["latin"] })
 
 export const metadata: Metadata = {
-  title: "ScientificWorks - Elmi Tədqiqatlar Platforması",
+  title: "Scientific Journals - Elmi Tədqiqatlar Platforması",
   description: "Elmi məqalələrinizi paylaşın və akademik icma ilə əlaqə qurun",
 }
 

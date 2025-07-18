@@ -34,7 +34,7 @@ export function Navbar() {
         <div className="flex justify-between items-center py-4">
           <Link href="/" className="flex items-center">
             <BookOpen className="h-8 w-8 text-blue-600" />
-            <span className="ml-2 text-2xl font-bold text-gray-900">ScientificWorks</span>
+            <span className="ml-2 text-2xl font-bold text-gray-900">ScientificWorks1</span>
           </Link>
 
           {/* Desktop Navigation */}

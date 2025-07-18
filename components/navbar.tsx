@@ -1,12 +1,14 @@
 "use client"
 
 import { Button } from "@/components/ui/button"
-import { BookOpen, Menu, X } from "lucide-react"
+import { Menu, X } from "lucide-react"
 import Link from "next/link"
 import { useState } from "react"
 import { LanguageSwitcher } from "./language-switcher"
 import { useLocale, useTranslations } from "next-intl"
 import { useAuth } from "@/lib/auth-context"
+import logo from '../public/Başlıqsız dizayn (1)-Photoroom.png'
+import Image from "next/image"
 
 export function Navbar() {
   const [isOpen, setIsOpen] = useState(false)
@@ -33,8 +35,21 @@ export function Navbar() {
       <div className="mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex justify-between items-center py-4">
           <Link href="/" className="flex items-center">
-            <BookOpen className="h-8 w-8 text-blue-600" />
-            <span className="ml-2 text-2xl font-bold text-gray-900">ScientificWorks1</span>
+            <div className="flex items-center justify-center">
+              <div>
+                <Image
+                  src={logo}
+                  alt="ScientificWorks logo"
+                  width={70}
+                  height={50}
+                  priority
+                />
+              </div>
+              <div>
+                <p className="ml-2 text-xl font-bold  font-delius">{t("logo_title")}</p>
+                <p className="ml-2 text-l text-gray-900">{t("logo_description")}</p>
+              </div>
+            </div>
           </Link>
 
           {/* Desktop Navigation */}

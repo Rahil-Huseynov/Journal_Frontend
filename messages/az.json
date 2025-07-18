@@ -9,7 +9,9 @@
     "login": "Giriş",
     "register": "Qeydiyyat",
     "logout": "Çıxış",
-    "news": "Xəbərlər"
+    "news": "Xəbərlər",
+    "logo_title": "Elmi Jurnallar",
+    "logo_description": "Elmi tətqiqatlar platforması"
   },
   "Hero": {
     "badge": "Elmi İşlər Platforması",
@@ -59,10 +61,9 @@
   "Register": {
     "back": "Geri"
   },
-  
   "InstructionsForUsers": {
     "metaTitle": "Məqalələrə Baxılma Proseduru",
-    "header":"MÜƏLLİFLƏR ÜÇÜN TƏLİMAT",
+    "header": "MÜƏLLİFLƏR ÜÇÜN TƏLİMAT",
     "title": "MƏQALƏLƏRƏ BAXILMA PROSEDURU",
     "intro": "Məqalə müəlliflərinin nəzərinə çatdırılır ki, hər bir məqalə üzərindəki iş bir neçə mərhələdən ibarətdir. Redaksiyaya daxil olunmuş məqalə ilkin baxış zamanı elmi əhəmiyyət kəsb etmirsə, müəllifə bu barədə tez bir zamanda məlumat verilir. Məqalə maraq doğurursa, iki nəfər mütəxəssis rəyçi təyin olunaraq anonim qiymətləndirməyə göndərilir. Müəllifin statusu, mənsubiyyəti və digər şəxsi məlumatlar nəzərə alınmadan aparılan bu proses&nbsp;adətən <strong>2‑3 ay</strong> davam edir. Baxış tamamlandıqdan sonra redaksiya heyəti rəy, qeyd və yekun qərarı müəlliflərə göndərir.",
     "resultsTitle": "Rəylərdə məqalənin vəziyyəti barədə qeydlər",

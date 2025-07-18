@@ -7,7 +7,7 @@ import { useState } from "react"
 import { LanguageSwitcher } from "./language-switcher"
 import { useLocale, useTranslations } from "next-intl"
 import { useAuth } from "@/lib/auth-context"
-import logo from '../public/Başlıqsız dizayn (1)-Photoroom.png'
+import logo from '../public/favicon.png'
 import Image from "next/image"
 
 export function Navbar() {

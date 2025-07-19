@@ -14,22 +14,22 @@ type Lang = 'az' | 'en' | 'ru';
 
 type FormState = {
   [key in `title_${Lang}` | `description_${Lang}`]: string;
-} & {
-  image?: string;
 };
 
 type NewsItem = {
   id: number;
+  createdAt: string;
   title_az: string;
   title_en: string;
   title_ru: string;
   description_az: string;
   description_en: string;
   description_ru: string;
-  image?: string;
+  images: { id: number; image: string }[];
 };
 
 export default function AddNewsPage() {
+  const locale = useLocale();
   const [form, setForm] = useState<FormState>({
     title_az: '',
     title_en: '',
@@ -38,105 +38,108 @@ export default function AddNewsPage() {
     description_en: '',
     description_ru: '',
   });
-  const [file, setFile] = useState<File | null>(null);
-
+  const [files, setFiles] = useState<File[]>([]);
+  const [previews, setPreviews] = useState<string[]>([]);
   const [loading, setLoading] = useState(false);
   const [newsList, setNewsList] = useState<NewsItem[]>([]);
-  const locale = useLocale();
   const [editModalOpen, setEditModalOpen] = useState(false);
   const [editNewsId, setEditNewsId] = useState<number | null>(null);
-  const [editForm, setEditForm] = useState<FormState>({
-    title_az: '',
-    title_en: '',
-    title_ru: '',
-    description_az: '',
-    description_en: '',
-    description_ru: '',
-  });
-  const [editFile, setEditFile] = useState<File | null>(null);
+  const [editForm, setEditForm] = useState<FormState>({ ...form });
+  const [editFiles, setEditFiles] = useState<File[]>([]);
+  const [editPreviews, setEditPreviews] = useState<string[]>([]);
   const [editLoading, setEditLoading] = useState(false);
-
+  const [existingImages, setExistingImages] = useState<{ id: number; image: string }[]>([]);
   useEffect(() => {
     fetchNews();
   }, []);
+    useEffect(() => {
+    previews.forEach(u => URL.revokeObjectURL(u));
+    const urls = files.map(f => URL.createObjectURL(f));
+    setPreviews(urls);
+  }, [files]);
 
-  const fetchNews = async () => {
+  useEffect(() => {
+    editPreviews.forEach(u => URL.revokeObjectURL(u));
+    const urls = editFiles.map(f => URL.createObjectURL(f));
+    setEditPreviews(urls);
+  }, [editFiles]);
+
+  async function fetchNews() {
     try {
-      const data = await apiClient.getNews()
+      const data = await apiClient.getNews();
       setNewsList(data);
     } catch {
       alert('Xəbərləri gətirərkən xəta baş verdi');
     }
-  };
+  }
 
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
-    setForm((prev) => ({ ...prev, [e.target.name]: e.target.value }));
-  };
+  function handleChange(e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) {
+    setForm(p => ({ ...p, [e.target.name]: e.target.value }));
+  }
 
-  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    if (e.target.files && e.target.files.length > 0) {
-      setFile(e.target.files[0]);
-    }
-  };
+  function handleFileChange(e: React.ChangeEvent<HTMLInputElement>) {
+    if (!e.target.files) return;
+    const selected = Array.from(e.target.files);
+    setFiles(prev => [...prev, ...selected]);
+  }
 
-  const handleEditChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
-    setEditForm((prev) => ({ ...prev, [e.target.name]: e.target.value }));
-  };
+  function handleEditChange(e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) {
+    setEditForm(p => ({ ...p, [e.target.name]: e.target.value }));
+  }
 
-  const handleEditFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    if (e.target.files && e.target.files.length > 0) {
-      setEditFile(e.target.files[0]);
-    }
-  };
+  function handleEditFileChange(e: React.ChangeEvent<HTMLInputElement>) {
+    if (!e.target.files) return;
+    const selected = Array.from(e.target.files);
+    setEditFiles(prev => [...prev, ...selected]);
+  }
 
-  const createFormData = (data: typeof form, file: File | null) => {
-    const formData = new FormData();
-    Object.entries(data).forEach(([key, value]) => {
-      formData.append(key, value);
-    });
-    if (file) {
-      formData.append('image', file);
-    }
-    return formData;
-  };
+  function createFormData(data: any, file?: File) {
+    const fd = new FormData();
+    Object.entries(data).forEach(([k, v]) => fd.append(k, v as string));
+    if (file) fd.append('image', file);
+    return fd;
+  }
 
-  const handleSubmit = async (e: React.FormEvent) => {
+  async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
     setLoading(true);
     try {
-      const formData = createFormData(form, file);
+      const created = await apiClient.addnews(form);
 
-      await apiClient.addnews(formData)
-      window.location.href = `/${locale}/admin/news`;
-      setForm({
-        title_az: '',
-        title_en: '',
-        title_ru: '',
-        description_az: '',
-        description_en: '',
-        description_ru: '',
-      });
-      setFile(null);
+      const newsId = created.id;
+      for (const file of files) {
+        const fm = new FormData();
+        fm.append('newsId', String(newsId));
+        fm.append('image', file);
+        await apiClient.addnewsImage(fm);
+      }
+
       await fetchNews();
+      setForm({
+        title_az: '', title_en: '', title_ru: '',
+        description_az: '', description_en: '', description_ru: ''
+      });
+      setFiles([]);
+      setPreviews([]);
     } catch {
       alert('Xəbər əlavə edilərkən xəta baş verdi');
     } finally {
       setLoading(false);
     }
-  };
+  }
 
-  const handleDelete = async (id: number) => {
+
+  async function handleDelete(id: number) {
     if (!confirm('Xəbəri silmək istədiyinizə əminsiniz?')) return;
     try {
-      await apiClient.deletenews(id)
-      window.location.href = `/${locale}/admin/news`;
-      setNewsList((prev) => prev.filter((news) => news.id !== id));
+      await apiClient.deletenews(id);
+      setNewsList(p => p.filter(n => n.id !== id));
     } catch {
       alert('Xəbər silinərkən xəta baş verdi');
     }
-  };
+  }
 
-  const openEditModal = (news: NewsItem) => {
+  function openEditModal(news: NewsItem) {
     setEditNewsId(news.id);
     setEditForm({
       title_az: news.title_az,
@@ -145,277 +148,343 @@ export default function AddNewsPage() {
       description_az: news.description_az,
       description_en: news.description_en,
       description_ru: news.description_ru,
-      image: news.image || '',
     });
-    setEditFile(null);
+    setEditFiles([]);
+    setEditPreviews([]);
     setEditModalOpen(true);
-  };
+    setExistingImages(news.images);
+  }
 
-  const handleEditSubmit = async (e: React.FormEvent) => {
+  async function handleRemoveExisting(imgId: number) {
+    if (!confirm('Şəkli silmək istədiyinizə əminsiniz?')) return;
+    try {
+      await apiClient.deletenewsImage(imgId);
+      setExistingImages((p) => p.filter((img) => img.id !== imgId));
+    } catch {
+      alert('Şəkil silinərkən xəta baş verdi');
+    }
+  }
+
+  async function handleEditSubmit(e: React.FormEvent) {
     e.preventDefault();
     if (!editNewsId) return;
     setEditLoading(true);
     try {
-      const formData = createFormData(editForm, editFile);
-      const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/news/${editNewsId}`, {
-        method: 'PUT',
-        body: formData,
+      const formData = new FormData();
+      Object.entries(editForm).forEach(([key, value]) => {
+        formData.append(key, value);
       });
-      if (!res.ok) throw new Error('Xəbər yenilənə bilmədi');
-      setEditModalOpen(false);
+
+      await apiClient.updatenews(editNewsId, formData);
+
+      for (const file of editFiles) {
+        const imageFd = new FormData();
+        imageFd.append("newsId", String(editNewsId));
+        imageFd.append("image", file);
+        await apiClient.addnewsImage(imageFd);
+      }
+
       await fetchNews();
+      setEditModalOpen(false);
     } catch {
       alert('Xəbər yenilənərkən xəta baş verdi');
     } finally {
       setEditLoading(false);
     }
-  };
+  }
 
-  const closeModal = () => {
-    setEditModalOpen(false);
-  };
+  const getText = (item: NewsItem, key: "id" | "title" | "description") =>
+    item[`${key}_${locale}`] ||
+    item[`${key}_az`] ||
+    "";
+
+  const truncate = (text: string, maxLength = 100) =>
+    text.length > maxLength ? text.slice(0, maxLength) + "…" : text;
 
   return (
     <div className="min-h-screen bg-gradient-to-r from-indigo-50 to-white p-6">
-      <div className="w-full bg-white rounded-3xl shadow-2xl p-12">
-        <h1 className="text-5xl font-extrabold text-indigo-900 mb-12 text-center tracking-wide">
+      <div className="bg-white p-12 rounded-3xl shadow-lg mb-12">
+        <h1 className="text-5xl font-extrabold text-center text-indigo-900 mb-8">
           Yeni Xəbər Əlavə Et
         </h1>
-        <form onSubmit={handleSubmit} className="space-y-14">
+        <form onSubmit={handleSubmit} className="space-y-10">
           <section>
-            <h2 className="text-3xl font-semibold text-indigo-700 mb-6 border-b border-indigo-200 pb-3">
-              Başlıqlar
-            </h2>
-            <div className="grid gap-8 md:grid-cols-3">
+            <h2 className="text-2xl font-semibold text-indigo-700 mb-4">Başlıqlar</h2>
+            <div className="grid md:grid-cols-3 gap-6">
               {languages.map(({ code, label }) => (
                 <div key={code}>
-                  <label
-                    htmlFor={`title_${code}`}
-                    className="block mb-2 text-lg font-semibold text-indigo-900"
-                  >
-                    {label}
-                  </label>
+                  <label htmlFor={`title_${code}`} className="block mb-2">{label}</label>
                   <input
                     id={`title_${code}`}
                     name={`title_${code}`}
                     type="text"
                     value={form[`title_${code}`]}
                     onChange={handleChange}
-                    placeholder={`${label} dilində başlıq`}
                     required
-                    className="w-full rounded-xl border border-indigo-300 px-4 py-3 text-lg
-                      placeholder-indigo-400 focus:outline-none focus:ring-4 focus:ring-indigo-400
-                      focus:border-indigo-600 transition shadow-sm"
+                    className="w-full border rounded px-3 py-2"
                   />
                 </div>
               ))}
             </div>
           </section>
-
           <section>
-            <h2 className="text-3xl font-semibold text-indigo-700 mb-6 border-b border-indigo-200 pb-3">
-              Məzmunlar
-            </h2>
-            <div className="grid gap-8 md:grid-cols-3">
+            <h2 className="text-2xl font-semibold text-indigo-700 mb-4">Məzmunlar</h2>
+            <div className="grid md:grid-cols-3 gap-6">
               {languages.map(({ code, label }) => (
                 <div key={code}>
-                  <label
-                    htmlFor={`description_${code}`}
-                    className="block mb-2 text-lg font-semibold text-indigo-900"
-                  >
-                    {label}
-                  </label>
+                  <label htmlFor={`description_${code}`} className="block mb-2">{label}</label>
                   <textarea
                     id={`description_${code}`}
                     name={`description_${code}`}
-                    rows={6}
+                    rows={4}
                     value={form[`description_${code}`]}
                     onChange={handleChange}
-                    placeholder={`${label} dilində məzmun`}
                     required
-                    className="w-full rounded-xl border border-indigo-300 px-4 py-3 text-lg
-                      placeholder-indigo-400 focus:outline-none focus:ring-4 focus:ring-indigo-400
-                      focus:border-indigo-600 transition shadow-sm resize-none"
+                    className="w-full border rounded px-3 py-2"
                   />
                 </div>
               ))}
             </div>
           </section>
-
           <section>
-            <label className="block mb-2 font-semibold text-indigo-900 text-lg" htmlFor="image">
-              Şəkil əlavə et (istəyə bağlı)
+            <label htmlFor="images" className="block mb-2 font-semibold">
+              Şəkillər (çoxlu seçim)
             </label>
             <input
               type="file"
-              id="image"
+              id="images"
+              multiple
               accept="image/*"
               onChange={handleFileChange}
               className="block w-full text-indigo-700"
             />
-            {file && <p className="mt-2 text-indigo-600">Seçilmiş fayl: {file.name}</p>}
           </section>
+          {previews.length > 0 && (
+            <section>
+              <h3 className="font-semibold mb-2">Seçilən şəkillər</h3>
+              <div className="flex flex-wrap gap-4">
+                {previews.map((src, idx) => (
+                  <img
+                    key={idx}
+                    src={src}
+                    alt={`preview-${idx}`}
+                    className="h-24 w-24 object-cover rounded border"
+                  />
+                ))}
+              </div>
+            </section>
+          )}
 
           <button
             type="submit"
             disabled={loading}
-            className="w-full py-4 rounded-full bg-indigo-700 hover:bg-indigo-800 text-white text-xl font-bold transition disabled:opacity-50 disabled:cursor-not-allowed"
+            className="w-full bg-indigo-700 text-white py-3 rounded-lg disabled:opacity-50"
           >
-            {loading ? 'Əlavə olunur...' : 'Xəbəri Əlavə Et'}
+            {loading ? 'Əlavə olunur...' : 'Yadda saxla'}
           </button>
         </form>
-
-        <section className="mt-20">
-          <h2 className="text-3xl font-semibold text-indigo-700 mb-8 border-b border-indigo-200 pb-3 text-center">
-            Əlavə edilmiş xəbərlər
-          </h2>
-
-          {newsList.length === 0 ? (
-            <p className="text-center text-indigo-500">Heç bir xəbər əlavə edilməyib.</p>
-          ) : (
-            <ul className="space-y-6">
-              {newsList.map((news) => (
-                <li
-                  key={news.id}
-                  className="flex flex-col md:flex-row md:justify-between md:items-center border border-indigo-200 rounded-xl p-4 shadow-sm hover:shadow-md transition"
-                >
-                  <div className="flex-1 space-y-1">
-                    <p className="font-semibold text-indigo-900">
-                      AZ: {news.title_az || <span className="text-indigo-400 italic">Boşdur</span>}
-                    </p>
-                    <p className="font-semibold text-indigo-900">
-                      EN: {news.title_en || <span className="text-indigo-400 italic">Boşdur</span>}
-                    </p>
-                    <p className="font-semibold text-indigo-900">
-                      RU: {news.title_ru || <span className="text-indigo-400 italic">Boşdur</span>}
-                    </p>
-                    {news.image && (
-                      <img
-                        src={`${process.env.NEXT_PUBLIC_API_URL_FOR_IMAGE}/uploads/news/${news.image}`}
-                        alt="Xəbər şəkli"
-                        className="mt-2 max-h-24 rounded-lg object-contain"
-                      />
-                    )}
-                  </div>
-
-                  <div className="mt-4 md:mt-0 flex gap-4">
-                    <button
-                      onClick={() => openEditModal(news)}
-                      className="px-5 py-2 rounded-full bg-yellow-400 hover:bg-yellow-500 text-indigo-900 font-semibold transition shadow"
-                      type="button"
-                    >
-                      Düzəliş et
-                    </button>
-                    <button
-                      onClick={() => handleDelete(news.id)}
-                      className="px-5 py-2 rounded-full bg-red-500 hover:bg-red-600 text-white font-semibold transition shadow"
-                      type="button"
-                    >
-                      Sil
-                    </button>
-                  </div>
-                </li>
-              ))}
-            </ul>
-          )}
-        </section>
       </div>
 
-      {editModalOpen && (
-        <div
-          className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 px-4"
-          aria-modal="true"
-          role="dialog"
-        >
-          <div className="bg-white rounded-3xl max-w-4xl w-full p-10 relative shadow-2xl max-h-[90vh] overflow-y-auto">
-            <h3 className="text-3xl font-extrabold text-indigo-900 mb-8 text-center">
-              Xəbəri Düzəliş Et
-            </h3>
-            <form onSubmit={handleEditSubmit} className="space-y-8">
-              {languages.map(({ code, label }) => (
-                <div key={code}>
-                  <label
-                    htmlFor={`edit_title_${code}`}
-                    className="block mb-2 font-semibold text-indigo-900"
-                  >
-                    {label} Başlıq
-                  </label>
-                  <input
-                    id={`edit_title_${code}`}
-                    name={`title_${code}`}
-                    type="text"
-                    value={editForm[`title_${code}`]}
-                    onChange={handleEditChange}
-                    required
-                    className="w-full rounded-xl border border-indigo-300 px-4 py-3 text-lg
-                      placeholder-indigo-400 focus:outline-none focus:ring-4 focus:ring-indigo-400
-                      focus:border-indigo-600 transition shadow-sm"
-                  />
-                  <label
-                    htmlFor={`edit_description_${code}`}
-                    className="block mt-4 mb-2 font-semibold text-indigo-900"
-                  >
-                    {label} Məzmun
-                  </label>
-                  <textarea
-                    id={`edit_description_${code}`}
-                    name={`description_${code}`}
-                    rows={5}
-                    value={editForm[`description_${code}`]}
-                    onChange={handleEditChange}
-                    required
-                    className="w-full rounded-xl border border-indigo-300 px-4 py-3 text-lg
-                      placeholder-indigo-400 focus:outline-none focus:ring-4 focus:ring-indigo-400
-                      focus:border-indigo-600 transition shadow-sm resize-none"
-                  />
-                </div>
-              ))}
+      <section>
+        <h2 className="text-3xl font-semibold text-indigo-700 mb-6 text-center">
+          Mövcud Xəbərlər
+        </h2>
 
-              <section>
-                <label
-                  htmlFor="edit_image"
-                  className="block mb-2 font-semibold text-indigo-900 text-lg"
+        {newsList.length === 0 ? (
+          <p className="text-center text-gray-500">Heç bir xəbər yoxdur</p>
+        ) : (
+          <ul className="space-y-6">
+            {newsList.map((n) => {
+              const id = getText(n, "title");
+              const title = truncate(getText(n, "title"));
+              const description = truncate(getText(n, "description"));
+              return (
+                <li
+                  key={n.id}
+                  className="bg-white/70 backdrop-blur-md p-6 rounded-2xl shadow transition hover:shadow-lg"
                 >
-                  Şəkil dəyişdir (istəyə bağlı)
+                  <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
+                    <div>
+                      <h3 className="text-xl font-bold text-indigo-900">
+                        {n.title_az || 'Başlıq (AZ) yoxdur'}
+                      </h3>
+                      <p className="text-sm text-indigo-600">
+                        {new Date(n.createdAt).toLocaleDateString(locale)}
+                      </p>
+                    </div>
+
+                    <div className="flex gap-3">
+                      <button
+                        onClick={() => openEditModal(n)}
+                        className="px-4 py-2 rounded-full bg-yellow-400/90 hover:bg-yellow-400 text-indigo-900 font-semibold shadow"
+                      >
+                        Düzəliş
+                      </button>
+                      <button
+                        onClick={() => handleDelete(n.id)}
+                        className="px-4 py-2 rounded-full bg-red-500 hover:bg-red-600 text-white font-semibold shadow"
+                      >
+                        Sil
+                      </button>
+                    </div>
+                  </div>
+
+                  <div className="flex  items-center gap -6 mt-4 space-y-3">
+                    <div key={id}>
+                      <p className="font-medium">
+                        {title || <em className="text-gray-400">Başlıq yoxdur</em>}
+                      </p>
+                      <p className=" text-sm text-gray-700 mt-1">
+                        {description || <em className="text-gray-400">Məzmun yoxdur</em>}
+                      </p>
+                    </div>
+                  </div>
+
+                  {n.images.length > 0 && (
+                    <div className="flex mt-5 ">
+                      {n.images.slice(0, 8).map((img) => (
+                        <img
+                          key={img.id}
+                          src={`${process.env.NEXT_PUBLIC_API_URL_FOR_IMAGE}/${img.image}`}
+                          alt="news"
+                          className="h-24 w-24 object-contain rounded-lg shadow-sm"
+                        />
+                      ))}
+                    </div>
+                  )}
+                </li>
+              );
+            })}
+          </ul>
+        )}
+      </section>
+      {editModalOpen && (
+        <div className="fixed inset-0 bg-black/40 z-50 flex items-center justify-center px-4">
+          <div className="bg-white rounded-xl shadow-xl w-full max-w-3xl p-8 relative animate-fadeIn">
+            <button
+              onClick={() => setEditModalOpen(false)}
+              className="absolute top-4 right-4 text-gray-500 hover:text-red-500 text-2xl"
+            >
+              ×
+            </button>
+
+            <h2 className="text-2xl font-bold text-indigo-800 mb-6 text-center">
+              Xəbəri Redaktə Et
+            </h2>
+
+            <form onSubmit={handleEditSubmit} className="space-y-6">
+              <div className="grid md:grid-cols-3 gap-6">
+                {languages.map(({ code, label }) => (
+                  <div key={code}>
+                    <label htmlFor={`edit_title_${code}`} className="block mb-1 text-sm font-medium text-gray-700">
+                      {label} Başlıq
+                    </label>
+                    <input
+                      id={`edit_title_${code}`}
+                      name={`title_${code}`}
+                      type="text"
+                      value={editForm[`title_${code}`]}
+                      onChange={handleEditChange}
+                      required
+                      className="w-full border rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                    />
+                    <label htmlFor={`edit_description_${code}`} className="block mt-3 mb-1 text-sm font-medium text-gray-700">
+                      {label} Məzmun
+                    </label>
+                    <textarea
+                      id={`edit_description_${code}`}
+                      name={`description_${code}`}
+                      rows={4}
+                      value={editForm[`description_${code}`]}
+                      onChange={handleEditChange}
+                      required
+                      className="w-full border rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                    />
+                  </div>
+                ))}
+              </div>
+              <div>
+                <label htmlFor="edit_images" className="block mb-2 font-semibold text-gray-700">
+                  Yeni Şəkillər Yüklə
                 </label>
                 <input
                   type="file"
-                  id="edit_image"
+                  id="edit_images"
+                  multiple
                   accept="image/*"
                   onChange={handleEditFileChange}
                   className="block w-full text-indigo-700"
                 />
-                <p className="mt-2 text-indigo-600">
-                  {editFile ? editFile.name : editForm.image || 'Seçilmiş fayl yoxdur'}
-                </p>
-              </section>
-
-              <div className="flex justify-end gap-4 mt-6">
+                {editPreviews.length > 0 && (
+                  <div className="flex flex-wrap gap-4 mt-3">
+                    {editPreviews.map((src, idx) => (
+                      <div key={idx} className="relative group">
+                        <img
+                          src={src}
+                          alt={`edit-preview-${idx}`}
+                          className="h-24 w-24 object-cover rounded border shadow-sm transition-transform group-hover:scale-105"
+                        />
+                        <button
+                          type="button"
+                          onClick={() => {
+                            const newFiles = [...editFiles];
+                            newFiles.splice(idx, 1);
+                            setEditFiles(newFiles);
+                          }}
+                          className="absolute top-0 right-0 bg-red-600 text-white text-xs p-1 rounded-bl-md opacity-80 hover:opacity-100"
+                        >
+                          ✕
+                        </button>
+                      </div>
+                    ))}
+                  </div>
+                )}
+              </div>
+              {editNewsId && newsList.length > 0 && (
+                <div>
+                  <h4 className="font-semibold text-gray-800 mb-2">Əvvəlki şəkillər</h4>
+                  <div className="flex flex-wrap gap-4">
+                    {newsList.find(n => n.id === editNewsId)?.images.map((img) => (
+                      <div key={img.id} className="relative group">
+                        <img
+                          src={`${process.env.NEXT_PUBLIC_API_URL_FOR_IMAGE}/${img.image}`}
+                          alt="Old Image"
+                          className="h-24 w-24 object-cover rounded-md border shadow-sm"
+                        />
+                        <button
+                          type="button"
+                          onClick={async () => {
+                            const confirmed = confirm("Bu şəkli silmək istədiyinizə əminsiniz?");
+                            if (!confirmed) return;
+                            await apiClient.deletenewsImage(img.id);
+                            await fetchNews();
+                          }}
+                          className="absolute top-0 right-0 bg-red-600 text-white text-xs p-1 rounded-bl-md opacity-80 hover:opacity-100"
+                        >
+                          ✕
+                        </button>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              )}
+              <div className="flex justify-end gap-4 pt-4">
                 <button
                   type="button"
-                  onClick={closeModal}
-                  className="px-6 py-3 rounded-full bg-gray-300 hover:bg-gray-400 text-gray-800 font-semibold transition"
+                  onClick={() => setEditModalOpen(false)}
+                  className="px-4 py-2 bg-gray-300 rounded hover:bg-gray-400 text-sm"
                 >
-                  Ləğv et
+                  Ləğv Et
                 </button>
                 <button
                   type="submit"
                   disabled={editLoading}
-                  className="px-6 py-3 rounded-full bg-indigo-700 hover:bg-indigo-800 text-white font-semibold transition disabled:opacity-50 disabled:cursor-not-allowed"
+                  className="px-6 py-2 bg-indigo-700 text-white rounded hover:bg-indigo-800 disabled:opacity-50 text-sm"
                 >
                   {editLoading ? 'Yenilənir...' : 'Yenilə'}
                 </button>
               </div>
             </form>
-
-            <button
-              onClick={closeModal}
-              aria-label="Close modal"
-              className="absolute top-5 right-5 text-indigo-600 hover:text-indigo-900 text-3xl font-bold leading-none"
-              type="button"
-            >
-              ×
-            </button>
           </div>
         </div>
       )}

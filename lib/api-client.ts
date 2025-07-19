@@ -410,8 +410,17 @@ class ApiClient {
     })
   }
 
-  async addnews(formData: FormData) {
+  async addnews(data: any) {
     return this.request("/news", {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(data),
+    })
+  }
+
+
+  async addnewsImage(formData: FormData) {
+    return this.request("/news-images", {
       method: 'POST',
       body: formData,
     })
@@ -422,6 +431,28 @@ class ApiClient {
       method: "DELETE",
     })
   }
+
+  async deletenewsImage(id: number) {
+    return this.request(`/news-images/${id}`, {
+      method: "DELETE",
+    })
+  }
+
+
+  async updatenewsImage(id: number, formData: FormData) {
+    return this.request(`/news-images/${id}`, {
+      method: "PUT",
+      body: formData
+    })
+  }
+  async updatenews(id: number, formData: FormData) {
+    return this.request(`/news/${id}`, {
+      method: "PUT",
+      body: formData,
+    });
+  }
+
+
 
   async forgotPassword(email: string) {
     return this.request("/auth/forgot-password", {

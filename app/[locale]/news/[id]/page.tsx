@@ -1,53 +1,63 @@
-// app/news/[id]/page.tsx
-import { apiClient } from "@/lib/api-client";
-import { notFound } from "next/navigation";
-import { format } from "date-fns";
-import { az } from "date-fns/locale";
+import { ImageCarousel } from "@/components/image-carousel"
+import { apiClient } from "@/lib/api-client"
+import { News } from "@/lib/types"
+import { notFound } from "next/navigation"
 
-interface News {
-  id: number;
-  createdAt: string;
-  title_az: string;
-  description_az: string;
-  image: string;
+interface NewsDetailPageProps {
+  params: {
+    id: string
+    locale: string
+  }
 }
 
-export default async function NewsDetailPage({ params }: { params: { id: string } }) {
-  try {
-    const news: News = await apiClient.getNewsById(Number(params.id));
+export default async function NewsDetailPage({ params }: NewsDetailPageProps) {
+  const newsId = Number.parseInt(params.id)
+  if (isNaN(newsId)) notFound()
 
-    return (
-      <main className="max-w-4xl mx-auto px-6 py-12 bg-white dark:bg-gray-900 rounded-lg shadow-lg">
-        <article className="prose prose-lg prose-amber mx-auto dark:prose-invert">
-          {/* Şəkil */}
-          <img
-            src={`${process.env.NEXT_PUBLIC_API_URL_FOR_IMAGE}/uploads/news/${news.image}`}
-            alt={news.title_az}
-            className="w-full max-h-[400px] object-cover rounded-lg mb-8 shadow-md"
-            loading="lazy"
-          />
+  const newsItem = await apiClient.getNewsById(newsId)
+  if (!newsItem) notFound()
 
-          {/* Başlıq */}
-          <h1 className="text-4xl font-extrabold mb-4 tracking-tight text-gray-900 dark:text-gray-100">
-            {news.title_az}
-          </h1>
+  // Dilə görə müvafiq title və description seçək
+  const locale = params.locale.toLowerCase()
 
-          {/* Tarix */}
-          <time
-            dateTime={news.createdAt}
-            className="block text-sm text-gray-500 mb-8 dark:text-gray-400"
-          >
-            {format(new Date(news.createdAt), "dd MMMM yyyy", { locale: az })}
-          </time>
+  // Default olaraq azərbaycan dili götürək
+  const title =
+    locale === "en" ? newsItem.title_en :
+    locale === "ru" ? newsItem.title_ru :
+    newsItem.title_az
 
-          {/* Mətni */}
-          <div className="text-lg leading-relaxed text-gray-700 dark:text-gray-300 whitespace-pre-line">
-            {news.description_az}
+  const description =
+    locale === "en" ? newsItem.description_en :
+    locale === "ru" ? newsItem.description_ru :
+    newsItem.description_az
+
+  return (
+    <main className="max-w-7xl mx-auto px-4 md:px-6 py-10">
+      <div className="border border-gray-200 dark:border-gray-800 rounded-xl overflow-hidden shadow-sm bg-white dark:bg-gray-900">
+        {/* Carousel */}
+        <div className="flex mt-6 justify-center items-center">
+          <div className="min-w-[700px] max-w-[700px] border-b border-gray-200 dark:border-gray-700">
+            <ImageCarousel images={newsItem.images} altPrefix={title} />
           </div>
+        </div>
+        {/* Article */}
+        <article className="px-6 md:px-10 py-8">
+          <header className="mb-6">
+            <h1 className="text-2xl md:text-4xl font-bold text-gray-900 dark:text-white text-center">
+              {title}
+            </h1>
+          </header>
+
+          <section className="prose dark:prose-invert prose-lg max-w-none leading-relaxed">
+            <p>{description}</p>
+          </section>
+          <section>
+            <p className="text-sm text-muted-foreground text-end mt-2">
+              Published on {new Date(newsItem.createdAt).toLocaleDateString()}
+            </p>
+          </section>
         </article>
-      </main>
-    );
-  } catch (error) {
-    return notFound();
-  }
+      </div>
+    </main>
+  )
 }

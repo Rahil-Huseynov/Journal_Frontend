@@ -1,25 +1,17 @@
 "use client"
 
 import { Button } from "@/components/ui/button"
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
-import { BookOpen, Users, Award, TrendingUp, ArrowRight, CheckCircle } from "lucide-react"
+import { BookOpen, ArrowRight} from "lucide-react"
 import Link from "next/link"
 import { useLocale, useTranslations } from "next-intl"
 import AnimatedText from "@/components/AnimatedText"
 import { useEffect, useState } from "react"
 import { apiClient } from "@/lib/api-client"
+import { NewsCard } from "@/components/news-card"
+import { News } from "@/lib/types"
 
 
-interface News {
-  title_az: string;
-  title_en: string;
-  title_ru: string;
-  description_az: string;
-  description_en: string;
-  description_ru: string;
-  image: string;
-}
 
 interface Category {
   id: number;
@@ -189,33 +181,13 @@ export default function LandingPage() {
           </div>
 
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-10">
-            {news.slice(0, 4).map((item, index) => (
-              <div
-                key={index}
-                className="bg-white rounded-2xl overflow-hidden shadow-sm hover:shadow-md transition-shadow duration-300 border border-gray-200"
-              >
-                {/* Şəkil */}
-                <img
-                  src={`${process.env.NEXT_PUBLIC_API_URL}/uploads/news/${item.image}`}
-                  alt={item[`title_${locale}`]}
-                  className="w-full p-1 h-56 object-contain transition-transform duration-500 hover:scale-105"
-                />
-
-                {/* Məzmun */}
-                <div className="p-5">
-                  <h3 className="text-lg font-semibold text-gray-900 mb-2">
-                    {item[`title_${locale}`]}
-                  </h3>
-                  <p className="text-sm text-gray-600 line-clamp-3">
-                    {item[`description_${locale}`]}
-                  </p>
-                </div>
-              </div>
+            {news.slice(0, 4).map((news) => (
+              <NewsCard key={news.id} news={news} />
             ))}
           </div>
           <div className="flex justify-center mt-10">
             <Link
-              href="/news"
+              href={`${locale}/news`}
               className="inline-flex items-center gap-2 px-6 py-3 bg-blue-600 text-white text-sm font-medium rounded-full shadow-md hover:bg-blue-700 transition duration-300"
             >
               Bütün Xəbərlər

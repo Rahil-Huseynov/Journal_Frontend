@@ -240,7 +240,7 @@ export default function AddNewsPage() {
                     value={form[`description_${code}`]}
                     onChange={handleChange}
                     required
-                    className="w-full border rounded px-3 py-2"
+                    className="w-full h-[250px] resize-none border rounded px-3 py-2"
                   />
                 </div>
               ))}
@@ -398,7 +398,7 @@ export default function AddNewsPage() {
                       value={editForm[`description_${code}`]}
                       onChange={handleEditChange}
                       required
-                      className="w-full border rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                      className="w-full h-[250px]  border resize-none rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-indigo-500"
                     />
                   </div>
                 ))}

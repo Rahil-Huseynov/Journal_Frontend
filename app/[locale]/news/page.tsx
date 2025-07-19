@@ -1,43 +1,41 @@
-// app/news/page.tsx
-import Link from "next/link"
+"use client"
+
+import { useEffect, useState } from "react"
+import { NewsCard } from "@/components/news-card"
 import { apiClient } from "@/lib/api-client"
-import { format } from "date-fns"
-import { az } from "date-fns/locale"
+import { News } from "@/lib/types"
 
-interface News {
-  id: number
-  createdAt: string
-  title_az: string
-  description_az: string
-  image: string
-}
+export default function NewsListPage() {
+  const [newsItems, setNewsItems] = useState<News[]>([])
+  const [loading, setLoading] = useState(true)
 
-export default async function NewsPage() {
-  const news: News[] = await apiClient.getNews()
+  useEffect(() => {
+    const fetchNews = async () => {
+      try {
+        const data = await apiClient.getNews()
+        setNewsItems(data)
+      } catch (error) {
+        console.error("Failed to fetch news:", error)
+      } finally {
+        setLoading(false)
+      }
+    }
+
+    fetchNews()
+  }, []) 
+
+  if (loading) {
+    return <div className="text-center mt-10">Yüklənir...</div>
+  }
 
   return (
-    <div className="max-w-6xl mx-auto px-4 py-10">
-      <h1 className="text-3xl font-bold mb-6">Xəbərlər</h1>
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-        {news.map((item) => (
-          <Link href={`/news/${item.id}`} key={item.id}>
-            <div className="bg-white shadow-md rounded-xl overflow-hidden hover:shadow-lg transition">
-              <img
-                src={`${process.env.NEXT_PUBLIC_API_URL_FOR_IMAGE}/uploads/news/${item.image}`}
-                alt={item.title_az}
-                className="w-full h-48 object-cover"
-              />
-              <div className="p-4">
-                <h2 className="text-xl font-semibold mb-2">{item.title_az}</h2>
-                <p className="text-gray-600 text-sm line-clamp-3">{item.description_az}</p>
-                <p className="text-xs text-gray-400 mt-2">
-                  {format(new Date(item.createdAt), "dd MMMM yyyy", { locale: az })}
-                </p>
-              </div>
-            </div>
-          </Link>
+    <main className="min-h-screen container mx-auto px-4 py-8 md:px-6 lg:px-8">
+      <h1 className="text-3xl font-bold mb-8 text-center">Latest News</h1>
+      <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+        {newsItems.map((news) => (
+          <NewsCard key={news.id} news={news} />
         ))}
       </div>
-    </div>
+    </main>
   )
 }

@@ -8,6 +8,7 @@ import {
   SelectItem,
 } from "@/components/ui/select";
 import { countries } from "./CountryCode";
+import { useTranslations } from "next-intl";
 
 interface Props {
   value: string;
@@ -19,6 +20,8 @@ export default function CitizenshipCountrySelect({ value, onChange }: Props) {
     (country, index, self) =>
       self.findIndex((c) => c.name === country.name) === index
   );
+    const t = useTranslations("Navigation_Client");
+
 
   return (
     <Select
@@ -29,7 +32,7 @@ export default function CitizenshipCountrySelect({ value, onChange }: Props) {
       }}
     >
       <SelectTrigger>
-        <SelectValue placeholder="Vətəndaşlıq ölkənizi seçin" />
+        <SelectValue placeholder={t("Vətəndaşlıqölkəniziseçin")} />
       </SelectTrigger>
       <SelectContent className="max-h-[300px] overflow-y-auto">
         {uniqueCountries.map((country) => (

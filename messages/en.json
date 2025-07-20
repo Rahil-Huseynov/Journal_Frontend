@@ -310,5 +310,17 @@
         "Only manuscripts within the journal’s scope are accepted."
       ],
       "finalNote": "Submissions that do not meet these requirements will be rejected by the editorial board."
+    },
+    "Navigation_Client": {
+      "dashboard": "Dashboard",
+      "My Articles": "My Articles",
+      "New Article": "New Article",
+      "Profile": "Profile",
+      "Settings": "Settings"
+    },
+    "MIX": {
+      "NoImageAvailable": "No image available",
+      "Selectcountrycode": "Select country code",
+      "Selectcountryofcitizenship": "Select your country of citizenship"
     }
   }

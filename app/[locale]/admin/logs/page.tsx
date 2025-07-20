@@ -73,7 +73,6 @@ export default function LogsPage() {
                 </table>
             </div>
 
-            {/* Səhifələmə */}
             <div className="flex justify-between items-center mt-4">
                 <button
                     className="px-4 py-2 bg-gray-200 dark:bg-gray-700 rounded disabled:opacity-50"

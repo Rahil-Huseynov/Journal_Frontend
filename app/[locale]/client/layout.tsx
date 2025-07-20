@@ -2,7 +2,7 @@
 
 import type React from "react"
 import { useState } from "react"
-import { useLocale } from "next-intl"
+import { useLocale, useTranslations } from "next-intl"
 import { ProtectedRoute } from "@/components/protected-route"
 import { Button } from "@/components/ui/button"
 import { BookOpen, FileText, User, BarChart3, Settings, LogOut, Menu, X, PlusCircle } from "lucide-react"
@@ -20,13 +20,14 @@ export default function ClientLayout({
   const pathname = usePathname()
   const router = useRouter()
   const locale = useLocale();
+  const t = useTranslations("Navigation_Client");
 
   const navigation = [
-    { name: "Dashboard", href: `/${locale}/client/dashboard`, icon: BarChart3 },
-    { name: "Məqalələrim", href: `/${locale}/client/myarticles`, icon: FileText },
-    { name: "Yeni Məqalə", href: `/${locale}/client/addarticles/`, icon: PlusCircle },
-    { name: "Profil", href: `/${locale}/client/profile`, icon: User },
-    { name: "Parametrlər", href: `/${locale}/client/settings`, icon: Settings },
+    { name: t("Dashboard"), href: `/${locale}/client/dashboard`, icon: BarChart3 },
+    { name: t("Məqalələrim"), href: `/${locale}/client/myarticles`, icon: FileText },
+    { name: t("Yeni Məqalə"), href: `/${locale}/client/addarticles/`, icon: PlusCircle },
+    { name: t("Profil"), href: `/${locale}/client/profile`, icon: User },
+    { name: t("Parametrlər"), href: `/${locale}/client/settings`, icon: Settings },
   ];
 
   const handleLogout = () => {

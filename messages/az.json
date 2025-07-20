@@ -310,5 +310,17 @@
       "Jurnal yalnız öz profilinə uyğun məqalələri dərc edir."
     ],
     "finalNote": "Yuxarıdakı şərtlərə uyğun olmayan məqalələr redaksiya heyəti tərəfindən qəbul edilmir."
+  },
+  "Navigation_Client": {
+    "dashboard": "İdarə paneli",
+    "Məqalələrim": "Məqalələrim",
+    "Yeni Məqalə": "Yeni Məqalə",
+    "Profil": "Profil",
+    "Parametrlər": "Parametrlər"
+  },
+  "MIX": {
+    "NoImageAvailable": "Şəkil mövcud deyil",
+    "Ölkəkoduseçin": "Ölkə kodu seçin",
+    "Vətəndaşlıqölkəniziseçin": "Vətəndaşlıq ölkənizi seçin"
   }
 }

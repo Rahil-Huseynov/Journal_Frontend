@@ -8,6 +8,7 @@ import {
   SelectItem,
 } from "@/components/ui/select";
 import { countries } from "./CountryCode";
+import { useTranslations } from "next-intl";
 
 interface Props {
   value: string;
@@ -19,11 +20,12 @@ export default function CountrySelect({ value, onChange }: Props) {
     (country, index, self) =>
       self.findIndex((c) => c.code === country.code) === index
   );
+  const t = useTranslations("MIX")
 
   return (
     <Select value={value} onValueChange={onChange}>
       <SelectTrigger>
-        <SelectValue placeholder="Ölkə kodu seçin" />
+        <SelectValue placeholder={t("Ölkəkoduseçin")} />
       </SelectTrigger>
       <SelectContent>
         {uniqueCountries.map((country) => (

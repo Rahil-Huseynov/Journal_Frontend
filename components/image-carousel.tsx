@@ -10,6 +10,7 @@ import {
 } from "@/components/ui/carousel"
 import { useEffect } from "react"
 import { useCarousel } from "./ui/carouselNews"
+import { useTranslations } from "next-intl"
 
 interface ImageCarouselProps {
   images: { image: string }[]
@@ -18,6 +19,7 @@ interface ImageCarouselProps {
 
 export function ImageCarousel({ images, altPrefix }: ImageCarouselProps) {
   const [api] = useCarousel()
+  const t = useTranslations("MIX")
 
   useEffect(() => {
     if (!api) {
@@ -43,7 +45,7 @@ export function ImageCarousel({ images, altPrefix }: ImageCarouselProps) {
           height={192}
           className="object-cover w-full h-full"
         />
-        <span className="absolute text-sm text-gray-500">No Image Available</span>
+        <span className="absolute text-sm text-gray-500">{t("NoImageAvailable")}</span>
       </div>
     )
   }

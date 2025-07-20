@@ -297,9 +297,6 @@ export default function RegisterPage() {
               </Alert>
             )}
 
-            {/* --- input fields --- */}
-
-            {/* firstName, lastName, fatherName */}
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
               <div className="space-y-1">
                 <Label htmlFor="firstName">{t("firstName")}</Label>
@@ -345,7 +342,6 @@ export default function RegisterPage() {
               </div>
             </div>
 
-            {/* email */}
             <div className="space-y-1">
               <Label htmlFor="email">{t("email")}</Label>
               <Input
@@ -362,7 +358,6 @@ export default function RegisterPage() {
               )}
             </div>
 
-            {/* role */}
             <div className="space-y-1">
               <Label htmlFor="role">{t("userType")}</Label>
               <Select
@@ -382,7 +377,6 @@ export default function RegisterPage() {
               </Select>
             </div>
 
-            {/* organization, position */}
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div className="space-y-1">
                 <Label htmlFor="organization">{t("organization")}</Label>
@@ -415,7 +409,6 @@ export default function RegisterPage() {
               </div>
             </div>
 
-            {/* phone and address */}
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div className="space-y-1">
                 <Label htmlFor="phone">{t("phone")}</Label>
@@ -458,7 +451,6 @@ export default function RegisterPage() {
               </div>
             </div>
 
-            {/* National or foreign */}
             {!formData.isForeign && (
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div className="space-y-1">
@@ -551,7 +543,6 @@ export default function RegisterPage() {
               </label>
             </div>
 
-            {/* password fields */}
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div className="space-y-1">
                 <Label htmlFor="password">{t("password")}</Label>

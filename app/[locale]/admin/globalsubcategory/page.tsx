@@ -27,6 +27,7 @@ type GlobalSubCategory = {
   file: File | null | string;
   categoryId: number;
   subCategoryId: number;
+  image: string;
 };
 
 type UserJournal = {
@@ -51,6 +52,8 @@ export default function GlobalSubCategoryPublisher() {
   const [finishedJournals, setFinishedJournals] = useState<UserJournal[]>([]);
   const [counts, setCounts] = useState<Record<number, number>>({});
   const [subCategoryMaxCount, setSubCategoryMaxCount] = useState<number>(0);
+  const [imageFile, setImageFile] = useState<File | null>(null);
+  const [editImageFile, setEditImageFile] = useState<File | null>(null);
 
   useEffect(() => {
     fetchData();
@@ -93,12 +96,15 @@ export default function GlobalSubCategoryPublisher() {
     formData.append("categoryId", subCategory.categoryId.toString());
     formData.append("subCategoryId", subCategory.id.toString());
     formData.append("file", file);
+    if (imageFile) formData.append("image", imageFile);
+    else throw new Error("Şəkil faylı mütləq seçilməlidir.");
 
     try {
       await apiClient.createGlobalCategory(formData);
       await apiClient.deleteSubCategory(subCategory.id);
       setSubCategories((prev) => prev.filter((sc) => sc.id !== subCategory.id));
       setFiles((prev) => ({ ...prev, [subCategory.id]: null }));
+      setImageFile(null);
       await fetchData();
       alert("Uğurla yayımlandı və SubCategory silindi");
     } catch (error) {
@@ -129,6 +135,13 @@ export default function GlobalSubCategoryPublisher() {
       }));
     }
   }
+
+  function handleEditImageChange(e: ChangeEvent<HTMLInputElement>) {
+    if (e.target.files && e.target.files.length > 0) {
+      setEditImageFile(e.target.files[0]);
+    }
+  }
+
   async function handleEditSubmit(e: FormEvent) {
     e.preventDefault();
     if (!editData.id) return;
@@ -148,6 +161,9 @@ export default function GlobalSubCategoryPublisher() {
       formData.append("file", editData.file);
     }
 
+    if (editImageFile) {
+      formData.append("image", editImageFile);
+    }
     try {
       await apiClient.updateGlobalCategory(editData.id, formData);
       await fetchData();
@@ -260,6 +276,7 @@ export default function GlobalSubCategoryPublisher() {
                   "Açıqlama (EN)",
                   "Açıqlama (RU)",
                   "Fayl əlavə et",
+                  "Şəkil əlavə et",
                   "Yayımla",
                   "Sırala",
                 ].map((title) => (
@@ -288,6 +305,18 @@ export default function GlobalSubCategoryPublisher() {
                       onChange={(e) => handleFileChange(e, sub.id)}
                       className="w-[200px] mx-auto block text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded file:border-0 file:bg-indigo-50 file:text-indigo-700 hover:file:bg-indigo-100"
                     />
+                  </td>
+                  <td>
+                    <div>
+                      <input
+                        id="image"
+                        type="file"
+                        accept="image/*"
+                        onChange={(e) => setImageFile(e.target.files?.[0] || null)}
+                        required
+                        className="w-[200px] mx-auto block text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded file:border-0 file:bg-indigo-50 file:text-indigo-700 hover:file:bg-indigo-100"
+                      />
+                    </div>
                   </td>
                   <td className="px-6 py-4">
                     <button
@@ -320,6 +349,7 @@ export default function GlobalSubCategoryPublisher() {
             <table className="min-w-full divide-y divide-gray-200 rounded-lg border border-gray-300 shadow-sm">
               <thead className="bg-gray-100">
                 <tr>
+                  <th className="px-6 py-3 text-left text-xs font-semibold text-gray-600 uppercase">Şəkil</th>
                   <th className="px-6 py-3 text-left text-xs font-semibold text-gray-600 uppercase">Başlıq (AZ)</th>
                   <th className="px-6 py-3 text-left text-xs font-semibold text-gray-600 uppercase">Başlıq (EN)</th>
                   <th className="px-6 py-3 text-left text-xs font-semibold text-gray-600 uppercase">Başlıq (RU)</th>
@@ -334,6 +364,14 @@ export default function GlobalSubCategoryPublisher() {
               <tbody className="bg-white divide-y divide-gray-200">
                 {globalSubs.map((g) => (
                   <tr key={g.id} className="hover:bg-gray-50 transition">
+                    <td>
+                      <div className="w-[150px]">
+                        <img
+                          className="object-contain"
+                          src={`${process.env.NEXT_PUBLIC_API_URL_FOR_IMAGE}/uploads/globalsubcategory/${g.image}` || "Şəkil yoxdur"}
+                          alt={`${process.env.NEXT_PUBLIC_API_URL_FOR_IMAGE}/uploads/globalsubcategory/${g.image}` || "Şəkil yoxdur"} />
+                      </div>
+                    </td>
                     <td className="px-6 py-4 font-semibold text-gray-900">{g.title_az}</td>
                     <td className="px-6 py-4 font-semibold text-gray-900">{g.title_en}</td>
                     <td className="px-6 py-4 font-semibold text-gray-900">{g.title_ru}</td>
@@ -342,7 +380,7 @@ export default function GlobalSubCategoryPublisher() {
                     <td className="px-6 py-4 text-gray-700">{g.description_ru}</td>
                     <td className="px-6 py-4">
                       <a
-                        href={`${process.env.NEXT_PUBLIC_API_URL}/uploads/globalsubcategory/${typeof g.file === "string" ? g.file : ""}`}
+                        href={`${process.env.NEXT_PUBLIC_API_URL_FOR_IMAGE}/uploads/globalsubcategory/${typeof g.file === "string" ? g.file : ""}`}
                         target="_blank"
                         rel="noopener noreferrer"
                         className="text-blue-600 hover:underline"
@@ -444,6 +482,16 @@ export default function GlobalSubCategoryPublisher() {
                   type="file"
                   accept="image/*,application/pdf"
                   onChange={handleEditFileChange}
+                  className="w-full text-sm text-gray-500"
+                />
+              </div>
+              <div>
+                <label className="block mb-1 font-medium">Şəkil (əgər dəyişdirsəniz seçin)</label>
+                <input
+                  id="image"
+                  type="file"
+                  accept="image/*"
+                  onChange={handleEditImageChange}
                   className="w-full text-sm text-gray-500"
                 />
               </div>

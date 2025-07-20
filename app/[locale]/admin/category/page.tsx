@@ -230,7 +230,7 @@ export default function CreateCategoryPage() {
                                     <div>
                                         {category.image && (
                                             <img
-                                                src={`${process.env.NEXT_PUBLIC_API_URL}/uploads/categories/${category.image}`}
+                                                src={`${process.env.NEXT_PUBLIC_API_URL_FOR_IMAGE}/uploads/categories/${category.image}`}
                                                 alt="Şəkil"
                                                 className="w-40 h-40 object-cover rounded-md border"
                                             />

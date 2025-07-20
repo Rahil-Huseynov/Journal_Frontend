@@ -47,9 +47,6 @@ export default function SubCategoryCreatePage() {
   const [message, setMessage] = useState<string | null>(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [editId, setEditId] = useState<number | null>(null);
-  const [imageFile, setImageFile] = useState<File | null>(null);
-  const [editImageFile, setEditImageFile] = useState<File | null>(null);
-
 
   useEffect(() => {
     async function fetchCategories() {
@@ -92,14 +89,17 @@ export default function SubCategoryCreatePage() {
 
     try {
       const formData = new FormData();
-      if (imageFile) formData.append("image", imageFile);
-      else throw new Error("Şəkil faylı mütləq seçilməlidir.");
-
       Object.entries(form).forEach(([key, value]) => {
-        if (value !== "") {
+        if (key === "categoryId" || key === "requireCount") {
+          const numberValue = Number(value);
+          if (!Number.isNaN(numberValue)) {
+            formData.append(key, numberValue.toString());
+          }
+        } else if (value !== "") {
           formData.append(key, value);
         }
       });
+
 
       await apiClient.addSubCategories(formData);
 
@@ -114,7 +114,6 @@ export default function SubCategoryCreatePage() {
         categoryId: "",
         requireCount: "",
       });
-      setImageFile(null);
       const updated = await apiClient.getSubCategories();
       setSubcategories(updated);
 
@@ -159,10 +158,6 @@ export default function SubCategoryCreatePage() {
           formData.append(key, value.toString());
         }
       });
-
-      if (editImageFile) {
-        formData.append("image", editImageFile);
-      }
 
       await apiClient.updateSubCategories(formData, editId);
       setMessage("✅ Alt kateqoriya uğurla redaktə olundu!");
@@ -235,16 +230,6 @@ export default function SubCategoryCreatePage() {
               />
             </div>
             <div>
-              <Label htmlFor="image">Şəkil Faylı</Label>
-              <Input
-                id="image"
-                type="file"
-                accept="image/*"
-                onChange={(e) => setImageFile(e.target.files?.[0] || null)}
-                required
-              />
-            </div>
-            <div>
               <Label htmlFor="categoryId">Kateqoriya Seç</Label>
               <select
                 name="categoryId"
@@ -286,11 +271,6 @@ export default function SubCategoryCreatePage() {
               className="border rounded-md p-4 shadow-sm bg-gray-50 flex flex-col md:flex-row justify-between items-start md:items-center"
             >
               <div className="flex items-center gap-6">
-                <div className="w-[150px]">
-                  <img
-                    src={`${process.env.NEXT_PUBLIC_API_URL_FOR_IMAGE}/uploads/subcategory/${sub.image}`}
-                    alt={`${process.env.NEXT_PUBLIC_API_URL_FOR_IMAGE}/uploads/subcategory/${sub.image}`} />
-                </div>
                 <div>
                   <p className="font-medium text-indigo-700">{sub.title_az}</p>
                   <p className="text-sm text-gray-600 mt-1">{sub.description_az}</p>
@@ -359,18 +339,6 @@ export default function SubCategoryCreatePage() {
                   required
                 />
               </div>
-
-              <div>
-                <Label htmlFor="image">Şəkil Faylı</Label>
-                <Input
-                  id="image"
-                  type="file"
-                  accept="image/*"
-                  onChange={(e) => setEditImageFile(e.target.files?.[0] || null)}
-                  required
-                />
-              </div>
-
               <div>
                 <Label htmlFor="categoryIdEdit">Kateqoriya Seç</Label>
                 <select

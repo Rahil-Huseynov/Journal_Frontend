@@ -9,16 +9,18 @@ import { apiClient } from "@/lib/api-client";
 import { useAuth } from "@/lib/auth-context";
 import CountrySelect from "@/components/CountryCodeSelect";
 import CitizenshipCountrySelect from "@/components/CitizenshipCountrySelect";
-import { useLocale } from "next-intl";
+import { useLocale, useTranslations } from "next-intl";
 import { Eye, EyeOff } from "lucide-react";
 
 export default function SettingsPage() {
     const { user } = useAuth() as { user: any };
-    const locale = useLocale()
+    const locale = useLocale();
+    const t = useTranslations("Client_Settings");
 
     if (!user) {
-        return <p>Yüklənir...</p>;
+        return <p>{t("loadingText")}</p>;
     }
+
     const [formData, setFormData] = useState({
         firstName: user.firstName || "",
         lastName: user.lastName || "",
@@ -39,9 +41,11 @@ export default function SettingsPage() {
     const [errorMessages, setErrorMessages] = useState<{ [key: string]: string }>({});
     const [loading, setLoading] = useState(false);
     const [successMessage, setSuccessMessage] = useState<string | null>(null);
+
     const finEmpty = !user.fin;
     const idSerialEmpty = !user.idSerial;
     const hasPassport = !!user.passportId;
+
     const [passwordData, setPasswordData] = useState({ currentPassword: "", newPassword: "" });
     const [passwordErrors, setPasswordErrors] = useState<{ [key: string]: string }>({});
     const [passwordLoading, setPasswordLoading] = useState(false);
@@ -50,9 +54,7 @@ export default function SettingsPage() {
     const [showNewCurrentPassword, setshowNewCurrentPassword] = useState(false);
 
     const showForeignCitizenSelect = finEmpty && idSerialEmpty && !hasPassport;
-
     const finAndIdSerialReadOnly = hasPassport;
-
     const passportRequired = finEmpty && idSerialEmpty;
 
     const handlePasswordChange = (field: string, value: string) => {
@@ -61,7 +63,7 @@ export default function SettingsPage() {
         if (field === "newPassword") {
             const passwordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/;
             if (!passwordRegex.test(value)) {
-                setPasswordErrors((prev) => ({ ...prev, newPassword: "Yeni şifrə ən azı 8 simvol olmalı, böyük və kiçik hərf, rəqəm və xüsusi simvol (@$!%*?&) içerməlidir." }));
+                setPasswordErrors((prev) => ({ ...prev, newPassword: t("passwordErrorNewPattern") }));
             } else {
                 setPasswordErrors((prev) => {
                     const copy = { ...prev };
@@ -83,24 +85,22 @@ export default function SettingsPage() {
         const passwordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/;
 
         if (!passwordData.currentPassword.trim()) {
-            errors.currentPassword = "Hazırki şifrə daxil edilməlidir.";
+            errors.currentPassword = t("passwordErrorCurrent");
         }
 
         if (!passwordData.newPassword.trim()) {
-            errors.newPassword = "Yeni şifrə daxil edilməlidir.";
+            errors.newPassword = t("passwordErrorNew");
         } else if (!passwordRegex.test(passwordData.newPassword)) {
-            errors.newPassword =
-                "Yeni şifrə ən azı 8 simvol olmalı, böyük və kiçik hərf, rəqəm və xüsusi simvol (@$!%*?&) içerməlidir.";
+            errors.newPassword = t("passwordErrorNewPattern");
         }
 
         return errors;
     };
 
-
     const validateField = (field: string, value: string | boolean) => {
         if (field === "passportId" && passportRequired) {
             if (!value || (typeof value === "string" && value.trim() === "")) {
-                return "Pasport nömrəsi doldurulmalıdır.";
+                return t("passportRequiredError");
             }
         }
         if (
@@ -108,7 +108,7 @@ export default function SettingsPage() {
             typeof value === "string" &&
             value.trim() === ""
         ) {
-            return `${field} boş ola bilməz.`;
+            return `${field} ${t("fieldCannotBeEmpty") || "boş ola bilməz."}`;
         }
         return "";
     };
@@ -147,13 +147,12 @@ export default function SettingsPage() {
         try {
             setPasswordLoading(true);
 
-            
             const formData = new FormData();
             formData.append("currentPassword", passwordData.currentPassword);
             formData.append("newPassword", passwordData.newPassword);
-            
+
             await apiClient.updatePassword(formData);
-            setPasswordSuccessMessage("Şifrə uğurla yeniləndi.");
+            setPasswordSuccessMessage(t("passwordUpdateSuccess"));
             setPasswordData({ currentPassword: "", newPassword: "" });
             setPasswordErrors({});
         } catch (error: any) {
@@ -161,13 +160,12 @@ export default function SettingsPage() {
                 const message = error.response.data.message;
                 setPasswordErrors({ general: Array.isArray(message) ? message.join(" ") : message });
             } else {
-                setPasswordErrors({ general: "Hazırki şifrə düzgün deyil. Xəta baş verdi. Yenidən cəhd edin." });
+                setPasswordErrors({ general: t("errorGeneral") });
             }
         } finally {
             setPasswordLoading(false);
         }
     };
-
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
@@ -181,7 +179,7 @@ export default function SettingsPage() {
         }
 
         if (!user?.id) {
-            setErrorMessages({ general: "İstifadəçi ID-si tapılmadı. Yenidən daxil olun." });
+            setErrorMessages({ general: t("userIdNotFound") });
             return;
         }
 
@@ -200,10 +198,10 @@ export default function SettingsPage() {
             });
 
             await apiClient.updateUser(user.id.toString(), fd);
-            setSuccessMessage("Məlumatlar uğurla yeniləndi.");
+            setSuccessMessage(t("updateSuccess"));
             window.location.href = `/${locale}/client/profile`;
         } catch (error) {
-            setErrorMessages({ general: "Xəta baş verdi. Yenidən cəhd edin." });
+            setErrorMessages({ general: t("errorGeneral") });
         } finally {
             setLoading(false);
         }
@@ -213,13 +211,13 @@ export default function SettingsPage() {
         <div className="w-full mx-auto p-8 space-y-12 bg-white rounded-xl shadow-lg">
             <Card className="shadow-none bg-transparent">
                 <CardHeader>
-                    <CardTitle className="text-4xl font-extrabold text-indigo-800 mb-6">İstifadəçi Məlumatları</CardTitle>
+                    <CardTitle className="text-4xl font-extrabold text-indigo-800 mb-6">{t("userInfoTitle")}</CardTitle>
                 </CardHeader>
                 <CardContent>
                     <form onSubmit={handleSubmit} className="grid grid-cols-1 md:grid-cols-2 gap-8">
                         <div className="col-span-1 md:col-span-2">
                             <Label htmlFor="fin" className="font-semibold mb-1 block text-gray-700">
-                                FİN kodu
+                                {t("finLabel")}
                             </Label>
                             <Input
                                 id="fin"
@@ -233,7 +231,7 @@ export default function SettingsPage() {
 
                         <div>
                             <Label htmlFor="idSerial" className="font-semibold mb-1 block text-gray-700">
-                                Şəxsiyyət vəsiqəsinin seriya nömrəsi
+                                {t("idSerialLabel")}
                             </Label>
                             <Input
                                 id="idSerial"
@@ -243,8 +241,9 @@ export default function SettingsPage() {
                                 maxLength={9}
                                 readOnly={finAndIdSerialReadOnly}
                                 disabled={finAndIdSerialReadOnly}
-                                className={`rounded-md shadow-sm border-gray-300 focus:ring-indigo-500 ${finAndIdSerialReadOnly ? "bg-gray-100 cursor-not-allowed" : ""
-                                    }`}
+                                className={`rounded-md shadow-sm border-gray-300 focus:ring-indigo-500 ${
+                                    finAndIdSerialReadOnly ? "bg-gray-100 cursor-not-allowed" : ""
+                                }`}
                             />
                             {errorMessages.idSerial && <p className="text-red-600 text-sm mt-1">{errorMessages.idSerial}</p>}
                         </div>
@@ -252,7 +251,7 @@ export default function SettingsPage() {
                         {(hasPassport || showForeignCitizenSelect) && (
                             <div>
                                 <Label htmlFor="passportId" className="font-semibold mb-1 block text-gray-700">
-                                    Pasport nömrəsi
+                                    {t("passportLabel")}
                                 </Label>
                                 <Input
                                     id="passportId"
@@ -261,8 +260,9 @@ export default function SettingsPage() {
                                     placeholder="Nümunə: AZ1234567"
                                     maxLength={20}
                                     required={passportRequired}
-                                    className={`rounded-md shadow-sm border-gray-300 focus:ring-indigo-500 ${errorMessages.passportId ? "border-red-600 focus:ring-red-600" : ""
-                                        }`}
+                                    className={`rounded-md shadow-sm border-gray-300 focus:ring-indigo-500 ${
+                                        errorMessages.passportId ? "border-red-600 focus:ring-red-600" : ""
+                                    }`}
                                 />
                                 {errorMessages.passportId && <p className="text-red-600 text-sm mt-1">{errorMessages.passportId}</p>}
                             </div>
@@ -278,14 +278,14 @@ export default function SettingsPage() {
                                     className="rounded border-gray-300 text-indigo-600 focus:ring-indigo-500"
                                 />
                                 <Label htmlFor="isForeignCitizen" className="cursor-pointer">
-                                    Xarici vətəndaşam
+                                    {t("foreignCitizenLabel")}
                                 </Label>
                             </div>
                         )}
 
                         <div>
                             <Label htmlFor="firstName" className="font-semibold mb-1 block text-gray-700">
-                                Ad
+                                {t("firstNameLabel")}
                             </Label>
                             <Input
                                 id="firstName"
@@ -293,14 +293,16 @@ export default function SettingsPage() {
                                 onChange={(e) => handleChange("firstName", e.target.value)}
                                 placeholder="Nümunə: Ayxan"
                                 maxLength={30}
-                                className={`rounded-md shadow-sm ${errorMessages.firstName ? "border-red-600 focus:ring-red-600" : "border-gray-300 focus:ring-indigo-500"}`}
+                                className={`rounded-md shadow-sm ${
+                                    errorMessages.firstName ? "border-red-600 focus:ring-red-600" : "border-gray-300 focus:ring-indigo-500"
+                                }`}
                             />
                             {errorMessages.firstName && <p className="text-red-600 text-sm mt-1">{errorMessages.firstName}</p>}
                         </div>
 
                         <div>
                             <Label htmlFor="lastName" className="font-semibold mb-1 block text-gray-700">
-                                Soyad
+                                {t("lastNameLabel")}
                             </Label>
                             <Input
                                 id="lastName"
@@ -308,14 +310,16 @@ export default function SettingsPage() {
                                 onChange={(e) => handleChange("lastName", e.target.value)}
                                 placeholder="Nümunə: Məmmədov"
                                 maxLength={30}
-                                className={`rounded-md shadow-sm ${errorMessages.lastName ? "border-red-600 focus:ring-red-600" : "border-gray-300 focus:ring-indigo-500"}`}
+                                className={`rounded-md shadow-sm ${
+                                    errorMessages.lastName ? "border-red-600 focus:ring-red-600" : "border-gray-300 focus:ring-indigo-500"
+                                }`}
                             />
                             {errorMessages.lastName && <p className="text-red-600 text-sm mt-1">{errorMessages.lastName}</p>}
                         </div>
 
                         <div>
                             <Label htmlFor="fatherName" className="font-semibold mb-1 block text-gray-700">
-                                Ata adı
+                                {t("fatherNameLabel")}
                             </Label>
                             <Input
                                 id="fatherName"
@@ -323,14 +327,16 @@ export default function SettingsPage() {
                                 onChange={(e) => handleChange("fatherName", e.target.value)}
                                 placeholder="Nümunə: Hüseyn"
                                 maxLength={30}
-                                className={`rounded-md shadow-sm ${errorMessages.fatherName ? "border-red-600 focus:ring-red-600" : "border-gray-300 focus:ring-indigo-500"}`}
+                                className={`rounded-md shadow-sm ${
+                                    errorMessages.fatherName ? "border-red-600 focus:ring-red-600" : "border-gray-300 focus:ring-indigo-500"
+                                }`}
                             />
                             {errorMessages.fatherName && <p className="text-red-600 text-sm mt-1">{errorMessages.fatherName}</p>}
                         </div>
 
                         <div>
                             <Label htmlFor="email" className="font-semibold mb-1 block text-gray-700">
-                                E-poçt
+                                {t("emailLabel")}
                             </Label>
                             <Input
                                 id="email"
@@ -338,22 +344,29 @@ export default function SettingsPage() {
                                 value={formData.email}
                                 onChange={(e) => handleChange("email", e.target.value)}
                                 placeholder="Nümunə: example@email.com"
-                                className={`rounded-md shadow-sm ${errorMessages.email ? "border-red-600 focus:ring-red-600" : "border-gray-300 focus:ring-indigo-500"}`}
+                                className={`rounded-md shadow-sm ${
+                                    errorMessages.email ? "border-red-600 focus:ring-red-600" : "border-gray-300 focus:ring-indigo-500"
+                                }`}
                             />
                             {errorMessages.email && <p className="text-red-600 text-sm mt-1">{errorMessages.email}</p>}
                         </div>
 
                         <div className="space-y-1">
-                            <Label className="font-semibold block text-gray-700">Mobil nömrə</Label>
+                            <Label className="font-semibold block text-gray-700">{t("mobileNumberLabel")}</Label>
                             <div className="flex gap-2">
-                                <CountrySelect value={formData.phoneCode} onChange={(val) => handleChange("phoneCode", val)} />
+                                <CountrySelect
+                                    value={formData.phoneCode}
+                                    onChange={(val) => handleChange("phoneCode", val)}
+                                />
                                 <Input
                                     id="phoneNumber"
-                                    placeholder="Nümunə: 501234567"
+                                    placeholder={t("phonePlaceholder")}
                                     value={formData.phoneNumber}
                                     onChange={(e) => handleChange("phoneNumber", e.target.value)}
                                     maxLength={15}
-                                    className={`flex-grow rounded-md shadow-sm ${errorMessages.phoneNumber ? "border-red-600 focus:ring-red-600" : "border-gray-300 focus:ring-indigo-500"}`}
+                                    className={`flex-grow rounded-md shadow-sm ${
+                                        errorMessages.phoneNumber ? "border-red-600 focus:ring-red-600" : "border-gray-300 focus:ring-indigo-500"
+                                    }`}
                                 />
                             </div>
                             {(errorMessages.phoneCode || errorMessages.phoneNumber) && (
@@ -363,7 +376,7 @@ export default function SettingsPage() {
 
                         <div>
                             <Label htmlFor="organization" className="font-semibold mb-1 block text-gray-700">
-                                Təşkilat
+                                {t("organizationLabel")}
                             </Label>
                             <Input
                                 id="organization"
@@ -376,7 +389,7 @@ export default function SettingsPage() {
 
                         <div>
                             <Label htmlFor="position" className="font-semibold mb-1 block text-gray-700">
-                                Vəzifə
+                                {t("positionLabel")}
                             </Label>
                             <Input
                                 id="position"
@@ -389,7 +402,7 @@ export default function SettingsPage() {
 
                         <div>
                             <Label htmlFor="address" className="font-semibold mb-1 block text-gray-700">
-                                Ünvan
+                                {t("addressLabel")}
                             </Label>
                             <Input
                                 id="address"
@@ -402,7 +415,7 @@ export default function SettingsPage() {
 
                         <div className="space-y-1">
                             <Label htmlFor="citizenship" className="font-semibold block text-gray-700">
-                                Vətəndaşlıq
+                                {t("citizenshipLabel")}
                             </Label>
                             <CitizenshipCountrySelect
                                 value={formData.citizenship}
@@ -417,14 +430,11 @@ export default function SettingsPage() {
                                     }))
                                 }
                             />
-                            {errorMessages.citizenship && (
-                                <p className="text-red-600 text-sm mt-1">{errorMessages.citizenship}</p>
-                            )}
+                            {errorMessages.citizenship && <p className="text-red-600 text-sm mt-1">{errorMessages.citizenship}</p>}
                         </div>
 
-
                         {errorMessages.general && (
-                            <p className="text-red-600 text-center mt-6 col-span-2">{errorMessages.general}</p>
+                            <p className="text-red-600 text-center mt-6 col-span-2">{t("errorGeneral")}</p>
                         )}
 
                         <Button
@@ -432,31 +442,36 @@ export default function SettingsPage() {
                             disabled={loading}
                             className="mt-8 w-full md:w-48 mx-auto block bg-indigo-600 hover:bg-indigo-700 text-white font-semibold rounded-md shadow-md transition col-span-2"
                         >
-                            {loading ? "Yüklənir..." : "Məlumatları Yenilə"}
+                            {loading ? t("loadingText") : t("updateButton")}
                         </Button>
 
                         {successMessage && (
-                            <p className="text-green-600 mt-6 text-center font-semibold col-span-2">{successMessage}</p>
+                            <p className="text-green-600 mt-6 text-center font-semibold col-span-2">{t("updateSuccess")}</p>
                         )}
                     </form>
                 </CardContent>
             </Card>
+
             <Card className="shadow-none bg-transparent mt-12 relative">
                 <CardHeader>
-                    <CardTitle className="text-4xl font-extrabold text-indigo-800 mb-6">Şifrənin yenilənməsi</CardTitle>
+                    <CardTitle className="text-4xl font-extrabold text-indigo-800 mb-6">{t("passwordUpdateTitle")}</CardTitle>
                 </CardHeader>
                 <CardContent>
                     <form onSubmit={handlePasswordSubmit} className="grid grid-cols-1 md:grid-cols-2 gap-8 relative">
                         <div className="relative">
-                            <Label htmlFor="currentPassword" className="font-semibold mb-1 block text-gray-700">Hazırki şifrə</Label>
+                            <Label htmlFor="currentPassword" className="font-semibold mb-1 block text-gray-700">
+                                {t("currentPasswordLabel")}
+                            </Label>
                             <Input
                                 id="currentPassword"
                                 type={showCurrentPassword ? "text" : "password"}
                                 value={passwordData.currentPassword}
                                 onChange={(e) => handlePasswordChange("currentPassword", e.target.value)}
-                                placeholder="Hazırki şifrə"
+                                placeholder={t("currentPasswordLabel")}
                                 maxLength={30}
-                                className={`rounded-md shadow-sm ${passwordErrors.currentPassword ? "border-red-600 focus:ring-red-600" : "border-gray-300 focus:ring-indigo-500"}`}
+                                className={`rounded-md shadow-sm ${
+                                    passwordErrors.currentPassword ? "border-red-600 focus:ring-red-600" : "border-gray-300 focus:ring-indigo-500"
+                                }`}
                             />
                             <button
                                 type="button"
@@ -466,19 +481,25 @@ export default function SettingsPage() {
                             >
                                 {showCurrentPassword ? <EyeOff /> : <Eye />}
                             </button>
-                            {passwordErrors.currentPassword && <p className="text-red-600 text-sm mt-1">{passwordErrors.currentPassword}</p>}
+                            {passwordErrors.currentPassword && (
+                                <p className="text-red-600 text-sm mt-1">{passwordErrors.currentPassword}</p>
+                            )}
                         </div>
 
                         <div>
-                            <Label htmlFor="newPassword" className="font-semibold mb-1 block text-gray-700">Yeni şifrə</Label>
+                            <Label htmlFor="newPassword" className="font-semibold mb-1 block text-gray-700">
+                                {t("newPasswordLabel")}
+                            </Label>
                             <Input
                                 id="newPassword"
                                 type={showNewCurrentPassword ? "text" : "password"}
                                 value={passwordData.newPassword}
                                 onChange={(e) => handlePasswordChange("newPassword", e.target.value)}
-                                placeholder="Yeni şifrə"
+                                placeholder={t("newPasswordLabel")}
                                 maxLength={30}
-                                className={`rounded-md shadow-sm ${passwordErrors.newPassword ? "border-red-600 focus:ring-red-600" : "border-gray-300 focus:ring-indigo-500"}`}
+                                className={`rounded-md shadow-sm ${
+                                    passwordErrors.newPassword ? "border-red-600 focus:ring-red-600" : "border-gray-300 focus:ring-indigo-500"
+                                }`}
                             />
                             <button
                                 type="button"
@@ -500,16 +521,15 @@ export default function SettingsPage() {
                             disabled={passwordLoading}
                             className="mt-8 w-full md:w-48 mx-auto block bg-indigo-600 hover:bg-indigo-700 text-white font-semibold rounded-md shadow-md transition col-span-2"
                         >
-                            {passwordLoading ? "Yüklənir..." : "Şifrəni Yenilə"}
+                            {passwordLoading ? t("loadingText") : t("passwordUpdateButton")}
                         </Button>
 
                         {passwordSuccessMessage && (
-                            <p className="text-green-600 mt-6 text-center font-semibold col-span-2">{passwordSuccessMessage}</p>
+                            <p className="text-green-600 mt-6 text-center font-semibold col-span-2">{t("passwordUpdateSuccess")}</p>
                         )}
                     </form>
                 </CardContent>
             </Card>
-
         </div>
     );
 }

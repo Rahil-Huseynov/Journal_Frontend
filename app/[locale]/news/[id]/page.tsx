@@ -16,11 +16,7 @@ export default async function NewsDetailPage({ params }: NewsDetailPageProps) {
 
   const newsItem = await apiClient.getNewsById(newsId)
   if (!newsItem) notFound()
-
-  // Dilə görə müvafiq title və description seçək
   const locale = params.locale.toLowerCase()
-
-  // Default olaraq azərbaycan dili götürək
   const title =
     locale === "en" ? newsItem.title_en :
     locale === "ru" ? newsItem.title_ru :
@@ -34,13 +30,11 @@ export default async function NewsDetailPage({ params }: NewsDetailPageProps) {
   return (
     <main className="max-w-7xl mx-auto px-4 md:px-6 py-10">
       <div className="border border-gray-200 dark:border-gray-800 rounded-xl overflow-hidden shadow-sm bg-white dark:bg-gray-900">
-        {/* Carousel */}
         <div className="flex mt-6 justify-center items-center">
           <div className="min-w-[700px] max-w-[700px] border-b border-gray-200 dark:border-gray-700">
             <ImageCarousel images={newsItem.images} altPrefix={title} />
           </div>
         </div>
-        {/* Article */}
         <article className="px-6 md:px-10 py-8">
           <header className="mb-6">
             <h1 className="text-2xl md:text-4xl font-bold text-gray-900 dark:text-white text-center">
@@ -53,7 +47,7 @@ export default async function NewsDetailPage({ params }: NewsDetailPageProps) {
           </section>
           <section>
             <p className="text-sm text-muted-foreground text-end mt-2">
-              Published on {new Date(newsItem.createdAt).toLocaleDateString()}
+               {new Date(newsItem.createdAt).toLocaleDateString()}
             </p>
           </section>
         </article>

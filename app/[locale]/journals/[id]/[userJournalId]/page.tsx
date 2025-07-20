@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { useParams } from "next/navigation";
-import { useLocale } from "next-intl";
+import { useLocale, useTranslations } from "next-intl";
 import { apiClient } from "@/lib/api-client";
 
 interface Author {
@@ -23,7 +23,7 @@ interface UserJournal {
   description_en: string;
   description_ru: string;
   file: string;
-  approvedFile:string;
+  approvedFile: string;
 }
 
 interface GlobalSubCategory {
@@ -57,7 +57,7 @@ export default function JournalsInGlobalSubCategories() {
     userJournalId: string;
   }>();
   const locale = useLocale();
-
+  const t = useTranslations("Journals")
   const [category, setCategory] = useState<Category | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -73,19 +73,19 @@ export default function JournalsInGlobalSubCategories() {
         const data = await apiClient.getCategoryById(Number(id));
         setCategory(data);
       } catch {
-        setError("Məlumatları yükləmək mümkün olmadı.");
+        setError(t("Məlumatları yükləmək mümkün olmadı."));
       } finally {
         setLoading(false);
       }
     })();
   }, [id]);
 
-  if (loading) return <div className="p-6 text-center">Yüklənir...</div>;
+  if (loading) return <div className="p-6 text-center">{t("Loading")}</div>;
   if (error)
     return <div className="p-6 text-center text-red-600">{error}</div>;
   if (!category)
     return (
-      <div className="p-6 text-center text-red-600">Kateqoriya tapılmadı.</div>
+      <div className="p-6 text-center text-red-600">{t("Journalnotfound")}</div>
     );
 
   const selectedSubCategory = category.globalSubCategory.find(
@@ -95,7 +95,7 @@ export default function JournalsInGlobalSubCategories() {
   if (!selectedSubCategory)
     return (
       <div className="p-6 text-center text-red-600">
-        Alt kateqoriya tapılmadı.
+        {t("Nonumberforthisjournalwasfound")}
       </div>
     );
 
@@ -115,14 +115,14 @@ export default function JournalsInGlobalSubCategories() {
             />
           ) : (
             <div className="w-full h-48 xl:h-64 bg-gray-200 flex items-center justify-center rounded-xl text-gray-500">
-              Şəkil yoxdur
+              {t("noimage")}
             </div>
           )}
         </div>
 
         <div className="w-full xl:w-2/4 overflow-auto">
-          {selectedSubCategory.userJournals.length === 0  ? (
-            <p className="italic text-gray-600">Bu alt kateqoriyada jurnal tapılmadı.</p>
+          {selectedSubCategory.userJournals.length === 0 ? (
+            <p className="italic text-gray-600">{t("Nonumberforthisjournalwasfound")}</p>
           ) : (
             <ul className="space-y-6">
               {selectedSubCategory.userJournals.map((journal) => (
@@ -159,11 +159,11 @@ export default function JournalsInGlobalSubCategories() {
               <table className="w-full text-sm text-left border border-gray-300">
                 <thead className="bg-gray-100">
                   <tr>
-                    <th className="p-2 border w-[160] break-words">Ad</th>
-                    <th className="p-2 border w-[160] break-words">Soyad</th>
-                    <th className="p-2 border w-[160] break-words">Elmi dərəcə/Elmi ad</th>
-                    <th className="p-2 border w-[160] break-words">İş yeri</th>
-                    <th className="p-2 border w-[160] break-words">Ölkə</th>
+                    <th className="p-2 border w-[160] break-words">{t('Ad')}</th>
+                    <th className="p-2 border w-[160] break-words">{t('Soyad')}</th>
+                    <th className="p-2 border w-[160] break-words">{t('Elmi dərəcə/Elmi ad')}</th>
+                    <th className="p-2 border w-[160] break-words">{t('İş yeri')}</th>
+                    <th className="p-2 border w-[160] break-words">{t('Ölkə')}</th>
                   </tr>
                 </thead>
                 <tbody>

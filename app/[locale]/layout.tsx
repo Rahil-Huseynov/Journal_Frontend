@@ -10,8 +10,8 @@ import { Navbar } from "@/components/navbar"
 const inter = Inter({ subsets: ["latin"] })
 
 export const metadata: Metadata = {
-  title: "ScientificWorks - Elmi Tədqiqatlar Platforması",
-  description: "Elmi məqalələrinizi paylaşın və akademik icma ilə əlaqə qurun",
+  title: "Scientific Journals - Scientific Research Platform",
+  description: "Share your scientific articles and connect with the academic community",
 }
 
 export default async function LocaleLayout({

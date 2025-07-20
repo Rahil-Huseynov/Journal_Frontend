@@ -16,6 +16,8 @@ import { BookOpen, ArrowLeft } from "lucide-react";
 import Link from "next/link";
 import { useLocale, useTranslations } from "next-intl";
 import { apiClient } from "@/lib/api-client";
+import Image from "next/image";
+import logo from '../../../../public/favicon.png'
 
 export default function ForgotPasswordPage() {
   const [email, setEmail] = useState("");
@@ -33,9 +35,9 @@ export default function ForgotPasswordPage() {
 
     try {
       await apiClient.forgotPassword(email);
-      setMessage("Şifrə sıfırlama linki e-poçt ünvanınıza göndərildi.");
+      setMessage(t("passwordResetLinkSent"));
     } catch (err: any) {
-      setError(err.message || "Xəta baş verdi. Yenidən cəhd edin.");
+      setError(err.message || t("errorOccurredTryAgain"));
     } finally {
       setIsLoading(false);
     }
@@ -45,16 +47,25 @@ export default function ForgotPasswordPage() {
     <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 flex items-center justify-center p-4">
       <Card className="w-full max-w-md">
         <CardHeader className="text-center">
-          <div className="flex items-center justify-center mb-4">
-            <BookOpen className="h-8 w-8 text-blue-600" />
-            <span className="ml-2 text-2xl font-bold text-gray-900">
-              ScientificWorks
-            </span>
+          <div  className="flex justify-center items-center">
+            <div className="flex items-center justify-center">
+              <div>
+                <Image
+                  src={logo}
+                  alt="Scientific Journals logo"
+                  width={70}
+                  height={50}
+                  priority
+                />
+              </div>
+              <div className="text-left">
+                <p className="ml-2 text-xl font-bold  font-delius">{t("logo_title")}</p>
+                <p className="ml-2 text-l text-gray-900">{t("logo_description")}</p>
+              </div>
+            </div>
           </div>
-          <CardTitle className="text-2xl">{t("resetPassword")}</CardTitle>
-          <CardDescription>
-            E-poçt ünvanınızı daxil edin və şifrə sıfırlama linki alın
-          </CardDescription>
+          <CardTitle className="pt-6 text-xl">{t("resetPassword")}</CardTitle>
+          <CardDescription>{t("enterEmailToReset")}</CardDescription>
         </CardHeader>
 
         <form onSubmit={handleSubmit}>
@@ -78,7 +89,7 @@ export default function ForgotPasswordPage() {
               <Input
                 id="email"
                 type="email"
-                placeholder="ornek@email.com"
+                placeholder={t("emailPlaceholder")}
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
                 required
@@ -88,7 +99,7 @@ export default function ForgotPasswordPage() {
 
           <CardFooter className="flex flex-col space-y-4">
             <Button type="submit" className="w-full" disabled={isLoading}>
-              {isLoading ? "Göndərilir..." : "Şifrə sıfırlama linki göndər"}
+              {isLoading ? t("sending") : t("sendResetLink")}
             </Button>
 
             <Link

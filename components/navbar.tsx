@@ -39,7 +39,7 @@ export function Navbar() {
               <div>
                 <Image
                   src={logo}
-                  alt="ScientificWorks logo"
+                  alt="Scientific Journals logo"
                   width={70}
                   height={50}
                   priority

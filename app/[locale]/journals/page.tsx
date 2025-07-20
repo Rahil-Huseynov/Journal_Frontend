@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { useState, useEffect } from "react";
-import { useLocale } from "next-intl";
+import { useLocale, useTranslations } from "next-intl";
 import { apiClient } from "@/lib/api-client";
 
 interface Category {
@@ -19,6 +19,7 @@ interface Category {
 export default function JournalsPage() {
   const [categories, setCategories] = useState<Category[]>([]);
   const locale = useLocale();
+  const t = useTranslations("Journals")
 
   useEffect(() => {
     async function fetchCategories() {
@@ -42,7 +43,7 @@ export default function JournalsPage() {
 
   return (
     <div className="max-w-7xl mx-auto p-8">
-      <h1 className="text-4xl font-bold mb-10 text-center">Jurnallar</h1>
+      <h1 className="text-4xl font-bold mb-10 text-center">{t("Journals")}</h1>
 
       <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
         {categories.map((cat) => {
@@ -90,7 +91,7 @@ export default function JournalsPage() {
                     duration-150
                   "
                 >
-                  Daha ətraflı
+                  {t("Readmore")}
                   <svg
                     className="ml-2 w-4 h-4"
                     fill="none"

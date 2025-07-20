@@ -2,7 +2,7 @@
 
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
-import { BookOpen, ArrowRight} from "lucide-react"
+import { BookOpen, ArrowRight } from "lucide-react"
 import Link from "next/link"
 import { useLocale, useTranslations } from "next-intl"
 import AnimatedText from "@/components/AnimatedText"
@@ -26,13 +26,14 @@ interface Category {
 
 
 export default function LandingPage() {
-  const t = useTranslations()
   const locale = useLocale();
+  const t = useTranslations("Hero")
+
   const animatedTexts = [
     {
-      before: t("Hero.text.before"),
-      highlight: t("Hero.text.highlight"),
-      after: t("Hero.text.after")
+      before: t("text.before"),
+      highlight: t("text.highlight"),
+      after: t("text.after")
     }
   ];
 
@@ -73,21 +74,21 @@ export default function LandingPage() {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center">
             <Badge className="mb-4" variant="secondary">
-              {t("Hero.badge")}
+              {t("badge")}
             </Badge>
             <h1 className="text-4xl md:text-6xl font-bold text-gray-900 mb-6">
               <AnimatedText texts={animatedTexts} />
             </h1>
-            <p className="text-xl text-gray-600 mb-8 max-w-3xl mx-auto">{t("Hero.description")}</p>
+            <p className="text-xl text-gray-600 mb-8 max-w-3xl mx-auto">{t("description")}</p>
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
               <Link href={`/${locale}/auth/register`}>
                 <Button size="lg" className="w-full sm:w-auto">
-                  {t("Hero.startNow")}
+                  {t("startNow")}
                   <ArrowRight className="ml-2 h-4 w-4" />
                 </Button>
               </Link>
               <Button size="lg" variant="outline" className="w-full sm:w-auto bg-transparent">
-                {t("Hero.learnMore")}
+                {t("learnMore")}
               </Button>
             </div>
           </div>
@@ -98,10 +99,10 @@ export default function LandingPage() {
         <div className="max-w-[1400px] mx-auto px-6 lg:px-8">
           <div className="text-center mb-16">
             <h2 className="text-4xl font-extrabold tracking-tight text-gray-900 sm:text-5xl">
-              Bütün Jurnallar
+              {t("all_journal")}
             </h2>
             <p className="mt-4 text-lg text-gray-600 max-w-2xl mx-auto">
-              Platformadakı bütün elmi jurnallarla tanış olun
+              {t("Discoverallthescientific")}
             </p>
           </div>
 
@@ -148,7 +149,7 @@ export default function LandingPage() {
                     duration-150
                   "
                     >
-                      Daha ətraflı
+                      {t("Readmore")}
                       <svg
                         className="ml-2 w-4 h-4"
                         fill="none"
@@ -176,7 +177,7 @@ export default function LandingPage() {
         <div className="max-w-7xl mx-auto px-6 lg:px-8">
           <div className="text-center mb-16">
             <h2 className="text-4xl font-extrabold tracking-tight text-gray-900 sm:text-5xl">
-              Son Xəbərlər
+              {t("LatestNews")}
             </h2>
           </div>
 
@@ -190,7 +191,7 @@ export default function LandingPage() {
               href={`${locale}/news`}
               className="inline-flex items-center gap-2 px-6 py-3 bg-blue-600 text-white text-sm font-medium rounded-full shadow-md hover:bg-blue-700 transition duration-300"
             >
-              Bütün Xəbərlər
+              {t("Allnews")}
               <ArrowRight className="w-4 h-4" />
             </Link>
           </div>
@@ -204,7 +205,7 @@ export default function LandingPage() {
             <div>
               <div className="flex items-center mb-4">
                 <BookOpen className="h-8 w-8 text-blue-400" />
-                <span className="ml-2 text-xl font-bold">ScientificWorks</span>
+                <span className="ml-2 text-xl font-bold">Scientific Journals</span>
               </div>
               <p className="text-gray-400">Elmi tədqiqatçılar üçün yaradılmış peşəkar platform</p>
             </div>
@@ -229,14 +230,14 @@ export default function LandingPage() {
             <div>
               <h3 className="text-lg font-semibold mb-4">Əlaqə</h3>
               <ul className="space-y-2 text-gray-400">
-                <li>info@scientificworks.az</li>
+                <li>info@scientificjournals.az</li>
                 <li>+994 12 345 67 89</li>
                 <li>Bakı, Azərbaycan</li>
               </ul>
             </div>
           </div>
           <div className="border-t border-gray-800 mt-8 pt-8 text-center text-gray-400">
-            <p>&copy; 2024 ScientificWorks. Bütün hüquqlar qorunur.</p>
+            <p>&copy; 2025 Scientific Journals. Bütün hüquqlar qorunur.</p>
           </div>
         </div>
       </footer>

@@ -3,7 +3,7 @@
 import { useAuth } from "@/lib/auth-context"
 import { apiClient } from "@/lib/api-client"
 import { useEffect, useState } from "react"
-import { useLocale } from "next-intl"
+import { useLocale, useTranslations } from "next-intl"
 
 type Category = {
   id: number
@@ -37,11 +37,12 @@ interface JournalForm {
 
 export default function ClientaddarticlesPage() {
   const { user } = useAuth()
+  const t = useTranslations("Client_AddArticles")
+  const locale = useLocale()
+
   const [loading, setLoading] = useState(false)
   const [file, setFile] = useState<File | null>(null)
   const [categories, setCategories] = useState<Category[]>([])
-  const locale = useLocale()
-
   const [alertMessage, setAlertMessage] = useState<string | null>(null)
 
   useEffect(() => {
@@ -50,11 +51,11 @@ export default function ClientaddarticlesPage() {
         const data = await apiClient.getCategories()
         setCategories(data)
       } catch (error) {
-        console.error("Kateqoriyalar alınarkən xəta:", error)
+        console.error(t("error_fetching_categories"), error)
       }
     }
     fetchCategories()
-  }, [])
+  }, [t])
 
   const [form, setForm] = useState<JournalForm>({
     title_az: "",
@@ -112,11 +113,11 @@ export default function ClientaddarticlesPage() {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
     if (!user) {
-      setAlertMessage("Zəhmət olmasa, daxil olun")
+      setAlertMessage(t("please_login"))
       return
     }
     if (!form.categoryId || !form.subCategoryId) {
-      setAlertMessage("Kateqoriya və alt kateqoriya seçməlisiniz")
+      setAlertMessage(t("select_category_subcategory"))
       return
     }
 
@@ -142,7 +143,7 @@ export default function ClientaddarticlesPage() {
     try {
       setLoading(true)
       await apiClient.addjournalforUser(formData)
-      setAlertMessage("Jurnal uğurla əlavə olundu!")
+      setAlertMessage(t("journal_added_success"))
 
       setForm({
         title_az: "",
@@ -167,7 +168,7 @@ export default function ClientaddarticlesPage() {
         window.location.href = `/${locale}/client/myarticles`
       }, 3000)
     } catch (error) {
-      setAlertMessage("Xəta baş verdi!")
+      setAlertMessage(t("error_occurred"))
       console.error(error)
       setTimeout(() => setAlertMessage(null), 3000)
     } finally {
@@ -178,12 +179,12 @@ export default function ClientaddarticlesPage() {
   return (
     <div className="w-full max-w-4xl mx-auto px-4 py-10">
       <div className="bg-white shadow-xl rounded-2xl p-6 border border-gray-100">
-        <h2 className="text-2xl font-semibold mb-6 text-gray-800">📝 Yeni Jurnal Əlavə Et</h2>
+        <h2 className="text-2xl font-semibold mb-6 text-gray-800">📝 {t("add_new_journal")}</h2>
         <form onSubmit={handleSubmit} className="space-y-5 w-full">
           {[
-            { name: "title_az", label: "Başlıq (AZ)" },
-            { name: "title_en", label: "Title (EN)" },
-            { name: "title_ru", label: "Заголовок (RU)" },
+            { name: "title_az", label: t("title_az") },
+            { name: "title_en", label: t("title_en") },
+            { name: "title_ru", label: t("title_ru") },
           ].map((input) => (
             <div key={input.name}>
               <label className="block text-sm text-gray-600 mb-1">{input.label}</label>
@@ -198,9 +199,9 @@ export default function ClientaddarticlesPage() {
           ))}
 
           {[
-            { name: "description_az", label: "Təsvir (AZ)" },
-            { name: "description_en", label: "Description (EN)" },
-            { name: "description_ru", label: "Описание (RU)" },
+            { name: "description_az", label: t("description_az") },
+            { name: "description_en", label: t("description_en") },
+            { name: "description_ru", label: t("description_ru") },
           ].map((area) => (
             <div key={area.name}>
               <label className="block text-sm text-gray-600 mb-1">{area.label}</label>
@@ -216,9 +217,9 @@ export default function ClientaddarticlesPage() {
           ))}
 
           {[
-            { name: "keywords_az", label: "Açar söz (AZ)" },
-            { name: "keywords_en", label: "Keywords (EN)" },
-            { name: "keywords_ru", label: "Ключевые слова (RU)" },
+            { name: "keywords_az", label: t("keywords_az") },
+            { name: "keywords_en", label: t("keywords_en") },
+            { name: "keywords_ru", label: t("keywords_ru") },
           ].map((area) => (
             <div key={area.name}>
               <label className="block text-sm text-gray-600 mb-1">{area.label}</label>
@@ -234,7 +235,7 @@ export default function ClientaddarticlesPage() {
           ))}
 
           <div>
-            <label className="block text-sm text-gray-600 mb-1">Kateqoriya</label>
+            <label className="block text-sm text-gray-600 mb-1">{t("category")}</label>
             <select
               name="categoryId"
               value={form.categoryId ?? ""}
@@ -242,7 +243,7 @@ export default function ClientaddarticlesPage() {
               required
               className="w-full p-3 border rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-400 transition"
             >
-              <option value="">Seçin...</option>
+              <option value="">{t("select_option")}</option>
               {categories.map((cat) => (
                 <option key={cat.id} value={cat.id}>
                   {cat.title_az}
@@ -252,7 +253,7 @@ export default function ClientaddarticlesPage() {
           </div>
 
           <div>
-            <label className="block text-sm text-gray-600 mb-1">Alt Kateqoriya</label>
+            <label className="block text-sm text-gray-600 mb-1">{t("sub_category")}</label>
             <select
               name="subCategoryId"
               value={form.subCategoryId ?? ""}
@@ -264,52 +265,51 @@ export default function ClientaddarticlesPage() {
                 : "bg-gray-100 text-gray-400 cursor-not-allowed"
                 }`}
             >
-              <option value="">Seçin...</option>
+              <option value="">{t("select_option")}</option>
               {selectedCategory?.subCategories.map((sub) => (
-                <option key={sub.id} value={sub.id} disabled={sub.status === "blocked"} >
+                <option key={sub.id} value={sub.id} disabled={sub.status === "blocked"}>
                   {sub.title_az}
-                  {sub.status === "blocked" ? " (Bloklanıb)" : ""}
+                  {sub.status === "blocked" ? ` (${t("blocked")})` : ""}
                 </option>
               ))}
-          </select>
-      </div>
+            </select>
+          </div>
 
-      <div>
-        <label className="block text-sm text-gray-600 mb-1">PDF və ya şəkil faylı</label>
-        <input
-          type="file"
-          accept="application/pdf,image/*"
-          onChange={handleFileChange}
-          required
-          className="w-full p-3 border rounded-lg shadow-sm bg-white cursor-pointer file:text-blue-600"
-        />
-      </div>
+          <div>
+            <label className="block text-sm text-gray-600 mb-1">{t("file_upload")}</label>
+            <input
+              type="file"
+              accept="application/pdf,image/*"
+              onChange={handleFileChange}
+              required
+              className="w-full p-3 border rounded-lg shadow-sm bg-white cursor-pointer file:text-blue-600"
+            />
+          </div>
 
-      <button
-        type="submit"
-        disabled={loading}
-        className="w-full py-3 text-white bg-blue-600 hover:bg-blue-700 rounded-lg transition font-medium"
-      >
-        {loading ? "Yüklənir..." : "Jurnalı Yarat"}
-      </button>
-    </form>
-      </div >
-
-    { alertMessage && (
-      <div className="fixed top-6 right-6 z-50">
-        <div className="bg-green-500 text-white px-6 py-4 rounded-lg shadow-lg flex items-center gap-4 animate-fade-in-out transition-all duration-300 max-w-sm">
-          <span className="flex-grow">{alertMessage}</span>
           <button
-            onClick={() => setAlertMessage(null)}
-            className="text-white font-bold text-xl leading-none hover:text-gray-200"
-            aria-label="Close alert"
+            type="submit"
+            disabled={loading}
+            className="w-full py-3 text-white bg-blue-600 hover:bg-blue-700 rounded-lg transition font-medium"
           >
-            ×
+            {loading ? t("loading") : t("create_journal")}
           </button>
-        </div>
+        </form>
       </div>
-    )
-}
-    </div >
+
+      {alertMessage && (
+        <div className="fixed top-6 right-6 z-50">
+          <div className="bg-green-500 text-white px-6 py-4 rounded-lg shadow-lg flex items-center gap-4 animate-fade-in-out transition-all duration-300 max-w-sm">
+            <span className="flex-grow">{alertMessage}</span>
+            <button
+              onClick={() => setAlertMessage(null)}
+              className="text-white font-bold text-xl leading-none hover:text-gray-200"
+              aria-label={t("close_alert")}
+            >
+              ×
+            </button>
+          </div>
+        </div>
+      )}
+    </div>
   )
 }

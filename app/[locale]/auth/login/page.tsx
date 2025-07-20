@@ -13,6 +13,8 @@ import { useRouter } from "next/navigation"
 import { useLocale, useTranslations } from "next-intl"
 import { tokenManager } from "@/lib/token-manager"
 import { apiClient } from "@/lib/api-client"
+import Image from "next/image"
+import logo from '../../../../public/favicon.png'
 
 export default function LoginPage() {
   const [email, setEmail] = useState("")
@@ -21,7 +23,7 @@ export default function LoginPage() {
   const [isLoading, setIsLoading] = useState(false)
   const [error, setError] = useState("")
   const locale = useLocale()
-  const t = useTranslations("Register")
+  const t = useTranslations("Auth")
   const router = useRouter()
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -40,7 +42,7 @@ export default function LoginPage() {
         let destination = ""
 
         if (response.user && response.user.role) {
-          role = response.user.role 
+          role = response.user.role
         } else if (response.admin) {
           role = "admin"
         } else if (response.superadmin) {
@@ -58,21 +60,21 @@ export default function LoginPage() {
             destination = `/${locale}/client/dashboard`
             break
           default:
-            setError("Giriş uğursuz oldu: Rol təyin olunmayıb")
+            setError(t("loginFailedRoleUndefined"))
+            setIsLoading(false)
             return
         }
 
         window.location.href = destination
       } else {
-        setError("Giriş uğursuz oldu: Məlumat tapılmadı")
+        setError(t("loginFailedNoData"))
       }
     } catch (err: any) {
-      setError(err.message || "Xəta baş verdi. Yenidən cəhd edin.")
+      setError(err.message || t("errorOccurredTryAgain"))
     } finally {
       setIsLoading(false)
     }
   }
-
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 flex items-center justify-center p-4">
@@ -83,17 +85,28 @@ export default function LoginPage() {
               <img
                 className="back_container_image"
                 src="https://www.svgrepo.com/show/509905/dropdown-arrow.svg"
-                alt="Back"
+                alt={t("back")}
               />
               <span>{t("back")}</span>
             </div>
           </Link>
-          <div className="flex items-center justify-center mb-4">
-            <BookOpen className="h-8 w-8 text-blue-600" />
-            <span className="ml-2 text-2xl font-bold text-gray-900">ScientificWorks</span>
+          <div className="flex items-center justify-center">
+            <div>
+              <Image
+                src={logo}
+                alt="Scientific Journals logo"
+                width={70}
+                height={50}
+                priority
+              />
+            </div>
+            <div className="text-left">
+              <p className="ml-2 text-xl font-bold  font-delius">{t("logo_title")}</p>
+              <p className="ml-2 text-l text-gray-900">{t("logo_description")}</p>
+            </div>
           </div>
-          <CardTitle className="text-2xl">Giriş</CardTitle>
-          <CardDescription>Hesabınıza daxil olmaq üçün məlumatlarınızı daxil edin</CardDescription>
+          <CardTitle className="pt-6 text-xl">{t("login")}</CardTitle>
+          <CardDescription>{t("enterCredentials")}</CardDescription>
         </CardHeader>
 
         <form onSubmit={handleSubmit}>
@@ -105,11 +118,11 @@ export default function LoginPage() {
             )}
 
             <div className="space-y-2">
-              <Label htmlFor="email">E-poçt</Label>
+              <Label htmlFor="email">{t("email")}</Label>
               <Input
                 id="email"
                 type="email"
-                placeholder="ornek@email.com"
+                placeholder={t("emailPlaceholder")}
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
                 required
@@ -117,12 +130,12 @@ export default function LoginPage() {
             </div>
 
             <div className="space-y-2">
-              <Label htmlFor="password">Şifrə</Label>
+              <Label htmlFor="password">{t("password")}</Label>
               <div className="relative">
                 <Input
                   id="password"
                   type={showPassword ? "text" : "password"}
-                  placeholder="Şifrənizi daxil edin"
+                  placeholder={t("passwordPlaceholder")}
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
                   required
@@ -133,7 +146,7 @@ export default function LoginPage() {
                   size="sm"
                   className="absolute right-0 top-0 h-full px-3 py-2 hover:bg-transparent"
                   onClick={() => setShowPassword(!showPassword)}
-                  aria-label={showPassword ? "Şifrəni gizlət" : "Şifrəni göstər"}
+                  aria-label={showPassword ? t("hidePassword") : t("showPassword")}
                 >
                   {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
                 </Button>
@@ -142,20 +155,20 @@ export default function LoginPage() {
 
             <div className="flex items-center justify-between">
               <Link href={`/${locale}/auth/forgot-password`} className="text-sm text-blue-600 hover:underline">
-                Şifrəni unutmusunuz?
+                {t("forgotPassword")}
               </Link>
             </div>
           </CardContent>
 
           <CardFooter className="flex flex-col space-y-4">
             <Button type="submit" className="w-full" disabled={isLoading}>
-              {isLoading ? "Giriş edilir..." : "Giriş"}
+              {isLoading ? t("loggingIn") : t("login")}
             </Button>
 
             <div className="text-center text-sm">
-              Hesabınız yoxdur?{" "}
+              {t("noAccount")}{" "}
               <Link href={`/${locale}/auth/register`} className="text-blue-600 hover:underline">
-                Qeydiyyatdan keçin
+                {t("register")}
               </Link>
             </div>
           </CardFooter>

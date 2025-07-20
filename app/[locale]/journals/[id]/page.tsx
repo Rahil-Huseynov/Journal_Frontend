@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from "react";
 import { useParams, useRouter } from "next/navigation";
-import { useLocale } from "next-intl";
+import { useLocale, useTranslations } from "next-intl";
 import { apiClient } from "@/lib/api-client";
 import Link from "next/link";
 
@@ -60,6 +60,7 @@ export default function JournalDetailPage() {
   const [category, setCategory] = useState<Category | null>(null);
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string>("");
+  const t = useTranslations("Journals")
 
   useEffect(() => {
     async function fetchCategory() {
@@ -70,7 +71,7 @@ export default function JournalDetailPage() {
         setLoading(false);
       } catch (err) {
         console.error(err);
-        setError("Məlumatları yükləmək mümkün olmadı.");
+        setError(t("Məlumatları yükləmək mümkün olmadı."));
         setLoading(false);
       }
     }
@@ -80,16 +81,16 @@ export default function JournalDetailPage() {
   const getText = (item: any, key: string) =>
     item[`${key}_${locale}`] || item[`${key}_az`] || "";
 
-  if (loading) return <div className="p-8 text-center">Yüklənir...</div>;
+  if (loading) return <div className="p-8 text-center">{t("Loading")}</div>;
   if (error) return <div className="p-8 text-center text-red-600">{error}</div>;
-  if (!category) return <div className="p-8 text-center">Kateqoriya tapılmadı.</div>;
+  if (!category) return <div className="p-8 text-center">{t("Journalnotfound")}</div>;
 
   return (
     <div className="w-full p-8">
       <h1 className="text-4xl font-bold mb-10 text-center">{getText(category, "title")}</h1>
 
       {category.globalSubCategory.length === 0 ? (
-        <p>Bu kateqoriyaya aid global alt kateqoriya tapılmadı.</p>
+        <p>{t("Nonumberforthisjournalwasfound")}</p>
       ) : (
         <div className="min-custom-xl:grid min-custom-xl:items-center min-custom-xl:grid-cols-2 max-custom-xl:grid max-custom-xl:grid-cols-1 gap-6 space-y-6">
           <div className="grid gap-6">
@@ -107,7 +108,7 @@ export default function JournalDetailPage() {
                     />
                   ) : (
                     <div className="w-full h-40 bg-gray-200 rounded-md flex items-center justify-center text-gray-500">
-                      Şəkil yoxdur
+                      {t("noimage")}
                     </div>
                   )}
                 </div>
@@ -121,12 +122,12 @@ export default function JournalDetailPage() {
                     <button
                       onClick={() => window.open(`${process.env.NEXT_PUBLIC_API_URL}/uploads/globalsubcategory/${sub.file}`, "_blank")}
                       className="px-5 py-2 bg-blue-600 text-white font-medium rounded-md hover:bg-blue-700 transition duration-300">
-                      Yüklə
+                      {t("download")}
                     </button>
                     <Link
                       className="px-5 py-2 border border-blue-600 text-blue-600 font-medium rounded-md hover:bg-blue-100 transition duration-300"
                       href={`/${locale}/journals/${category.id}/${sub.id}`}>
-                      Bax
+                      {t("see")}
                     </Link>
 
                   </div>
@@ -137,19 +138,19 @@ export default function JournalDetailPage() {
           </div>
 
           <div className="border rounded-xl p-6 overflow-x-auto">
-            <h4 className="text-lg text-center font-semibold mb-2">Redaksiya heyəti</h4>
+            <h4 className="text-lg text-center font-semibold mb-2">{t("EditorialStaff")}</h4>
             {category.authors.length === 0 ? (
-              <p className="text-gray-500 text-sm">Müəllif tapılmadı.</p>
+              <p className="text-gray-500 text-sm">{t("Editorialnotfound")}</p>
             ) : (
               <ul className="text-sm text-gray-700">
                 <table className="w-full text-sm text-left border border-gray-300">
                   <thead className="bg-gray-100">
                     <tr>
-                      <th className="p-2 border w-[160] break-words">Ad</th>
-                      <th className="p-2 border w-[160] break-words">Soyad</th>
-                      <th className="p-2 border w-[160] break-words">Elmi dərəcə/Elmi ad</th>
-                      <th className="p-2 border w-[160] break-words">İş yeri</th>
-                      <th className="p-2 border w-[160] break-words">Ölkə</th>
+                      <th className="p-2 border w-[160] break-words">{t('Ad')}</th>
+                      <th className="p-2 border w-[160] break-words">{t('Soyad')}</th>
+                      <th className="p-2 border w-[160] break-words">{t('Elmi dərəcə/Elmi ad')}</th>
+                      <th className="p-2 border w-[160] break-words">{t('İş yeri')}</th>
+                      <th className="p-2 border w-[160] break-words">{t('Ölkə')}</th>
                     </tr>
                   </thead>
                   <tbody>

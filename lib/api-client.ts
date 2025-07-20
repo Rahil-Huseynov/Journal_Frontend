@@ -475,6 +475,14 @@ class ApiClient {
     });
   }
 
+   async updateUserJournalDemo(id: number, formData: FormData) {
+    return this.request(`/journals/approve/${id}`, {
+      method: "PUT",
+      body: formData,
+      headers: {},
+    });
+  }
+
 
   deleteUserJournal(id: number) {
     return this.request(`/journals/delete/${id}`, {

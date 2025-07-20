@@ -63,7 +63,7 @@ export default function AdminLayout({
                 <X className="h-6 w-6" />
               </Button>
             </div>
-            <nav className="flex-1 space-y-1 px-2 py-4">
+            <nav className="flex-1 space-y-1 px-2 py-8">
               {navigation.map((item) => {
                 const isActive = pathname === item.href
                 return (
@@ -90,7 +90,7 @@ export default function AdminLayout({
               <BookOpen className="h-8 w-8 text-blue-600" />
               <span className="ml-2 text-xl font-bold">Admin Panel</span>
             </div>
-            <nav className="flex-1 space-y-1 px-2 py-4">
+            <nav className="flex-1 space-y-1 px-2 py-8">
               {navigation.map((item) => {
                 const isActive = pathname === item.href
                 return (

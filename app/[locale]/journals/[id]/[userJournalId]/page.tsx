@@ -9,6 +9,7 @@ interface Author {
   id: number;
   firstName: string;
   lastName: string;
+  academicdegree?: string;
   workplace?: string | null;
   country?: string | null;
 }
@@ -22,6 +23,7 @@ interface UserJournal {
   description_en: string;
   description_ru: string;
   file: string;
+  approvedFile:string;
 }
 
 interface GlobalSubCategory {
@@ -135,7 +137,7 @@ export default function JournalsInGlobalSubCategories() {
                     {getText(journal, "description")}
                   </p>
                   <a
-                    href={`${process.env.NEXT_PUBLIC_API_URL}/uploads/journals/${journal.file}`}
+                    href={`${process.env.NEXT_PUBLIC_API_URL_FOR_IMAGE}/uploads/journals/approved/${journal.approvedFile}`}
                     target="_blank"
                     rel="noopener noreferrer"
                     className="text-blue-600 hover:underline"
@@ -169,7 +171,7 @@ export default function JournalsInGlobalSubCategories() {
                     <tr key={author.id}>
                       <td className="p-2 border w-[160] break-words align-top !text-left">{author.firstName}</td>
                       <td className="p-2 border w-[160] break-words align-top !text-left">{author.lastName}</td>
-                      <td className="p-2 border w-[160] break-words align-top !text-left">elmi derece</td>
+                      <td className="p-2 border w-[160] break-words align-top !text-left">{author.academicdegree}</td>
                       <td className="p-2 border w-[160] break-words align-top !text-left">{author.workplace}</td>
                       <td className="p-2 border w-[160] break-words align-top !text-left">{author.country}</td>
                     </tr>

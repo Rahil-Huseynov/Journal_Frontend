@@ -15,6 +15,7 @@ interface Author {
     firstName: string | null;
     lastName: string | null;
     workplace?: string | null;
+    academicdegree?: string | null;
     country?: string | null;
 }
 
@@ -38,6 +39,7 @@ export default function CategoryPage() {
         firstName: '',
         lastName: '',
         workplace: '',
+        academicdegree: '',
         country: '',
     });
 
@@ -56,7 +58,7 @@ export default function CategoryPage() {
 
     const handleCloseModal = () => {
         setShowModal(false);
-        setFormData({ firstName: '', lastName: '', workplace: '', country: '' });
+        setFormData({ firstName: '', lastName: '', workplace: '', country: '', academicdegree: '' });
     };
 
     const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
@@ -71,6 +73,7 @@ export default function CategoryPage() {
         data.append('firstName', formData.firstName);
         data.append('lastName', formData.lastName);
         data.append('workplace', formData.workplace);
+        data.append('academicdegree', formData.academicdegree)
         data.append('country', formData.country)
         data.append('categoryIds', JSON.stringify([selectedCategoryId]));
 
@@ -120,6 +123,7 @@ export default function CategoryPage() {
         formData.append('firstName', editingAuthor.firstName || '');
         formData.append('lastName', editingAuthor.lastName || '');
         formData.append('workplace', editingAuthor.workplace || '');
+        formData.append('academicdegree', editingAuthor.academicdegree || '')
         formData.append('country', editingAuthor.country || '');
         try {
             await apiClient.updateAuthor(editingAuthor.id, formData)
@@ -179,6 +183,7 @@ export default function CategoryPage() {
                         <div className="space-y-3">
                             <input type="text" name="firstName" placeholder="Ad" value={formData.firstName} onChange={handleChange} className="w-full border px-3 py-2 rounded" />
                             <input type="text" name="lastName" placeholder="Soyad" value={formData.lastName} onChange={handleChange} className="w-full border px-3 py-2 rounded" />
+                            <input type="text" name="academicdegree" placeholder="Elmi dərəcə/Elmi ad" value={formData.academicdegree} onChange={handleChange} className="w-full border px-3 py-2 rounded" />
                             <textarea name="workplace" placeholder="İş yeri" value={formData.workplace} onChange={handleChange} className="w-full border px-3 py-2 rounded resize-none" />
                             <CitizenshipCountrySelect
                                 value={formData.country}
@@ -219,6 +224,7 @@ export default function CategoryPage() {
                         <div className="space-y-3">
                             <input type="text" name="firstName" value={editingAuthor.firstName || ''} onChange={e => setEditingAuthor(prev => prev && { ...prev, firstName: e.target.value })} placeholder="Ad" className="w-full border px-3 py-2 rounded" />
                             <input type="text" name="lastName" value={editingAuthor.lastName || ''} onChange={e => setEditingAuthor(prev => prev && { ...prev, lastName: e.target.value })} placeholder="Soyad" className="w-full border px-3 py-2 rounded" />
+                            <input type="text" name="academicdegree" value={editingAuthor.academicdegree || ''} onChange={e => setEditingAuthor(prev => prev && { ...prev, academicdegree: e.target.value })} placeholder="Elmi dərəcə/ Elmi ad" className="w-full border px-3 py-2 rounded" />
                             <textarea name="workplace" value={editingAuthor.workplace || ''} onChange={e => setEditingAuthor(prev => prev && { ...prev, workplace: e.target.value })} placeholder="İş yeri" className="w-full border px-3 py-2 rounded resize-none" />
                             <CitizenshipCountrySelect
                                 value={editingAuthor?.country || ''}

@@ -11,6 +11,7 @@ interface Author {
   firstName: string;
   lastName: string;
   workplace?: string;
+  academicdegree?: string
   country?: string;
 }
 
@@ -156,7 +157,7 @@ export default function JournalDetailPage() {
                       <tr key={author.id}>
                         <td className="p-2 border w-[160] break-words align-top !text-left">{author.firstName}</td>
                         <td className="p-2 border w-[160] break-words align-top !text-left">{author.lastName}</td>
-                        <td className="p-2 border w-[160] break-words align-top !text-left">elmi derece</td>
+                        <td className="p-2 border w-[160] break-words align-top !text-left">{author.academicdegree}</td>
                         <td className="p-2 border w-[160] break-words align-top !text-left">{author.workplace}</td>
                         <td className="p-2 border w-[160] break-words align-top !text-left">{author.country}</td>
                       </tr>

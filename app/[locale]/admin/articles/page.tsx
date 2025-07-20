@@ -36,6 +36,11 @@ interface Journal {
     createdAt: string;
     updatedAt: string;
     messages?: Message[];
+    approvedFile: string;
+    categoryIds?: number[];
+    subCategoryIds?: number[];
+    order?: number;
+
 }
 
 interface SubCategory {
@@ -68,6 +73,9 @@ const CategoryListPage = () => {
     const [message, setMessage] = useState<string>("");
     const [viewModalOpen, setViewModalOpen] = useState(false);
     const [viewMessages, setViewMessages] = useState<Message[]>([]);
+    const [editData, setEditData] = useState<Partial<Journal>>({});
+    const [file, setFile] = useState<File | null>(null);
+
     const locale = useLocale();
 
     useEffect(() => {
@@ -120,6 +128,8 @@ const CategoryListPage = () => {
         setCurrentJournal(journal);
         setSelectedStatus(journal.status);
         setMessage("");
+        setEditData(journal);
+        setFile(null);
         setEditModalOpen(true);
     };
 
@@ -147,15 +157,42 @@ const CategoryListPage = () => {
                     userJournalId: currentJournal.id,
                 });
             }
-            alert("Mesaj və status uğurla göndərildi");
+
+            if (selectedStatus === "payment" || selectedStatus === "finished") {
+                const formData = new FormData();
+
+                formData.append("title_az", editData.title_az || "");
+                formData.append("title_en", editData.title_en || "");
+                formData.append("title_ru", editData.title_ru || "");
+
+                formData.append("description_az", editData.description_az || "");
+                formData.append("description_en", editData.description_en || "");
+                formData.append("description_ru", editData.description_ru || "");
+
+                formData.append("keywords_az", currentJournal.keywords_az || "");
+                formData.append("keywords_en", currentJournal.keywords_en || "");
+                formData.append("keywords_ru", currentJournal.keywords_ru || "");
+                if (file) {
+                    formData.append("approvedFile", file);
+                }
+                await apiClient.updateUserJournalDemo(currentJournal.id, formData);
+            }
             await apiClient.updateJournalStatus(currentJournal.id, selectedStatus);
-            window.location.href = `/${locale}/admin/articles`;
+
+            alert("Əməliyyat uğurla tamamlandı");
             setEditModalOpen(false);
             setCurrentJournal(null);
             await fetchCategories();
+            window.location.reload();
         } catch (error) {
             console.error("Əməliyyat zamanı xəta baş verdi", error);
         }
+    };
+
+
+    const handleEditChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+        const { name, value } = e.target;
+        setEditData((prev) => ({ ...prev, [name]: value }));
     };
 
     const handleModalClose = () => {
@@ -239,6 +276,7 @@ const CategoryListPage = () => {
                                                                 <th className="border p-2">Yaradılma</th>
                                                                 <th className="border p-2">Yenilənmə</th>
                                                                 <th className="border p-2">Fayl</th>
+                                                                <th className="border p-2 breaks-word">Fayl (Təsdiqlənmiş)</th>
                                                                 <th className="border p-2">Əməliyyat</th>
                                                             </tr>
                                                         </thead>
@@ -263,7 +301,7 @@ const CategoryListPage = () => {
                                                                     </td>
                                                                     <td className="border p-2 text-center">
                                                                         <a
-                                                                            href={`${process.env.NEXT_PUBLIC_API_URL}${j.file}`}
+                                                                            href={`${process.env.NEXT_PUBLIC_API_URL_FOR_IMAGE}/uploads/journals/${j.file}`}
                                                                             target="_blank"
                                                                             rel="noreferrer"
                                                                             className="text-blue-600 underline"
@@ -271,6 +309,17 @@ const CategoryListPage = () => {
                                                                             Aç
                                                                         </a>
                                                                     </td>
+                                                                    <td className="border p-2 text-center">
+                                                                        <a
+                                                                            href={`${process.env.NEXT_PUBLIC_API_URL_FOR_IMAGE}/uploads/journals/approved/${j.approvedFile}`}
+                                                                            target="_blank"
+                                                                            rel="noreferrer"
+                                                                            className="text-blue-600 underline"
+                                                                        >
+                                                                            Aç
+                                                                        </a>
+                                                                    </td>
+
                                                                     <td className="border p-2 text-center">
                                                                         <div className="flex justify-center gap-2">
                                                                             <button
@@ -332,6 +381,7 @@ const CategoryListPage = () => {
                                 <option value="beingwatched">Baxılır</option>
                                 <option value="edit">Redakte et</option>
                                 <option value="payment">Ödəniş et</option>
+                                <option value="registered">Qeydə alındı</option>
                                 <option value="finished">Təsdiqlənmiş</option>
                                 <option value="rejected">Rədd edilmiş</option>
                             </select>
@@ -342,6 +392,63 @@ const CategoryListPage = () => {
                                     onChange={(e) => setMessage(e.target.value)}
                                 />
                             )}
+                            {selectedStatus === "finished" ? (
+                                <div>
+                                    <label className="block mb-1 font-medium">Başlıq (AZ)</label>
+                                    <input
+                                        name="title_az"
+                                        value={editData.title_az || ""}
+                                        onChange={handleEditChange}
+                                        className="w-full border border-gray-300 rounded px-3 py-2"
+                                    />
+                                    <label className="block mb-1 font-medium">Başlıq (EN)</label>
+                                    <input
+                                        name="title_en"
+                                        value={editData.title_en || ""}
+                                        onChange={handleEditChange}
+                                        className="w-full border border-gray-300 rounded px-3 py-2"
+                                    />
+                                    <label className="block mb-1 font-medium">Başlıq (RU)</label>
+                                    <input
+                                        name="title_ru"
+                                        value={editData.title_ru || ""}
+                                        onChange={handleEditChange}
+                                        className="w-full border border-gray-300 rounded px-3 py-2"
+                                    />
+                                    <label className="block mb-1 font-medium">Açıqlama (AZ)</label>
+                                    <textarea
+                                        name="description_az"
+                                        value={editData.description_az || ""}
+                                        onChange={handleEditChange}
+                                        className="w-full border border-gray-300 rounded px-3 py-2"
+                                        rows={2}
+                                    />
+                                    <label className="block mb-1 font-medium">Açıqlama (EN)</label>
+                                    <textarea
+                                        name="description_en"
+                                        value={editData.description_en || ""}
+                                        onChange={handleEditChange}
+                                        className="w-full border border-gray-300 rounded px-3 py-2"
+                                        rows={2}
+                                    />
+                                    <label className="block mb-1 font-medium">Açıqlama (RU)</label>
+                                    <textarea
+                                        name="description_ru"
+                                        value={editData.description_ru || ""}
+                                        onChange={handleEditChange}
+                                        className="w-full border border-gray-300 rounded px-3 py-2"
+                                        rows={2}
+                                    />
+                                    <label className="block mb-1 font-medium">Faylı seçin</label>
+                                    <input
+                                        type="file"
+                                        accept="application/pdf,image/*"
+                                        onChange={(e) => setFile(e.target.files?.[0] || null)}
+                                        className="w-full text-sm text-gray-500"
+                                    />
+                                </div>
+                            ) : null}
+
                             <Button className="w-full" onClick={handleSave}>
                                 Yadda saxla
                             </Button>

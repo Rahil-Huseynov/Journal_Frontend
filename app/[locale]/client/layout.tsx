@@ -24,10 +24,10 @@ export default function ClientLayout({
 
   const navigation = [
     { name: t("Dashboard"), href: `/${locale}/client/dashboard`, icon: BarChart3 },
-    { name: t("Məqalələrim"), href: `/${locale}/client/myarticles`, icon: FileText },
-    { name: t("Yeni Məqalə"), href: `/${locale}/client/addarticles/`, icon: PlusCircle },
-    { name: t("Profil"), href: `/${locale}/client/profile`, icon: User },
-    { name: t("Parametrlər"), href: `/${locale}/client/settings`, icon: Settings },
+    { name: t("MyArticles"), href: `/${locale}/client/myarticles`, icon: FileText },
+    { name: t("NewArticle"), href: `/${locale}/client/addarticles/`, icon: PlusCircle },
+    { name: t("Profile"), href: `/${locale}/client/profile`, icon: User },
+    { name: t("Settings"), href: `/${locale}/client/settings`, icon: Settings },
   ];
 
   const handleLogout = () => {

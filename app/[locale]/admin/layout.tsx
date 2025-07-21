@@ -5,11 +5,11 @@ import type React from "react"
 import { ProtectedRoute } from "@/components/protected-route"
 import { Button } from "@/components/ui/button"
 import { useAuth } from "@/lib/auth-context"
-import { BookOpen, Users, FileText, BarChart3, Settings, LogOut, Menu, X } from "lucide-react"
+import { BookOpen, Users, FileText, BarChart3, LogOut, Menu, X, NotebookText, NotebookPen, Rss, Logs, Shield, ShieldAlert, Signature, Newspaper } from "lucide-react"
 import Link from "next/link"
 import { usePathname, useRouter } from "next/navigation"
 import { useState } from "react"
-import { useLocale } from "next-intl"
+import { useLocale, useTranslations } from "next-intl"
 
 
 
@@ -23,20 +23,21 @@ export default function AdminLayout({
   const pathname = usePathname()
   const router = useRouter()
   const locale = useLocale();
+  const t = useTranslations("Admin_Navigation")
 
   const navigation = [
-    { name: "Dashboard", href: `/${locale}/admin/dashboard`, icon: BarChart3 },
-    { name: "Jurnal əlavə et", href: `/${locale}/admin/category`, icon: Users },
-    { name: "Jurnal Nömrələri əlavə et", href: `/${locale}/admin/subcategory`, icon: Users },
-    { name: "Global SubCategory", href: `/${locale}/admin/globalsubcategory`, icon: FileText },
-    { name: "Məqalələr", href: `/${locale}/admin/articles`, icon: FileText },
-    { name: "İstifadəçilər", href: `/${locale}/admin/users`, icon: Users },
-    { name: "Xəbərlər", href: `/${locale}/admin/news`, icon: FileText },
-    { name: "Müəllif", href: `/${locale}/admin/author`, icon: Users },
+    { name: t("dashboard"), href: `/${locale}/admin/dashboard`, icon: BarChart3 },
+    { name: t("addJournal"), href: `/${locale}/admin/category`, icon: NotebookText },
+    { name: t("addJournalnumber"), href: `/${locale}/admin/subcategory`, icon: NotebookPen },
+    { name: t("shareJournalNumber"), href: `/${locale}/admin/globalsubcategory`, icon: FileText },
+    { name: t("article"), href: `/${locale}/admin/articles`, icon: Newspaper },
+    { name: t("users"), href: `/${locale}/admin/users`, icon: Users },
+    { name: t("addnews"), href: `/${locale}/admin/news`, icon: Rss  },
+    { name: t("addEditorial"), href: `/${locale}/admin/author`, icon: Signature },
     ...(user?.role === "superadmin"
       ? [
-        { name: "Adminlər", href: `/${locale}/admin/admins`, icon: Users },
-        { name: "Logs", href: `/${locale}/admin/logs`, icon: Users }
+        { name: t("admins"), href: `/${locale}/admin/admins`, icon: ShieldAlert  },
+        { name: t("logs"), href: `/${locale}/admin/logs`, icon: Logs }
       ]
       : []),
 

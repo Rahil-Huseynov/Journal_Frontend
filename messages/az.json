@@ -312,11 +312,11 @@
     "finalNote": "Yuxarıdakı şərtlərə uyğun olmayan məqalələr redaksiya heyəti tərəfindən qəbul edilmir."
   },
   "Navigation_Client": {
-    "dashboard": "İdarə etmə paneli",
-    "Məqalələrim": "Məqalələrim",
-    "Yeni Məqalə": "Yeni Məqalə",
-    "Profil": "Profil",
-    "Parametrlər": "Parametrlər"
+    "Dashboard": "İdarə etmə paneli",
+    "MyArticles": "Məqalələrim",
+    "NewArticle": "Yeni Məqalə",
+    "Profile": "Profil",
+    "Settings": "Parametrlər"
   },
   "MIX": {
     "NoImageAvailable": "Şəkil mövcud deyil",
@@ -629,5 +629,17 @@
     "error_add_news": "Xəbər əlavə edilərkən xəta baş verdi",
     "confirm_delete_image": "Şəkli silmək istədiyinizə əminsiniz?",
     "error_delete_image": "Şəkil silinərkən xəta baş verdi"
+  },
+  "Admin_Navigation": {
+    "dashboard": "İdarə etmə paneli",
+    "addJournal": "Yeni jurnal əlavə et",
+    "addJournalnumber": "Yeni jurnal nömrəsi əlavə et",
+    "shareJournalNumber": "Journal nömrəsini paylaş",
+    "article":"Məqalələr",
+    "users":"İstifadəçilər",
+    "addnews": "Xəbərlər əlavə et",
+    "addEditorial": "Redaksiya heyəti əlavə et",
+    "admins":"Adminlər",
+    "logs": "Loglar"
   }
 }

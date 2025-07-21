@@ -250,11 +250,7 @@ export default function RegisterPage() {
 
   const getInputClass = (field: string) =>
     errorMessages[field] ? "border-red-600 focus:ring-red-600" : "";
-
-  useEffect(() => {
-    console.log("🔍 Current formData:", formData);
-  }, [formData]);
-
+  
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 flex items-center justify-center p-4">
       <Card className="w-full max-w-2xl">

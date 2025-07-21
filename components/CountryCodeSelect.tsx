@@ -25,7 +25,7 @@ export default function CountrySelect({ value, onChange }: Props) {
   return (
     <Select value={value} onValueChange={onChange}>
       <SelectTrigger>
-        <SelectValue placeholder={t("Ölkəkoduseçin")} />
+        <SelectValue placeholder={t("Selectcountrycode")} />
       </SelectTrigger>
       <SelectContent>
         {uniqueCountries.map((country) => (

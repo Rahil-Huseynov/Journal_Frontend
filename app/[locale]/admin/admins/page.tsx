@@ -31,7 +31,7 @@ import {
 import { apiClient } from "@/lib/api-client";
 import { useAuth } from "@/lib/auth-context";
 import { useRouter } from "next/navigation";
-import { useLocale } from "next-intl";
+import { useLocale, useTranslations } from "next-intl";
 
 interface Admin {
   id: string;
@@ -53,15 +53,16 @@ export default function AdminsPage() {
   const [loadingSubmit, setLoadingSubmit] = useState(false);
   const [loadingEditSubmit, setLoadingEditSubmit] = useState(false);
   const [message, setMessage] = useState<string | null>(null);
-  const { user } = useAuth()
-  const router = useRouter()
+  const { user } = useAuth();
+  const router = useRouter();
   const locale = useLocale();
+  const t = useTranslations("Admin_Admins");
 
   useEffect(() => {
     if (user && user.role !== "superadmin") {
-      router.push(`/${locale}/admin/dashboard`) 
+      router.push(`/${locale}/admin/dashboard`);
     }
-  }, [user, router])
+  }, [user, router, locale]);
 
   const [newAdmin, setNewAdmin] = useState({
     firstName: "",
@@ -87,23 +88,22 @@ export default function AdminsPage() {
       setUsers(users);
       setTotalPages(totalPages);
     } catch (error) {
-      console.error("Failed to load users:", error);
+      console.error(t("FailedToLoadUsers"), error);
     } finally {
       setIsLoading(false);
     }
   };
 
   const handleDeleteUser = async (userId: string) => {
-    if (confirm("Bu admini silmək istədiyinizə əminsiniz?")) {
+    if (confirm(t("ConfirmDeleteAdmin"))) {
       try {
-        await apiClient.deleteAdmin(userId)
+        await apiClient.deleteAdmin(userId);
         await loadUsers();
       } catch (error) {
-        console.error("Failed to delete admin:", error);
+        console.error(t("FailedToDeleteAdmin"), error);
       }
     }
   };
-
 
   const openEditModal = (admin: Admin) => {
     setEditAdmin(admin);
@@ -138,14 +138,14 @@ export default function AdminsPage() {
         formData.append(key, value)
       );
 
-      await apiClient.addAdmin(formData)
+      await apiClient.addAdmin(formData);
 
-      setMessage("✅ Admin uğurla əlavə olundu!");
+      setMessage(t("AdminAddedSuccessfully"));
       setNewAdmin({ firstName: "", lastName: "", email: "", password: "", role: "admin" });
       setIsModalOpen(false);
       loadUsers();
     } catch (error: any) {
-      setMessage("❌ Xəta baş verdi: " + (error.message || error.toString()));
+      setMessage(t("ErrorOccurred") + ": " + (error.message || error.toString()));
     } finally {
       setLoadingSubmit(false);
     }
@@ -160,12 +160,12 @@ export default function AdminsPage() {
     try {
       await apiClient.updateAdmin(editAdmin);
 
-      setMessage("✅ Admin uğurla redaktə olundu!");
+      setMessage(t("AdminUpdatedSuccessfully"));
       setIsEditModalOpen(false);
       setEditAdmin(null);
       loadUsers();
     } catch (error: any) {
-      setMessage("❌ Xəta baş verdi: " + error.message);
+      setMessage(t("ErrorOccurred") + ": " + error.message);
     } finally {
       setLoadingEditSubmit(false);
     }
@@ -185,9 +185,9 @@ export default function AdminsPage() {
   const getRoleText = (role: string) => {
     switch (role) {
       case "superadmin":
-        return "Super Admin";
+        return t("SuperAdmin");
       case "admin":
-        return "Admin";
+        return t("Admin");
       default:
         return role;
     }
@@ -204,25 +204,25 @@ export default function AdminsPage() {
     <div className="space-y-6 p-4">
       <div className="flex justify-between items-center">
         <div>
-          <h1 className="text-3xl font-bold text-gray-900">Adminlər</h1>
-          <p className="text-gray-600">Sistem adminlərini idarə edin</p>
+          <h1 className="text-3xl font-bold text-gray-900">{t("Admins")}</h1>
+          <p className="text-gray-600">{t("ManageSystemAdmins")}</p>
         </div>
         <Button onClick={() => setIsModalOpen(true)}>
           <UserPlus className="h-4 w-4 mr-2" />
-          Yeni admin
+          {t("AddNewAdmin")}
         </Button>
       </div>
 
       <Card>
         <CardHeader>
-          <CardTitle>Admin Siyahısı</CardTitle>
+          <CardTitle>{t("AdminsList")}</CardTitle>
         </CardHeader>
         <CardContent>
           <div className="flex items-center space-x-2 mb-4">
             <div className="relative flex-1">
               <Search className="absolute left-2 top-2.5 h-4 w-4 text-muted-foreground" />
               <Input
-                placeholder="İstifadəçi axtarın..."
+                placeholder={t("SearchUser")}
                 value={searchTerm}
                 onChange={(e) => {
                   setCurrentPage(1);
@@ -246,10 +246,10 @@ export default function AdminsPage() {
             <Table>
               <TableHeader>
                 <TableRow>
-                  <TableHead className="text-center">Ad Soyad</TableHead>
-                  <TableHead className="text-center">E-poçt</TableHead>
-                  <TableHead className="text-center">Rol</TableHead>
-                  <TableHead className="text-center">Əməliyyatlar</TableHead>
+                  <TableHead className="text-center">{t("FullName")}</TableHead>
+                  <TableHead className="text-center">{t("Email")}</TableHead>
+                  <TableHead className="text-center">{t("Role")}</TableHead>
+                  <TableHead className="text-center">{t("Operations")}</TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>
@@ -267,22 +267,18 @@ export default function AdminsPage() {
                     <TableCell className="text-center">
                       <DropdownMenu>
                         <DropdownMenuTrigger asChild>
-                          <Button variant="ghost">
+                          <Button variant="ghost" aria-label={t("MoreActions")}>
                             <MoreHorizontal className="h-4 w-4" />
                           </Button>
                         </DropdownMenuTrigger>
                         <DropdownMenuContent align="end">
-                          <DropdownMenuItem
-                            onClick={() => openEditModal(admin)}
-                          >
+                          <DropdownMenuItem onClick={() => openEditModal(admin)}>
                             <Edit className="h-4 w-4 mr-2" />
-                            Redaktə et
+                            {t("Edit")}
                           </DropdownMenuItem>
-                          <DropdownMenuItem
-                            onClick={() => handleDeleteUser(admin.id)}
-                          >
+                          <DropdownMenuItem onClick={() => handleDeleteUser(admin.id)}>
                             <Trash2 className="h-4 w-4 mr-2" />
-                            Sil
+                            {t("Delete")}
                           </DropdownMenuItem>
                         </DropdownMenuContent>
                       </DropdownMenu>
@@ -302,7 +298,7 @@ export default function AdminsPage() {
             disabled={currentPage === 1}
             onClick={() => setCurrentPage((prev) => prev - 1)}
           >
-            Əvvəlki
+            {t("Previous")}
           </Button>
           {Array.from({ length: totalPages }, (_, i) => (
             <Button
@@ -320,7 +316,7 @@ export default function AdminsPage() {
             disabled={currentPage === totalPages}
             onClick={() => setCurrentPage((prev) => prev + 1)}
           >
-            Sonrakı
+            {t("Next")}
           </Button>
         </div>
       )}
@@ -332,7 +328,7 @@ export default function AdminsPage() {
           onClose={closeModal}
           onSubmit={handleSubmitNewAdmin}
           loading={loadingSubmit}
-          title="Yeni Admin Əlavə Et"
+          title={t("AddNewAdmin")}
           message={message}
         />
       )}
@@ -348,7 +344,7 @@ export default function AdminsPage() {
           }}
           onSubmit={handleSubmitEditAdmin}
           loading={loadingEditSubmit}
-          title="Admin Redaktə Et"
+          title={t("EditAdmin")}
           message={message}
         />
       )}
@@ -356,22 +352,48 @@ export default function AdminsPage() {
   );
 }
 
-function AdminModal({ admin, onChange, onClose, onSubmit, loading, title, message, }: { admin: any; onChange: any; onClose: () => void; onSubmit: (e: React.FormEvent) => void; loading: boolean; title: string; message: string | null; }) {
+function AdminModal({
+  admin,
+  onChange,
+  onClose,
+  onSubmit,
+  loading,
+  title,
+  message,
+}: {
+  admin: any;
+  onChange: any;
+  onClose: () => void;
+  onSubmit: (e: React.FormEvent) => void;
+  loading: boolean;
+  title: string;
+  message: string | null;
+}) {
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
+  const t = useTranslations("Admin_Admins");
+
   return (
     <div
       className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 !m-0"
       onClick={onClose}
+      role="dialog"
+      aria-modal="true"
+      aria-labelledby="modal-title"
     >
       <div
         className="bg-white rounded-lg p-6 max-w-lg w-full mx-4"
         onClick={(e) => e.stopPropagation()}
       >
-        <h3 className="text-xl font-semibold mb-4 text-indigo-700">{title}</h3>
+        <h3
+          id="modal-title"
+          className="text-xl font-semibold mb-4 text-indigo-700"
+        >
+          {title}
+        </h3>
         <form onSubmit={onSubmit} className="space-y-4" noValidate>
           <div>
             <label className="block mb-1 font-medium" htmlFor="firstName">
-              Ad
+              {t("FirstName")}
             </label>
             <Input
               id="firstName"
@@ -384,7 +406,7 @@ function AdminModal({ admin, onChange, onClose, onSubmit, loading, title, messag
           </div>
           <div>
             <label className="block mb-1 font-medium" htmlFor="lastName">
-              Soyad
+              {t("LastName")}
             </label>
             <Input
               id="lastName"
@@ -396,7 +418,7 @@ function AdminModal({ admin, onChange, onClose, onSubmit, loading, title, messag
           </div>
           <div>
             <label className="block mb-1 font-medium" htmlFor="email">
-              E-poçt
+              {t("Email")}
             </label>
             <Input
               id="email"
@@ -409,24 +431,25 @@ function AdminModal({ admin, onChange, onClose, onSubmit, loading, title, messag
           </div>
           <div>
             <label className="block mb-1 font-medium" htmlFor="password">
-              Şifrə {admin.id ? "(istəyə bağlı)" : ""}
+              {t("Password")} {admin.id ? `(${t("Optional")})` : ""}
             </label>
             <div className="relative">
               <Input
                 id="password"
                 name="password"
-                type="password"
+                type={showConfirmPassword ? "text" : "password"}
                 value={admin.password || ""}
                 onChange={onChange}
                 minLength={6}
                 {...(admin.id ? {} : { required: true })}
-                placeholder={admin.id ? "Şifrəni dəyişmək üçün daxil edin" : ""}
+                placeholder={admin.id ? t("EnterToChangePassword") : ""}
               />
               <button
                 type="button"
                 className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-600"
                 onClick={() => setShowConfirmPassword(!showConfirmPassword)}
                 tabIndex={-1}
+                aria-label={showConfirmPassword ? t("HidePassword") : t("ShowPassword")}
               >
                 {showConfirmPassword ? <EyeOff size={20} /> : <Eye size={20} />}
               </button>
@@ -434,7 +457,7 @@ function AdminModal({ admin, onChange, onClose, onSubmit, loading, title, messag
           </div>
           <div>
             <label className="block mb-1 font-medium" htmlFor="role">
-              Rol
+              {t("Role")}
             </label>
             <select
               id="role"
@@ -444,8 +467,8 @@ function AdminModal({ admin, onChange, onClose, onSubmit, loading, title, messag
               className="w-full border border-gray-300 rounded-md h-10 px-2"
               required
             >
-              <option value="admin">Admin</option>
-              <option value="superadmin">Super Admin</option>
+              <option value="admin">{t("Admin")}</option>
+              <option value="superadmin">{t("SuperAdmin")}</option>
             </select>
           </div>
 
@@ -465,10 +488,10 @@ function AdminModal({ admin, onChange, onClose, onSubmit, loading, title, messag
               onClick={onClose}
               disabled={loading}
             >
-              Ləğv et
+              {t("Cancel")}
             </Button>
             <Button type="submit" disabled={loading}>
-              {loading ? "Göndərilir..." : "Təsdiq et"}
+              {loading ? t("Submitting") : t("Confirm")}
             </Button>
           </div>
         </form>

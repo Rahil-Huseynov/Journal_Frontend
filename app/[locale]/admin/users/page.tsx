@@ -6,10 +6,11 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Input } from "@/components/ui/input"
 import { Badge } from "@/components/ui/badge"
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
-import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger, } from "@/components/ui/dropdown-menu"
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu"
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from "@/components/ui/dialog"
 import { Search, MoreHorizontal, Eye, ChevronLeft, ChevronRight } from "lucide-react"
 import { apiClient } from "@/lib/api-client"
+import { useTranslations } from "next-intl"
 
 interface User {
   id: string
@@ -42,6 +43,7 @@ export default function UsersPage() {
   const [currentPage, setCurrentPage] = useState(1)
   const [totalPages, setTotalPages] = useState(1)
   const pageSize = 10
+  const t = useTranslations("Admin_Users")
 
   useEffect(() => {
     loadUsers(currentPage)
@@ -76,22 +78,22 @@ export default function UsersPage() {
     <div className="space-y-6">
       <div className="flex justify-between items-center">
         <div>
-          <h1 className="text-3xl font-bold text-gray-900">İstifadəçilər</h1>
-          <p className="text-gray-600">Sistem istifadəçilərini idarə edin</p>
+          <h1 className="text-3xl font-bold text-gray-900">{t("Title")}</h1>
+          <p className="text-gray-600">{t("Subtitle")}</p>
         </div>
       </div>
 
       <Card>
         <CardHeader>
-          <CardTitle>İstifadəçi Siyahısı</CardTitle>
-          <CardDescription>Bütün qeydiyyatlı istifadəçilərin siyahısı</CardDescription>
+          <CardTitle>{t("CardTitle")}</CardTitle>
+          <CardDescription>{t("CardDescription")}</CardDescription>
         </CardHeader>
         <CardContent>
           <div className="flex items-center space-x-2 mb-4">
             <div className="relative flex-1">
               <Search className="absolute left-2 top-2.5 h-4 w-4 text-muted-foreground" />
               <Input
-                placeholder="İstifadəçi axtarın..."
+                placeholder={t("SearchPlaceholder")}
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
                 className="pl-8"
@@ -110,12 +112,12 @@ export default function UsersPage() {
               <Table>
                 <TableHeader>
                   <TableRow>
-                    <TableHead className="text-center">Ad Soyad</TableHead>
-                    <TableHead className="text-center">E-poçt</TableHead>
-                    <TableHead className="text-center">Vətəndaşlıq</TableHead>
-                    <TableHead className="text-center">Təşkilat</TableHead>
-                    <TableHead className="text-center">Qeydiyyat Tarixi</TableHead>
-                    <TableHead className="text-center">Əməliyyatlar</TableHead>
+                    <TableHead className="text-center">{t("Table.NameSurname")}</TableHead>
+                    <TableHead className="text-center">{t("Table.Email")}</TableHead>
+                    <TableHead className="text-center">{t("Table.Citizenship")}</TableHead>
+                    <TableHead className="text-center">{t("Table.Organization")}</TableHead>
+                    <TableHead className="text-center">{t("Table.RegisterDate")}</TableHead>
+                    <TableHead className="text-center">{t("Table.Actions")}</TableHead>
                   </TableRow>
                 </TableHeader>
                 <TableBody>
@@ -143,14 +145,14 @@ export default function UsersPage() {
                         <DropdownMenu>
                           <DropdownMenuTrigger asChild>
                             <Button variant="ghost">
-                              <span className="sr-only">Open menu</span>
+                              <span className="sr-only">{t("Actions.OpenMenu")}</span>
                               <MoreHorizontal className="h-4 w-4" />
                             </Button>
                           </DropdownMenuTrigger>
                           <DropdownMenuContent align="end">
                             <DropdownMenuItem onClick={() => openUserDetails(user)}>
                               <Eye className="h-4 w-4 mr-2" />
-                              Bax
+                              {t("Actions.View")}
                             </DropdownMenuItem>
                           </DropdownMenuContent>
                         </DropdownMenu>
@@ -167,17 +169,17 @@ export default function UsersPage() {
                   disabled={currentPage === 1}
                 >
                   <ChevronLeft className="w-4 h-4 mr-1" />
-                  Əvvəlki
+                  {t("Pagination.Previous")}
                 </Button>
                 <div className="text-sm text-gray-600 mt-2">
-                  Səhifə {currentPage} / {totalPages}
+                  {t("Pagination.Page")} {currentPage} / {totalPages}
                 </div>
                 <Button
                   variant="outline"
                   onClick={() => setCurrentPage((prev) => Math.min(prev + 1, totalPages))}
                   disabled={currentPage === totalPages}
                 >
-                  Növbəti
+                  {t("Pagination.Next")}
                   <ChevronRight className="w-4 h-4 ml-1" />
                 </Button>
               </div>
@@ -191,19 +193,19 @@ export default function UsersPage() {
           <DialogContent>
             <DialogHeader>
               <DialogTitle>{selectedUser.firstName} {selectedUser.lastName}</DialogTitle>
-              <DialogDescription>İstifadəçi haqqında ətraflı məlumat</DialogDescription>
+              <DialogDescription>{t("Modal.Description")}</DialogDescription>
             </DialogHeader>
             <div className="space-y-1 text-sm">
-              <p><strong>Email:</strong> {selectedUser.email}</p>
-              <p><strong>Rol:</strong> {selectedUser.usertype}</p>
-              <p><strong>Təşkilat:</strong> {selectedUser.organization || "Yoxdur"}</p>
-              <p><strong>Vəzifə:</strong> {selectedUser.position || "Yoxdur"}</p>
-              <p><strong>FIN:</strong> {selectedUser.fin || "Yoxdur"}</p>
-              <p><strong>Seriya:</strong> {selectedUser.idSerial || "Yoxdur"}</p>
-              <p><strong>Telefon:</strong> {selectedUser.phoneCode || ""} {selectedUser.phoneNumber || "Yoxdur"}</p>
-              <p><strong>Ünvan:</strong> {selectedUser.address || "Yoxdur"}</p>
+              <p><strong>{t("Modal.Email")}:</strong> {selectedUser.email}</p>
+              <p><strong>{t("Modal.Role")}:</strong> {selectedUser.usertype}</p>
+              <p><strong>{t("Modal.Organization")}:</strong> {selectedUser.organization || t("Modal.None")}</p>
+              <p><strong>{t("Modal.Position")}:</strong> {selectedUser.position || t("Modal.None")}</p>
+              <p><strong>{t("Modal.FIN")}:</strong> {selectedUser.fin || t("Modal.None")}</p>
+              <p><strong>{t("Modal.Serial")}:</strong> {selectedUser.idSerial || t("Modal.None")}</p>
+              <p><strong>{t("Modal.Phone")}:</strong> {selectedUser.phoneCode || ""} {selectedUser.phoneNumber || t("Modal.None")}</p>
+              <p><strong>{t("Modal.Address")}:</strong> {selectedUser.address || t("Modal.None")}</p>
               <p>
-                <strong>Qeydiyyat:</strong>{" "}
+                <strong>{t("Modal.Register")}:</strong>{" "}
                 {new Date(selectedUser.createdAt).toLocaleString("az-Latn-AZ", {
                   day: "2-digit",
                   month: "2-digit",

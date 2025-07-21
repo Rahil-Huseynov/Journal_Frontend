@@ -6,7 +6,7 @@ import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
 import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
 import { apiClient } from "@/lib/api-client";
-import { useLocale } from "next-intl";
+import { useLocale, useTranslations } from "next-intl";
 
 type SubCategory = {
   id: number;
@@ -28,6 +28,7 @@ type Category = {
 
 export default function SubCategoryCreatePage() {
   const locale = useLocale();
+  const t = useTranslations("Admin_SubCategory");
 
   const [form, setForm] = useState({
     title_az: "",
@@ -54,11 +55,11 @@ export default function SubCategoryCreatePage() {
         const data = await apiClient.getCategories();
         setCategories(data);
       } catch (error) {
-        console.error("Kateqoriyalar alınarkən xəta:", error);
+        console.error(t("ErrorFetchingCategories") + ": ", error);
       }
     }
     fetchCategories();
-  }, []);
+  }, [t]);
 
   useEffect(() => {
     async function fetchSubCategories() {
@@ -66,11 +67,11 @@ export default function SubCategoryCreatePage() {
         const data = await apiClient.getSubCategories();
         setSubcategories(data);
       } catch (error) {
-        console.error("Alt kateqoriyalar alınarkən xəta:", error);
+        console.error(t("ErrorFetchingSubCategories") + ": ", error);
       }
     }
     fetchSubCategories();
-  }, []);
+  }, [t]);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
     const { name, value } = e.target;
@@ -100,10 +101,9 @@ export default function SubCategoryCreatePage() {
         }
       });
 
-
       await apiClient.addSubCategories(formData);
 
-      setMessage("✅ Alt kateqoriya uğurla əlavə olundu!");
+      setMessage("✅ " + t("SubCategoryAddedSuccessfully"));
       setForm({
         title_az: "",
         title_en: "",
@@ -121,7 +121,7 @@ export default function SubCategoryCreatePage() {
         window.location.href = `/${locale}/admin/subcategory`;
       }, 1000);
     } catch (err: any) {
-      setMessage("❌ Xəta baş verdi: " + err.message);
+      setMessage("❌ " + t("ErrorOccurred") + ": " + err.message);
     } finally {
       setLoading(false);
     }
@@ -160,7 +160,7 @@ export default function SubCategoryCreatePage() {
       });
 
       await apiClient.updateSubCategories(formData, editId);
-      setMessage("✅ Alt kateqoriya uğurla redaktə olundu!");
+      setMessage("✅ " + t("SubCategoryUpdatedSuccessfully"));
       setIsModalOpen(false);
       const updated = await apiClient.getSubCategories();
       setSubcategories(updated);
@@ -169,28 +169,28 @@ export default function SubCategoryCreatePage() {
         window.location.href = `/${locale}/admin/subcategory`;
       }, 1000);
     } catch (err: any) {
-      setMessage("❌ Xəta baş verdi: " + err.message);
+      setMessage("❌ " + t("ErrorOccurred") + ": " + err.message);
     } finally {
       setLoading(false);
     }
   };
 
   const handleDelete = async (id: number) => {
-    if (!confirm("Alt kateqoriyanı silmək istədiyinizə əminsiniz?")) return;
+    if (!confirm(t("ConfirmDeleteSubCategory"))) return;
 
     setLoading(true);
     setMessage(null);
 
     try {
       await apiClient.deleteSubCategory(id);
-      setMessage("✅ Alt kateqoriya uğurla silindi!");
+      setMessage("✅ " + t("SubCategoryDeletedSuccessfully"));
       const updated = await apiClient.getSubCategories();
       setSubcategories(updated);
       setTimeout(() => {
         window.location.href = `/${locale}/admin/subcategory`;
       }, 1000);
     } catch (err: any) {
-      setMessage("❌ Silmə zamanı xəta baş verdi: " + err.message);
+      setMessage(t("ErrorDeletingSubCategory") + ": " + err.message);
     } finally {
       setLoading(false);
     }
@@ -200,17 +200,19 @@ export default function SubCategoryCreatePage() {
     <div className="w-full mx-auto p-6 space-y-12">
       <Card className="rounded-xl shadow-lg">
         <CardHeader>
-          <CardTitle className="text-xl font-bold text-indigo-700">📁 Alt Kateqoriya Əlavə Et</CardTitle>
+          <CardTitle className="text-xl font-bold text-indigo-700">
+            📁 {t("AddSubCategory")}
+          </CardTitle>
         </CardHeader>
         <CardContent>
           <form onSubmit={handleSubmit} className="grid grid-cols-1 md:grid-cols-2 gap-6">
             {[
-              ["title_az", "Başlıq (AZ)"],
-              ["title_en", "Başlıq (EN)"],
-              ["title_ru", "Başlıq (RU)"],
-              ["description_az", "Açıqlama (AZ)"],
-              ["description_en", "Açıqlama (EN)"],
-              ["description_ru", "Açıqlama (RU)"],
+              ["title_az", t("TitleAZ")],
+              ["title_en", t("TitleEN")],
+              ["title_ru", t("TitleRU")],
+              ["description_az", t("DescriptionAZ")],
+              ["description_en", t("DescriptionEN")],
+              ["description_ru", t("DescriptionRU")],
             ].map(([key, label]) => (
               <div key={key}>
                 <Label htmlFor={key}>{label}</Label>
@@ -219,7 +221,7 @@ export default function SubCategoryCreatePage() {
             ))}
 
             <div>
-              <Label htmlFor="requireCount">Məqalə sayı</Label>
+              <Label htmlFor="requireCount">{t("ArticleCount")}</Label>
               <Input
                 type="number"
                 id="requireCount"
@@ -230,7 +232,7 @@ export default function SubCategoryCreatePage() {
               />
             </div>
             <div>
-              <Label htmlFor="categoryId">Kateqoriya Seç</Label>
+              <Label htmlFor="categoryId">{t("SelectCategory")}</Label>
               <select
                 name="categoryId"
                 id="categoryId"
@@ -239,7 +241,7 @@ export default function SubCategoryCreatePage() {
                 required
                 className="w-full border border-gray-300 rounded-md h-10 px-2"
               >
-                <option value="">-- Seçin --</option>
+                <option value="">{t("SelectPlaceholder")}</option>
                 {categories.map((cat) => (
                   <option key={cat.id} value={cat.id}>
                     {cat.title_az}
@@ -250,19 +252,21 @@ export default function SubCategoryCreatePage() {
 
             <div className="col-span-full">
               <Button type="submit" className="w-full bg-indigo-600 hover:bg-indigo-700 text-white" disabled={loading}>
-                {loading ? "Göndərilir..." : "Əlavə Et"}
+                {loading ? t("Submitting") : t("Add")}
               </Button>
             </div>
           </form>
           {message && (
-            <div className="mt-6 text-sm text-center font-medium text-green-600">{message}</div>
+            <div className={`mt-6 text-sm text-center font-medium ${message.startsWith("✅") ? "text-green-600" : "text-red-600"}`}>
+              {message}
+            </div>
           )}
         </CardContent>
       </Card>
 
       <div className="space-y-4">
-        <h2 className="text-2xl font-semibold text-indigo-700 mb-4">Alt Kateqoriyalar</h2>
-        {subcategories.length === 0 && <p>Alt kateqoriya yoxdur.</p>}
+        <h2 className="text-2xl font-semibold text-indigo-700 mb-4">{t("SubCategories")}</h2>
+        {subcategories.length === 0 && <p>{t("NoSubCategories")}</p>}
         {subcategories.map((sub) => {
           const category = categories.find((cat) => cat.id === sub.categoryId);
           return (
@@ -275,13 +279,13 @@ export default function SubCategoryCreatePage() {
                   <p className="font-medium text-indigo-700">{sub.title_az}</p>
                   <p className="text-sm text-gray-600 mt-1">{sub.description_az}</p>
                   <p className="text-sm text-gray-500 mt-1">
-                    📂 Kateqoriya: <span className="font-semibold">{category?.title_az || "Tapılmadı"}</span>
+                    📂 {t("Category")}: <span className="font-semibold">{category?.title_az || t("NotFound")}</span>
                   </p>
                 </div>
               </div>
               <div className="grid gap-2">
                 <Button variant="outline" onClick={() => openEditModal(sub)} className="mt-2 md:mt-0">
-                  Redaktə Et
+                  {t("Edit")}
                 </Button>
                 <Button
                   variant="destructive"
@@ -289,7 +293,7 @@ export default function SubCategoryCreatePage() {
                   className="mt-2 md:mt-0 bg-red-600 text-white rounded-lg font-semibold hover:bg-red-700 transition"
                   disabled={loading}
                 >
-                  Sil
+                  {t("Delete")}
                 </Button>
               </div>
             </div>
@@ -306,15 +310,15 @@ export default function SubCategoryCreatePage() {
             className="bg-white rounded-lg p-6 max-w-3xl w-full"
             onClick={(e) => e.stopPropagation()}
           >
-            <h3 className="text-xl font-semibold mb-4 text-indigo-700">Alt Kateqoriyanı Redaktə Et</h3>
+            <h3 className="text-xl font-semibold mb-4 text-indigo-700">{t("EditSubCategory")}</h3>
             <form onSubmit={handleEditSubmit} className="grid grid-cols-1 md:grid-cols-2 gap-6">
               {[
-                ["title_az", "Başlıq (AZ)"],
-                ["title_en", "Başlıq (EN)"],
-                ["title_ru", "Başlıq (RU)"],
-                ["description_az", "Açıqlama (AZ)"],
-                ["description_en", "Açıqlama (EN)"],
-                ["description_ru", "Açıqlama (RU)"],
+                ["title_az", t("TitleAZ")],
+                ["title_en", t("TitleEN")],
+                ["title_ru", t("TitleRU")],
+                ["description_az", t("DescriptionAZ")],
+                ["description_en", t("DescriptionEN")],
+                ["description_ru", t("DescriptionRU")],
               ].map(([key, label]) => (
                 <div key={"edit-" + key}>
                   <Label htmlFor={"edit-" + key}>{label}</Label>
@@ -329,7 +333,7 @@ export default function SubCategoryCreatePage() {
               ))}
 
               <div>
-                <Label htmlFor="edit-requireCount">Məqalə sayı</Label>
+                <Label htmlFor="edit-requireCount">{t("ArticleCount")}</Label>
                 <Input
                   type="number"
                   id="edit-requireCount"
@@ -340,7 +344,7 @@ export default function SubCategoryCreatePage() {
                 />
               </div>
               <div>
-                <Label htmlFor="categoryIdEdit">Kateqoriya Seç</Label>
+                <Label htmlFor="categoryIdEdit">{t("SelectCategory")}</Label>
                 <select
                   name="categoryId"
                   id="categoryIdEdit"
@@ -349,7 +353,7 @@ export default function SubCategoryCreatePage() {
                   required
                   className="w-full border border-gray-300 rounded-md h-10 px-2"
                 >
-                  <option value="">-- Seçin --</option>
+                  <option value="">{t("SelectPlaceholder")}</option>
                   {categories.map((cat) => (
                     <option key={cat.id} value={cat.id}>
                       {cat.title_az}
@@ -360,10 +364,10 @@ export default function SubCategoryCreatePage() {
 
               <div className="col-span-full flex justify-end gap-3">
                 <Button type="button" variant="outline" onClick={() => setIsModalOpen(false)}>
-                  Ləğv et
+                  {t("Cancel")}
                 </Button>
                 <Button type="submit" disabled={loading}>
-                  {loading ? "Yüklənir..." : "Yadda saxla"}
+                  {loading ? t("Loading") : t("Save")}
                 </Button>
               </div>
             </form>

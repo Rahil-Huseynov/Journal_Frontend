@@ -2,7 +2,7 @@
 
 import CitizenshipCountrySelect from '@/components/CitizenshipCountrySelect';
 import { apiClient } from '@/lib/api-client';
-import { id } from 'date-fns/locale';
+import { useTranslations } from 'next-intl';
 import React, { useEffect, useState } from 'react';
 
 interface CitizenshipCountrySelectProps {
@@ -34,6 +34,7 @@ export default function CategoryPage() {
     const [showModal, setShowModal] = useState(false);
     const [editModal, setEditModal] = useState(false);
     const [editingAuthor, setEditingAuthor] = useState<Author | null>(null);
+    const t = useTranslations("Admin_Author");
 
     const [formData, setFormData] = useState({
         firstName: '',
@@ -67,7 +68,7 @@ export default function CategoryPage() {
     };
 
     const handleSubmit = async () => {
-        if (!selectedCategoryId) return alert("Zəhmət olmasa bir kateqoriya seçin.");
+        if (!selectedCategoryId) return alert(t("SelectCategoryWarning"));
 
         const data = new FormData();
         data.append('firstName', formData.firstName);
@@ -79,32 +80,30 @@ export default function CategoryPage() {
 
         try {
             await apiClient.addAuthor(data);
-            alert('Author uğurla əlavə olundu!');
+            alert(t("AuthorAdded"));
             handleCloseModal();
             const categories = await apiClient.getCategories();
             setCategories(categories);
         } catch (error) {
             console.error('Author əlavə olunarkən xəta:', error);
-            alert('Server xətası baş verdi!');
+            alert(t("ServerError"));
         }
     };
 
     const handleDeleteAuthor = async (authorId: number) => {
-        const confirmDelete = window.confirm('Bu müəllifi silmək istədiyinizə əminsiniz?');
-
+        const confirmDelete = window.confirm(t("ConfirmDeleteAuthor"));
         if (!confirmDelete) return;
 
         try {
             await apiClient.deleteAuthor(authorId)
-            alert('Müəllif uğurla silindi!');
+            alert(t("AuthorDeleted"));
             const categories = await apiClient.getCategories();
             setCategories(categories);
         } catch (error) {
             console.error('Silinmə xətası:', error);
-            alert('Müəllif silinərkən xəta baş verdi!');
+            alert(t("AuthorDeleteError"));
         }
     };
-
 
     const handleEditAuthor = (author: Author) => {
         setEditingAuthor(author);
@@ -125,23 +124,22 @@ export default function CategoryPage() {
         formData.append('workplace', editingAuthor.workplace || '');
         formData.append('academicdegree', editingAuthor.academicdegree || '')
         formData.append('country', editingAuthor.country || '');
+
         try {
             await apiClient.updateAuthor(editingAuthor.id, formData)
-
-            alert('Müəllif uğurla yeniləndi!');
+            alert(t("AuthorUpdated"));
             closeEditModal();
             const categories = await apiClient.getCategories();
             setCategories(categories);
         } catch (error) {
             console.error('Error:', error);
-            alert('Server xətası baş verdi!');
+            alert(t("ServerError"));
         }
     };
 
-
     return (
         <div className="p-6">
-            <h1 className="text-2xl font-bold mb-4">Kateqoriyalar</h1>
+            <h1 className="text-2xl font-bold mb-4">{t("Categories")}</h1>
             <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
                 {categories.map(cat => (
                     <div
@@ -156,7 +154,7 @@ export default function CategoryPage() {
                         />
                         <p className='text-center text-lg'>{cat.title_az}</p>
                         <p className='text-center text-lg'>{cat.description_az}</p>
-                        <p className='text-center'>Müəlliflər:</p>
+                        <p className='text-center'>{t("Authors")}</p>
                         {cat.authors && cat.authors.length > 0 ? (
                             <div className='text-center'>
                                 {cat.authors.slice(0, 5).map((author, idx) => (
@@ -170,7 +168,7 @@ export default function CategoryPage() {
                                 {cat.authors.length > 5 && <span>...</span>}
                             </div>
                         ) : (
-                            <span>Müəllif yoxdur</span>
+                            <span>{t("NoAuthors")}</span>
                         )}
                     </div>
                 ))}
@@ -179,25 +177,25 @@ export default function CategoryPage() {
             {showModal && (
                 <div className="fixed inset-0 bg-black bg-opacity-40 flex items-center justify-center z-50 overflow-y-auto">
                     <div className="bg-white rounded-lg p-6 w-full max-w-xl shadow-lg">
-                        <h2 className="text-xl font-semibold mb-4 text-center">Author əlavə et</h2>
+                        <h2 className="text-xl font-semibold mb-4 text-center">{t("AddAuthor")}</h2>
                         <div className="space-y-3">
-                            <input type="text" name="firstName" placeholder="Ad" value={formData.firstName} onChange={handleChange} className="w-full border px-3 py-2 rounded" />
-                            <input type="text" name="lastName" placeholder="Soyad" value={formData.lastName} onChange={handleChange} className="w-full border px-3 py-2 rounded" />
-                            <input type="text" name="academicdegree" placeholder="Elmi dərəcə/Elmi ad" value={formData.academicdegree} onChange={handleChange} className="w-full border px-3 py-2 rounded" />
-                            <textarea name="workplace" placeholder="İş yeri" value={formData.workplace} onChange={handleChange} className="w-full border px-3 py-2 rounded resize-none" />
+                            <input type="text" name="firstName" placeholder={t("FirstName")} value={formData.firstName} onChange={handleChange} className="w-full border px-3 py-2 rounded" />
+                            <input type="text" name="lastName" placeholder={t("LastName")} value={formData.lastName} onChange={handleChange} className="w-full border px-3 py-2 rounded" />
+                            <input type="text" name="academicdegree" placeholder={t("AcademicDegree")} value={formData.academicdegree} onChange={handleChange} className="w-full border px-3 py-2 rounded" />
+                            <textarea name="workplace" placeholder={t("Workplace")} value={formData.workplace} onChange={handleChange} className="w-full border px-3 py-2 rounded resize-none" />
                             <CitizenshipCountrySelect
                                 value={formData.country}
                                 onChange={(value: string) => setFormData(prev => ({ ...prev, country: value }))}
                             />
                         </div>
                         <div className="mt-4 flex justify-end space-x-2">
-                            <button onClick={handleCloseModal} className="px-4 py-2 border rounded text-gray-600 hover:bg-gray-100">Bağla</button>
-                            <button onClick={handleSubmit} className="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700">Yadda saxla</button>
+                            <button onClick={handleCloseModal} className="px-4 py-2 border rounded text-gray-600 hover:bg-gray-100">{t("Close")}</button>
+                            <button onClick={handleSubmit} className="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700">{t("Save")}</button>
                         </div>
 
                         {selectedCategoryId && (
                             <div className="mt-6">
-                                <h3 className="text-lg font-semibold mb-2 text-center">Mövcud müəlliflər</h3>
+                                <h3 className="text-lg font-semibold mb-2 text-center">{t("ExistingAuthors")}</h3>
                                 <ul className="space-y-3 max-h-[300px] overflow-y-auto">
                                     {categories.find(cat => cat.id === selectedCategoryId)?.authors.map(author => (
                                         <li key={author.id} className="flex justify-between items-center border p-3 rounded-md shadow-sm hover:shadow-md">
@@ -206,8 +204,8 @@ export default function CategoryPage() {
                                                 {author.workplace && <p className="text-sm text-gray-600">{author.workplace}</p>}
                                             </div>
                                             <div className="flex space-x-2">
-                                                <button onClick={() => handleEditAuthor(author)} className="px-3 py-1 bg-yellow-400 text-white rounded hover:bg-yellow-500 text-sm">Redaktə et</button>
-                                                <button onClick={() => handleDeleteAuthor(author.id)} className="px-3 py-1 bg-red-500 text-white rounded hover:bg-red-600 text-sm">Sil</button>
+                                                <button onClick={() => handleEditAuthor(author)} className="px-3 py-1 bg-yellow-400 text-white rounded hover:bg-yellow-500 text-sm">{t("Edit")}</button>
+                                                <button onClick={() => handleDeleteAuthor(author.id)} className="px-3 py-1 bg-red-500 text-white rounded hover:bg-red-600 text-sm">{t("Delete")}</button>
                                             </div>
                                         </li>
                                     ))}
@@ -220,12 +218,12 @@ export default function CategoryPage() {
             {editModal && editingAuthor && (
                 <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
                     <div className="bg-white rounded-lg p-6 w-full max-w-md shadow-lg">
-                        <h2 className="text-xl font-semibold mb-4 text-center">Müəllifi Redaktə Et</h2>
+                        <h2 className="text-xl font-semibold mb-4 text-center">{t("EditAuthorTitle")}</h2>
                         <div className="space-y-3">
-                            <input type="text" name="firstName" value={editingAuthor.firstName || ''} onChange={e => setEditingAuthor(prev => prev && { ...prev, firstName: e.target.value })} placeholder="Ad" className="w-full border px-3 py-2 rounded" />
-                            <input type="text" name="lastName" value={editingAuthor.lastName || ''} onChange={e => setEditingAuthor(prev => prev && { ...prev, lastName: e.target.value })} placeholder="Soyad" className="w-full border px-3 py-2 rounded" />
-                            <input type="text" name="academicdegree" value={editingAuthor.academicdegree || ''} onChange={e => setEditingAuthor(prev => prev && { ...prev, academicdegree: e.target.value })} placeholder="Elmi dərəcə/ Elmi ad" className="w-full border px-3 py-2 rounded" />
-                            <textarea name="workplace" value={editingAuthor.workplace || ''} onChange={e => setEditingAuthor(prev => prev && { ...prev, workplace: e.target.value })} placeholder="İş yeri" className="w-full border px-3 py-2 rounded resize-none" />
+                            <input type="text" name="firstName" value={editingAuthor.firstName || ''} onChange={e => setEditingAuthor(prev => prev && { ...prev, firstName: e.target.value })} placeholder={t("FirstName")} className="w-full border px-3 py-2 rounded" />
+                            <input type="text" name="lastName" value={editingAuthor.lastName || ''} onChange={e => setEditingAuthor(prev => prev && { ...prev, lastName: e.target.value })} placeholder={t("LastName")} className="w-full border px-3 py-2 rounded" />
+                            <input type="text" name="academicdegree" value={editingAuthor.academicdegree || ''} onChange={e => setEditingAuthor(prev => prev && { ...prev, academicdegree: e.target.value })} placeholder={t("AcademicDegree")} className="w-full border px-3 py-2 rounded" />
+                            <textarea name="workplace" value={editingAuthor.workplace || ''} onChange={e => setEditingAuthor(prev => prev && { ...prev, workplace: e.target.value })} placeholder={t("Workplace")} className="w-full border px-3 py-2 rounded resize-none" />
                             <CitizenshipCountrySelect
                                 value={editingAuthor?.country || ''}
                                 onChange={(value: string) =>
@@ -236,8 +234,8 @@ export default function CategoryPage() {
                             />
                         </div>
                         <div className="mt-4 flex justify-end space-x-2">
-                            <button onClick={closeEditModal} className="px-4 py-2 border rounded text-gray-600 hover:bg-gray-100">Bağla</button>
-                            <button onClick={handleUpdateAuthor} className="px-4 py-2 bg-green-600 text-white rounded hover:bg-green-700">Yenilə</button>
+                            <button onClick={closeEditModal} className="px-4 py-2 border rounded text-gray-600 hover:bg-gray-100">{t("Close")}</button>
+                            <button onClick={handleUpdateAuthor} className="px-4 py-2 bg-green-600 text-white rounded hover:bg-green-700">{t("Update")}</button>
                         </div>
                     </div>
                 </div>

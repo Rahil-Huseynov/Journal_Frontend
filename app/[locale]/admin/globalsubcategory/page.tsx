@@ -1,6 +1,7 @@
 "use client";
 
 import { apiClient } from "@/lib/api-client";
+import { useTranslations } from "next-intl";
 import React, { useEffect, useState, ChangeEvent, FormEvent } from "react";
 
 type SubCategory = {
@@ -54,6 +55,7 @@ export default function GlobalSubCategoryPublisher() {
   const [subCategoryMaxCount, setSubCategoryMaxCount] = useState<number>(0);
   const [imageFile, setImageFile] = useState<File | null>(null);
   const [editImageFile, setEditImageFile] = useState<File | null>(null);
+  const t = useTranslations("Admin_GlobalSubCategory");
 
   useEffect(() => {
     fetchData();
@@ -66,7 +68,7 @@ export default function GlobalSubCategoryPublisher() {
       setSubCategories(subs);
       setGlobalSubs(globals);
     } catch (error) {
-      alert("Xəta baş verdi");
+      alert(t("error_occurred"));
       console.error(error);
     }
   }
@@ -81,7 +83,7 @@ export default function GlobalSubCategoryPublisher() {
   async function handlePublish(subCategory: SubCategory) {
     const file = files[subCategory.id];
     if (!file) {
-      alert("Zəhmət olmasa fayl seçin");
+      alert(t("please_select_file"));
       return;
     }
 
@@ -97,7 +99,10 @@ export default function GlobalSubCategoryPublisher() {
     formData.append("subCategoryId", subCategory.id.toString());
     formData.append("file", file);
     if (imageFile) formData.append("image", imageFile);
-    else throw new Error("Şəkil faylı mütləq seçilməlidir.");
+    else {
+      alert(t("image_file_required"));
+      return;
+    }
 
     try {
       await apiClient.createGlobalCategory(formData);
@@ -106,9 +111,9 @@ export default function GlobalSubCategoryPublisher() {
       setFiles((prev) => ({ ...prev, [subCategory.id]: null }));
       setImageFile(null);
       await fetchData();
-      alert("Uğurla yayımlandı və SubCategory silindi");
+      alert(t("published_and_deleted"));
     } catch (error) {
-      alert("Xəta: " + (error as Error).message);
+      alert(t("error") + ": " + (error as Error).message);
     }
   }
 
@@ -168,19 +173,19 @@ export default function GlobalSubCategoryPublisher() {
       await apiClient.updateGlobalCategory(editData.id, formData);
       await fetchData();
       closeEditModal();
-      alert("Uğurla yeniləndi");
+      alert(t("successfully_updated"));
     } catch (error) {
-      alert("Xəta: " + (error as Error).message);
+      alert(t("error") + ": " + (error as Error).message);
     }
   }
   async function handleDelete(id: number) {
-    if (!confirm("Bu global subcategory-ni silmək istədiyinizə əminsiniz?")) return;
+    if (!confirm(t("confirm_delete_global_subcategory"))) return;
     try {
       await apiClient.deleteGlobalCategory(id);
       setGlobalSubs((prev) => prev.filter((g) => g.id !== id));
-      alert("Uğurla silindi");
+      alert(t("successfully_deleted"));
     } catch (error) {
-      alert("Xəta: " + (error as Error).message);
+      alert(t("error") + ": " + (error as Error).message);
     }
   }
 
@@ -205,7 +210,7 @@ export default function GlobalSubCategoryPublisher() {
       const maxCount = sub.count ?? 0;
       setSubCategoryMaxCount(maxCount);
     } catch (error) {
-      alert("Statusu 'finished' olan jurnal tapılmadı");
+      alert(t("finished_journals_not_found"));
       setFinishedJournals([]);
       setCounts({});
     }
@@ -221,7 +226,7 @@ export default function GlobalSubCategoryPublisher() {
   function handleCountChange(e: ChangeEvent<HTMLInputElement>, journalId: number) {
     const value = Number(e.target.value);
     if (value > subCategoryMaxCount) {
-      alert(`Order dəyəri ${subCategoryMaxCount}-dan çox ola bilməz.`);
+      alert(t("order_value_max", { max: subCategoryMaxCount }));
       return;
     }
     setCounts((prev) => ({ ...prev, [journalId]: value }));
@@ -242,7 +247,7 @@ export default function GlobalSubCategoryPublisher() {
       }
 
       if (duplicates.length > 0) {
-        alert(`Eyni order dəyərləri təkrar olunmamalıdır. Təkrar dəyərlər: ${duplicates.join(", ")}`);
+        alert(t("duplicate_orders", { values: duplicates.join(", ") }));
         return;
       }
 
@@ -251,40 +256,38 @@ export default function GlobalSubCategoryPublisher() {
         await apiClient.updateJournalOrder(Number(journalId), orderValue);
       }
 
-      alert("Saylar uğurla yadda saxlanıldı");
+      alert(t("counts_saved_successfully"));
       closeSortModal();
     } catch (error) {
-      alert("Sayları yadda saxlama zamanı xəta baş verdi");
+      alert(t("error_saving_counts"));
     }
   }
-
-
 
   return (
     <div className="w-full p-8 bg-white rounded-lg shadow-lg">
       <div>
-        <h1 className="text-4xl font-extrabold mb-10 text-gray-900">SubCategory-lər</h1>
+        <h1 className="text-4xl font-extrabold mb-10 text-gray-900">{t("subcategories")}</h1>
         <div className="overflow-x-auto mb-16">
           <table className="min-w-full divide-y divide-gray-200 border border-gray-300 shadow-sm border-separate text-[inherit]">
             <thead className="bg-gray-50">
               <tr>
                 {[
-                  "Başlıq (AZ)",
-                  "Başlıq (EN)",
-                  "Başlıq (RU)",
-                  "Açıqlama (AZ)",
-                  "Açıqlama (EN)",
-                  "Açıqlama (RU)",
-                  "Fayl əlavə et",
-                  "Şəkil əlavə et",
-                  "Yayımla",
-                  "Sırala",
-                ].map((title) => (
+                  "title_az",
+                  "title_en",
+                  "title_ru",
+                  "description_az",
+                  "description_en",
+                  "description_ru",
+                  "add_file",
+                  "add_image",
+                  "publish",
+                  "sort",
+                ].map((key) => (
                   <th
-                    key={title}
+                    key={key}
                     className="px-6 py-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider"
                   >
-                    {title}
+                    {t(key)}
                   </th>
                 ))}
               </tr>
@@ -323,7 +326,7 @@ export default function GlobalSubCategoryPublisher() {
                       onClick={() => handlePublish(sub)}
                       className="px-4 py-2 bg-green-600 text-white rounded-md hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-green-500"
                     >
-                      Yayımla
+                      {t("publish")}
                     </button>
                   </td>
                   <td className="px-6 py-4">
@@ -331,7 +334,7 @@ export default function GlobalSubCategoryPublisher() {
                       onClick={() => openSortModal(sub.id)}
                       className="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500"
                     >
-                      Sırala
+                      {t("sort")}
                     </button>
                   </td>
                 </tr>
@@ -341,24 +344,24 @@ export default function GlobalSubCategoryPublisher() {
         </div>
       </div>
       <div>
-        <h2 className="text-2xl font-bold text-gray-800 mb-6">Yayımlanmış Global SubCategory-lər</h2>
+        <h2 className="text-2xl font-bold text-gray-800 mb-6">{t("published_global_subcategories")}</h2>
         {globalSubs.length === 0 ? (
-          <p className="text-gray-500 italic">Hələlik yayımlanmış subcategory yoxdur.</p>
+          <p className="text-gray-500 italic">{t("no_published_subcategories")}</p>
         ) : (
           <div className="overflow-x-auto mb-16">
             <table className="min-w-full divide-y divide-gray-200 rounded-lg border border-gray-300 shadow-sm">
               <thead className="bg-gray-100">
                 <tr>
-                  <th className="px-6 py-3 text-left text-xs font-semibold text-gray-600 uppercase">Şəkil</th>
-                  <th className="px-6 py-3 text-left text-xs font-semibold text-gray-600 uppercase">Başlıq (AZ)</th>
-                  <th className="px-6 py-3 text-left text-xs font-semibold text-gray-600 uppercase">Başlıq (EN)</th>
-                  <th className="px-6 py-3 text-left text-xs font-semibold text-gray-600 uppercase">Başlıq (RU)</th>
-                  <th className="px-6 py-3 text-left text-xs font-semibold text-gray-600 uppercase">Açıqlama (AZ)</th>
-                  <th className="px-6 py-3 text-left text-xs font-semibold text-gray-600 uppercase">Açıqlama (EN)</th>
-                  <th className="px-6 py-3 text-left text-xs font-semibold text-gray-600 uppercase">Açıqlama (RU)</th>
-                  <th className="px-6 py-3 text-left text-xs font-semibold text-gray-600 uppercase">Fayl</th>
-                  <th className="px-6 py-3 text-left text-xs font-semibold text-gray-600 uppercase">Redaktə et</th>
-                  <th className="px-6 py-3 text-left text-xs font-semibold text-gray-600 uppercase">Sil</th>
+                  <th className="px-6 py-3 text-left text-xs font-semibold text-gray-600 uppercase">{t("image")}</th>
+                  <th className="px-6 py-3 text-left text-xs font-semibold text-gray-600 uppercase">{t("title_az")}</th>
+                  <th className="px-6 py-3 text-left text-xs font-semibold text-gray-600 uppercase">{t("title_en")}</th>
+                  <th className="px-6 py-3 text-left text-xs font-semibold text-gray-600 uppercase">{t("title_ru")}</th>
+                  <th className="px-6 py-3 text-left text-xs font-semibold text-gray-600 uppercase">{t("description_az")}</th>
+                  <th className="px-6 py-3 text-left text-xs font-semibold text-gray-600 uppercase">{t("description_en")}</th>
+                  <th className="px-6 py-3 text-left text-xs font-semibold text-gray-600 uppercase">{t("description_ru")}</th>
+                  <th className="px-6 py-3 text-left text-xs font-semibold text-gray-600 uppercase">{t("file")}</th>
+                  <th className="px-6 py-3 text-left text-xs font-semibold text-gray-600 uppercase">{t("edit")}</th>
+                  <th className="px-6 py-3 text-left text-xs font-semibold text-gray-600 uppercase">{t("delete")}</th>
                 </tr>
               </thead>
               <tbody className="bg-white divide-y divide-gray-200">
@@ -368,8 +371,9 @@ export default function GlobalSubCategoryPublisher() {
                       <div className="w-[150px]">
                         <img
                           className="object-contain"
-                          src={`${process.env.NEXT_PUBLIC_API_URL_FOR_IMAGE}/uploads/globalsubcategory/${g.image}` || "Şəkil yoxdur"}
-                          alt={`${process.env.NEXT_PUBLIC_API_URL_FOR_IMAGE}/uploads/globalsubcategory/${g.image}` || "Şəkil yoxdur"} />
+                          src={`${process.env.NEXT_PUBLIC_API_URL_FOR_IMAGE}/uploads/globalsubcategory/${g.image}` || t("no_image")}
+                          alt={g.title_az || t("no_image")}
+                        />
                       </div>
                     </td>
                     <td className="px-6 py-4 font-semibold text-gray-900">{g.title_az}</td>
@@ -385,7 +389,7 @@ export default function GlobalSubCategoryPublisher() {
                         rel="noopener noreferrer"
                         className="text-blue-600 hover:underline"
                       >
-                        Bax
+                        {t("view")}
                       </a>
                     </td>
                     <td className="px-6 py-4 space-x-2">
@@ -393,7 +397,7 @@ export default function GlobalSubCategoryPublisher() {
                         onClick={() => openEditModal(g)}
                         className="px-3 py-1 bg-yellow-400 text-white rounded hover:bg-yellow-500 focus:outline-none focus:ring-2 focus:ring-yellow-300"
                       >
-                        Redaktə et
+                        {t("edit")}
                       </button>
                     </td>
                     <td className="px-6 py-4 space-x-2">
@@ -401,7 +405,7 @@ export default function GlobalSubCategoryPublisher() {
                         onClick={() => handleDelete(g.id)}
                         className="px-3 py-1 bg-red-600 text-white rounded hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-red-400"
                       >
-                        Sil
+                        {t("delete")}
                       </button>
                     </td>
                   </tr>
@@ -414,10 +418,10 @@ export default function GlobalSubCategoryPublisher() {
       {editModalOpen && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
           <div className="bg-white rounded-lg shadow-lg max-w-lg w-full p-6 relative">
-            <h3 className="text-xl font-semibold mb-4">Global SubCategory Redaktə et</h3>
+            <h3 className="text-xl font-semibold mb-4">{t("edit_global_subcategory")}</h3>
             <form onSubmit={handleEditSubmit} className="space-y-4">
               <div>
-                <label className="block mb-1 font-medium">Başlıq (AZ)</label>
+                <label className="block mb-1 font-medium">{t("title_az")}</label>
                 <input
                   name="title_az"
                   value={editData.title_az || ""}
@@ -427,7 +431,7 @@ export default function GlobalSubCategoryPublisher() {
                 />
               </div>
               <div>
-                <label className="block mb-1 font-medium">Başlıq (EN)</label>
+                <label className="block mb-1 font-medium">{t("title_en")}</label>
                 <input
                   name="title_en"
                   value={editData.title_en || ""}
@@ -437,7 +441,7 @@ export default function GlobalSubCategoryPublisher() {
                 />
               </div>
               <div>
-                <label className="block mb-1 font-medium">Başlıq (RU)</label>
+                <label className="block mb-1 font-medium">{t("title_ru")}</label>
                 <input
                   name="title_ru"
                   value={editData.title_ru || ""}
@@ -447,7 +451,7 @@ export default function GlobalSubCategoryPublisher() {
                 />
               </div>
               <div>
-                <label className="block mb-1 font-medium">Açıqlama (AZ)</label>
+                <label className="block mb-1 font-medium">{t("description_az")}</label>
                 <textarea
                   name="description_az"
                   value={editData.description_az || ""}
@@ -457,7 +461,7 @@ export default function GlobalSubCategoryPublisher() {
                 />
               </div>
               <div>
-                <label className="block mb-1 font-medium">Açıqlama (EN)</label>
+                <label className="block mb-1 font-medium">{t("description_en")}</label>
                 <textarea
                   name="description_en"
                   value={editData.description_en || ""}
@@ -467,7 +471,7 @@ export default function GlobalSubCategoryPublisher() {
                 />
               </div>
               <div>
-                <label className="block mb-1 font-medium">Açıqlama (RU)</label>
+                <label className="block mb-1 font-medium">{t("description_ru")}</label>
                 <textarea
                   name="description_ru"
                   value={editData.description_ru || ""}
@@ -477,7 +481,7 @@ export default function GlobalSubCategoryPublisher() {
                 />
               </div>
               <div>
-                <label className="block mb-1 font-medium">Fayl (əgər dəyişdirsəniz seçin)</label>
+                <label className="block mb-1 font-medium">{t("file_optional")}</label>
                 <input
                   type="file"
                   accept="image/*,application/pdf"
@@ -486,7 +490,7 @@ export default function GlobalSubCategoryPublisher() {
                 />
               </div>
               <div>
-                <label className="block mb-1 font-medium">Şəkil (əgər dəyişdirsəniz seçin)</label>
+                <label className="block mb-1 font-medium">{t("image_optional")}</label>
                 <input
                   id="image"
                   type="file"
@@ -501,10 +505,10 @@ export default function GlobalSubCategoryPublisher() {
                   onClick={closeEditModal}
                   className="px-4 py-2 border rounded border-gray-400 hover:bg-gray-100"
                 >
-                  Ləğv et
+                  {t("cancel")}
                 </button>
                 <button type="submit" className="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700">
-                  Yadda saxla
+                  {t("save")}
                 </button>
               </div>
             </form>
@@ -515,16 +519,16 @@ export default function GlobalSubCategoryPublisher() {
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
           <div className="bg-white rounded-lg p-6 max-w-2xl w-full max-h-[80vh] overflow-y-auto">
             <h2 className="text-xl font-semibold mb-4">
-              SubCategory ID: {currentSubCategoryId} üçün Statusu "finished" olan jurnallar
+              {t("subcat_finished_journals", { id: currentSubCategoryId })}
             </h2>
 
             {finishedJournals.length === 0 && (
-              <p className="italic text-gray-500">Heç bir finished jurnal tapılmadı.</p>
+              <p className="italic text-gray-500">{t("no_finished_journals")}</p>
             )}
 
             {finishedJournals.map((journal) => (
               <div key={journal.id} className="flex items-center justify-between mb-3">
-                <span>{journal.title_az || `Journal ID: ${journal.id}`}</span>
+                <span>{journal.title_az || `${t("journal_id")} ${journal.id}`}</span>
                 <input
                   type="number"
                   min={0}
@@ -541,13 +545,13 @@ export default function GlobalSubCategoryPublisher() {
                 onClick={closeSortModal}
                 className="px-4 py-2 border rounded border-gray-400 hover:bg-gray-100"
               >
-                Bağla
+                {t("close")}
               </button>
               <button
                 onClick={handleSaveCounts}
                 className="px-4 py-2 bg-green-600 text-white rounded hover:bg-green-700"
               >
-                Yadda saxla
+                {t("save")}
               </button>
             </div>
           </div>

@@ -5,6 +5,7 @@ import { Badge } from "@/components/ui/badge"
 import { Users, FileText, TrendingUp, Activity } from "lucide-react"
 import { useEffect, useState } from "react"
 import { apiClient } from "@/lib/api-client"
+import { useTranslations } from "next-intl"
 
 interface DashboardStats {
   totalUsers: number
@@ -24,6 +25,7 @@ interface DashboardStats {
 export default function AdminDashboard() {
   const [stats, setStats] = useState<DashboardStats | null>(null)
   const [isLoading, setIsLoading] = useState(true)
+  const t = useTranslations("Admin_Dashboard");
 
   useEffect(() => {
     loadDashboardStats()
@@ -43,7 +45,7 @@ export default function AdminDashboard() {
   if (isLoading) {
     return (
       <div className="space-y-6">
-        <h1 className="text-3xl font-bold">Dashboard</h1>
+        <h1 className="text-3xl font-bold">{t("Dashboard")}</h1>
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
           {[...Array(4)].map((_, i) => (
             <Card key={i} className="animate-pulse">
@@ -63,13 +65,13 @@ export default function AdminDashboard() {
   return (
     <div className="space-y-6">
       <div>
-        <h1 className="text-3xl font-bold text-gray-900">Admin Dashboard</h1>
-        <p className="text-gray-600">Sistem statistikaları və son fəaliyyətlər</p>
+        <h1 className="text-3xl font-bold text-gray-900">{t("Title")}</h1>
+        <p className="text-gray-600"> {t("Description")}</p>
       </div>
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Ümumi İstifadəçilər</CardTitle>
+            <CardTitle className="text-sm font-medium">{t("TotalUsers")}</CardTitle>
             <Users className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
@@ -79,7 +81,7 @@ export default function AdminDashboard() {
 
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Ümumi Məqalələr</CardTitle>
+            <CardTitle className="text-sm font-medium">{t("TotalArticles")}</CardTitle>
             <FileText className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
@@ -89,7 +91,7 @@ export default function AdminDashboard() {
 
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Aktiv İstifadəçilər</CardTitle>
+            <CardTitle className="text-sm font-medium">{t("ActiveUsersToday")}</CardTitle>
             <TrendingUp className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
@@ -99,7 +101,7 @@ export default function AdminDashboard() {
 
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Gözləyən Məqalələr</CardTitle>
+            <CardTitle className="text-sm font-medium">{t("PendingArticles")}</CardTitle>
             <Activity className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
@@ -109,8 +111,8 @@ export default function AdminDashboard() {
       </div>
       <Card>
         <CardHeader>
-          <CardTitle>Son Fəaliyyətlər</CardTitle>
-          <CardDescription>Sistemdə baş verən son dəyişikliklər</CardDescription>
+          <CardTitle>{t("RecentActivities")}</CardTitle>
+          <CardDescription>{t("RecentActivitiesDesc")}</CardDescription>
         </CardHeader>
         <CardContent>
           <div className="space-y-4">
@@ -125,7 +127,7 @@ export default function AdminDashboard() {
                 </div>
                 <Badge variant="secondary">{activity.type}</Badge>
               </div>
-            )) || <p className="text-gray-500 text-center py-4">Hələ ki fəaliyyət yoxdur</p>}
+            )) || <p className="text-gray-500 text-center py-4">{t("NoActivity")}</p>}
           </div>
         </CardContent>
       </Card>

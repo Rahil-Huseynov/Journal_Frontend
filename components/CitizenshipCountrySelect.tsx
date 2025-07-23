@@ -20,7 +20,7 @@ export default function CitizenshipCountrySelect({ value, onChange }: Props) {
     (country, index, self) =>
       self.findIndex((c) => c.name === country.name) === index
   );
-    const t = useTranslations("Navigation_Client");
+    const t = useTranslations("MIX");
 
 
   return (

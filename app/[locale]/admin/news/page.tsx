@@ -375,9 +375,9 @@ export default function AddNewsPage() {
                   <div key={code}>
                     <label
                       htmlFor={`edit_title_${code}`}
-                      className="block mb-1 text-sm font-medium text-gray-700"
+                      className="block capitalize mb-1 text-sm font-medium text-gray-700"
                     >
-                      {t('edit_title', { lang: label })}
+                      {t('edit_title', { lang: code })}
                     </label>
                     <input
                       id={`edit_title_${code}`}
@@ -390,9 +390,9 @@ export default function AddNewsPage() {
                     />
                     <label
                       htmlFor={`edit_description_${code}`}
-                      className="block mt-3 mb-1 text-sm font-medium text-gray-700"
+                      className="block mt-3 mb-1 capitalize text-sm font-medium text-gray-700"
                     >
-                      {t('edit_content', { lang: label })}
+                      {t('edit_content', { lang: code })}
                     </label>
                     <textarea
                       id={`edit_description_${code}`}

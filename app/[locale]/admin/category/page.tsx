@@ -196,11 +196,10 @@ export default function CreateCategoryPage() {
 
                     {message && (
                         <div
-                            className={`mt-6 p-4 rounded-xl font-medium ${
-                                message.type === "success"
-                                    ? "bg-green-100 text-green-800 border border-green-300"
-                                    : "bg-red-100 text-red-800 border border-red-300"
-                            }`}
+                            className={`mt-6 p-4 rounded-xl font-medium ${message.type === "success"
+                                ? "bg-green-100 text-green-800 border border-green-300"
+                                : "bg-red-100 text-red-800 border border-red-300"
+                                }`}
                         >
                             {message.text}
                         </div>
@@ -209,7 +208,7 @@ export default function CreateCategoryPage() {
             </Card>
 
             <div>
-                <h2 className="text-2xl font-semibold text-gray-800 mb-4">🗂 {t("existing_categories")}</h2>
+                <h2 className="text-2xl font-semibold text-gray-800 mb-4">🗂 {t("title.existing_categories")}</h2>
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
                     {categories.map((category) => {
                         const titleKey = `title_${locale}`;
@@ -252,9 +251,7 @@ export default function CreateCategoryPage() {
                                         </Button>
                                     </DialogTrigger>
                                     <DialogContent className="max-w-2xl">
-                                        <DialogHeader>
-                                            <DialogTitle>{t("dialogs.subcategories_of", { category: category[titleKey] })}</DialogTitle>
-                                        </DialogHeader>
+                                        <DialogTitle>{t("dialogs.subcategories_of", { category: category[titleKey] })}</DialogTitle>
                                         {category.subCategories?.length > 0 ? (
                                             <div className="space-y-4 mt-4">
                                                 {category.subCategories.map((sub: any) => (

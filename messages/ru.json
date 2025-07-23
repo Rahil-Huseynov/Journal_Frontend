@@ -521,7 +521,8 @@
   },
   "Admin_Category": {
     "title": {
-      "add_new_category": "Добавить новый журнал"
+      "add_new_category": "Добавить новый журнал",
+      "existing_categories": "Добавленные журналы"
     },
     "form": {
       "title_az": "Заголовок (AZ)",
@@ -545,9 +546,9 @@
       "save": "Сохранить"
     },
     "dialogs": {
-      "subcategories_of": "Номера журналов – {journal}",
+      "subcategories_of": "Номера журналов – {category}",
       "no_subcategories": "Нет номеров журналов.",
-      "edit_category": "Редактировать журнал – {journal}"
+      "edit_category": "Редактировать журнал – {category}"
     },
     "success": {
       "category_added": "Журнал успешно добавлен!",
@@ -600,7 +601,7 @@
     "duplicate_orders": "Повторяющиеся значения порядка не допускаются. Повторы: {{values}}",
     "counts_saved_successfully": "Количество успешно сохранено",
     "error_saving_counts": "Ошибка при сохранении количества",
-    "subcat_finished_journals": "Статьи со статусом 'finished' для номера журнала ID: {{id}}",
+    "subcat_finished_journals": "Статьи со статусом «завершено»",
     "no_finished_journals": "Статей со статусом 'finished' не найдено.",
     "journal_id": "ID статьи",
     "close": "Закрыть"
@@ -613,11 +614,12 @@
     "selected_images": "Выбранные изображения",
     "save": "Сохранить",
     "saving": "Сохраняется...",
+    "delete": "Удалить новости",
     "no_news": "Новостей нет",
     "existing_news": "Существующие новости",
     "edit_news": "Редактировать новость",
-    "edit_title": "{{lang}} Заголовок",
-    "edit_content": "{{lang}} Содержание",
+    "edit_title": "{lang} Заголовок",
+    "edit_content": "{lang} Содержание",
     "upload_new_images": "Загрузить новые изображения",
     "previous_images": "Предыдущие изображения",
     "cancel": "Отмена",

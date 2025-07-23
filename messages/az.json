@@ -485,7 +485,8 @@
     "Submitting": "Göndərilir...",
     "Confirm": "Təsdiq et",
     "Admin": "Admin",
-    "SuperAdmin": "Super Admin"
+    "SuperAdmin": "Super Admin",
+    "EditAdmin": "Admini redaktə et"
   },
   "Admin_SubCategory": {
     "AddSubCategory": "Jurnal nömrəsi əlavə et",
@@ -521,7 +522,8 @@
   },
   "Admin_Category": {
     "title": {
-      "add_new_category": "Yeni jurnal əlavə et"
+      "add_new_category": "Yeni jurnal əlavə et",
+      "existing_categories": "Əlavə olunmuş jurnallar"
     },
     "form": {
       "title_az": "Başlıq (AZ)",
@@ -545,9 +547,9 @@
       "save": "Yadda saxla"
     },
     "dialogs": {
-      "subcategories_of": "Jurnal nömrəsi – {jurnal}",
+      "subcategories_of": "Jurnal nömrəsi – {category}",
       "no_subcategories": "Jurnal nömrəsi yoxdur.",
-      "edit_category": "Jurnalı redaktə et – {jurnal}"
+      "edit_category": "Jurnalı redaktə et – {category}"
     },
     "success": {
       "category_added": "Jurnal uğurla əlavə edildi!",
@@ -600,7 +602,7 @@
     "duplicate_orders": "Eyni order dəyərləri təkrar olunmamalıdır. Təkrar dəyərlər: {{values}}",
     "counts_saved_successfully": "Saylar uğurla yadda saxlanıldı",
     "error_saving_counts": "Sayları yadda saxlama zamanı xəta baş verdi",
-    "subcat_finished_journals": "Jurnal nömrəsi ID: {{id}} üçün Statusu \"finished\" olan məqalələr",
+    "subcat_finished_journals": "Statusu finished olan məqalələr",
     "no_finished_journals": "Heç bir finished məqalə tapılmadı.",
     "journal_id": "Məqalə ID",
     "close": "Bağla"
@@ -615,9 +617,10 @@
     "saving": "Əlavə olunur...",
     "no_news": "Heç bir xəbər yoxdur",
     "existing_news": "Mövcud Xəbərlər",
-    "edit_news": "Xəbəri Redaktə Et",
-    "edit_title": "{{lang}} Başlıq",
-    "edit_content": "{{lang}} Məzmun",
+    "edit_news": "Xəbəri redaktə et",
+    "delete": "Xəbəri sil",
+    "edit_title": "{lang} Başlıq",
+    "edit_content": "{lang} Məzmun",
     "upload_new_images": "Yeni Şəkillər Yüklə",
     "previous_images": "Əvvəlki şəkillər",
     "cancel": "Ləğv Et",
@@ -635,11 +638,11 @@
     "addJournal": "Yeni jurnal əlavə et",
     "addJournalnumber": "Yeni jurnal nömrəsi əlavə et",
     "shareJournalNumber": "Journal nömrəsini paylaş",
-    "article":"Məqalələr",
-    "users":"İstifadəçilər",
+    "article": "Məqalələr",
+    "users": "İstifadəçilər",
     "addnews": "Xəbərlər əlavə et",
     "addEditorial": "Redaksiya heyəti əlavə et",
-    "admins":"Adminlər",
+    "admins": "Adminlər",
     "logs": "Loglar"
   }
 }

@@ -521,7 +521,8 @@
   },
   "Admin_Category": {
     "title": {
-      "add_new_category": "Add New Journal"
+      "add_new_category": "Add New Journal",
+      "existing_categories": "Added journals"
     },
     "form": {
       "title_az": "Title (AZ)",
@@ -545,9 +546,9 @@
       "save": "Save"
     },
     "dialogs": {
-      "subcategories_of": "Journal numbers – {journal}",
+      "subcategories_of": "Journal numbers – {category}",
       "no_subcategories": "No journal numbers.",
-      "edit_category": "Edit Journal – {journal}"
+      "edit_category": "Edit Journal – {category}"
     },
     "success": {
       "category_added": "Journal added successfully!",
@@ -600,7 +601,7 @@
     "duplicate_orders": "Duplicate order values are not allowed. Duplicates: {{values}}",
     "counts_saved_successfully": "Counts saved successfully",
     "error_saving_counts": "Error saving counts",
-    "subcat_finished_journals": "Articles with status 'finished' for Journal Number ID: {{id}}",
+    "subcat_finished_journals": "Articles with status finished",
     "no_finished_journals": "No finished articles found.",
     "journal_id": "Article ID",
     "close": "Close"
@@ -616,8 +617,8 @@
     "no_news": "No news available",
     "existing_news": "Existing News",
     "edit_news": "Edit News",
-    "edit_title": "{{lang}} Title",
-    "edit_content": "{{lang}} Content",
+    "edit_title": "{lang} Title",
+    "edit_content": "{lang} Content",
     "upload_new_images": "Upload New Images",
     "previous_images": "Previous images",
     "cancel": "Cancel",
@@ -628,8 +629,9 @@
     "error_fetch_news": "Error occurred while fetching news",
     "error_add_news": "Error occurred while adding news",
     "confirm_delete_image": "Are you sure you want to delete the image?",
-    "error_delete_image": "Error occurred while deleting the image"
-  },
+    "error_delete_image": "Error occurred while deleting the image",
+    "delete": "Delete news"
+    },
   "Admin_Navigation": {
     "dashboard": "Dashboard",
     "addJournal": "Add new journal",

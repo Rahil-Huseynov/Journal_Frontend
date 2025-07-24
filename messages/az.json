@@ -155,7 +155,8 @@
     "journal_added_success": "Jurnal uğurla əlavə olundu!",
     "error_occurred": "Xəta baş verdi!",
     "error_fetching_categories": "Jurnalıar alınarkən xəta baş verdi",
-    "close_alert": "Bildirişi bağla"
+    "close_alert": "Bildirişi bağla",
+    "ALREADY_APPLIED": "Artıq siz müraciət etmisiniz."
   },
   "Navigation": {
     "home": "Ana səhifə",

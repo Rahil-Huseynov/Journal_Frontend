@@ -155,7 +155,8 @@
     "journal_added_success": "Journal added successfully!",
     "error_occurred": "An error occurred!",
     "error_fetching_categories": "Error occurred while fetching journal",
-    "close_alert": "Close alert"
+    "close_alert": "Close alert",
+    "ALREADY_APPLIED": "You have already applied."
   },
   "Navigation": {
     "home": "Home",
@@ -631,7 +632,7 @@
     "confirm_delete_image": "Are you sure you want to delete the image?",
     "error_delete_image": "Error occurred while deleting the image",
     "delete": "Delete news"
-    },
+  },
   "Admin_Navigation": {
     "dashboard": "Dashboard",
     "addJournal": "Add new journal",

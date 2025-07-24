@@ -155,7 +155,8 @@
     "journal_added_success": "Журнал успешно добавлен!",
     "error_occurred": "Произошла ошибка!",
     "error_fetching_categories": "Ошибка при загрузке журнал",
-    "close_alert": "Закрыть уведомление"
+    "close_alert": "Закрыть уведомление",
+    "ALREADY_APPLIED": "Вы уже подали заявку."
   },
   "Navigation": {
     "home": "Главная",

@@ -142,9 +142,8 @@ export default function ClientaddarticlesPage() {
 
     try {
       setLoading(true)
-      await apiClient.addjournalforUser(formData)
+      await apiClient.addjournalforUser(formData, locale)
       setAlertMessage(t("journal_added_success"))
-
       setForm({
         title_az: "",
         title_en: "",
@@ -167,9 +166,14 @@ export default function ClientaddarticlesPage() {
         setAlertMessage(null)
         window.location.href = `/${locale}/client/myarticles`
       }, 3000)
-    } catch (error) {
-      setAlertMessage(t("error_occurred"))
+    } catch (error: any) {
       console.error(error)
+      if (error.message === "already_applied") {
+        setAlertMessage(t("ALREADY_APPLIED"))
+      }
+      else{
+        setAlertMessage(t("error_occurred"))
+      }
       setTimeout(() => setAlertMessage(null), 3000)
     } finally {
       setLoading(false)

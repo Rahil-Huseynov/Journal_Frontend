@@ -137,7 +137,7 @@ export default function ClientarticlesPage() {
             } catch (error) {
                 console.error(t("subcategories_update_error"), error)
             }
-        }, 1000)
+        }, 10000)
 
         return () => clearInterval(interval)
     }, [formData.categoryId, formData.subCategoryId, t])
@@ -162,13 +162,10 @@ export default function ClientarticlesPage() {
         }
     }, [formData.categoryId, categories])
 
-    // Helper for localized field access
     const getLocalizedField = (obj: any, base: string) => {
         const key = `${base}_${locale}`
         return obj[key] || obj[`${base}_az`] || ""
     }
-
-    // ... Qalan hissələr də belə t(...) ilə dəyişdiriləcək ...
 
     const openEditModal = (journal: Journal) => {
         setSelectedJournal(journal)

@@ -107,14 +107,23 @@ class ApiClient {
     });
   }
 
-
-  async addjournalforUser(formData: FormData) {
-    return this.request("/journals/add", {
+  async addjournalforUser(formData: FormData, lang: string) {
+    const response = await this.request("/journals/add", {
       method: "POST",
       body: formData,
-      headers: {},
-    })
+      headers: {
+        'Accept-Language': lang,
+      },
+    });
+
+    if (!response.ok) {
+      const errorData = await response.json();
+      throw new Error(errorData.message || 'Unknown error');
+    }
+
+    return response.json();
   }
+
   async updateJournalStatus(id: number, status: string, reason?: string) {
     return this.request(`/journals/update-status/${id}`, {
       method: "PATCH",
@@ -475,7 +484,7 @@ class ApiClient {
     });
   }
 
-   async updateUserJournalDemo(id: number, formData: FormData) {
+  async updateUserJournalDemo(id: number, formData: FormData) {
     return this.request(`/journals/approve/${id}`, {
       method: "PUT",
       body: formData,
